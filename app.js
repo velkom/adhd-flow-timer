@@ -67,6 +67,12 @@ function init() {
     flowStateInfoElement = document.getElementById('flowStateInfo');
     progressRingCircle = document.querySelector('.progress-ring-circle');
     
+    // Initialize the progress ring
+    if (progressRingCircle) {
+        progressRingCircle.style.strokeDasharray = CIRCUMFERENCE;
+        progressRingCircle.style.strokeDashoffset = CIRCUMFERENCE;
+    }
+    
     // Load stored settings
     loadSettings();
     
@@ -408,6 +414,7 @@ function updateProgressRing(elapsedSeconds) {
     
     const dashoffset = CIRCUMFERENCE * (1 - percentage);
     progressRingCircle.style.strokeDashoffset = dashoffset;
+    progressRingCircle.style.strokeDasharray = CIRCUMFERENCE;
     
     // Update color based on progress
     if (!timerState.isFlowState && !timerState.isBreak) {
