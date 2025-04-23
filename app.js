@@ -54,25 +54,36 @@ const CIRCUMFERENCE = 2 * Math.PI * 120; // Circumference of the progress ring
 
 // Initialize
 function init() {
-    // Load saved settings and session data from localStorage
+    // Setup basic references
+    timerTimeElement = document.getElementById('timerTime');
+    timerLabelElement = document.getElementById('timerLabel');
+    timerStatusElement = document.getElementById('timerStatus');
+    startButton = document.getElementById('startBtn');
+    pauseButton = document.getElementById('pauseBtn');
+    skipButton = document.getElementById('skipBtn');
+    resetButton = document.getElementById('resetBtn');
+    undoButton = document.getElementById('undoBtn');
+    sessionCountElement = document.getElementById('sessionCount');
+    flowStateInfoElement = document.getElementById('flowStateInfo');
+    progressRingCircle = document.querySelector('.progress-ring-circle');
+    
+    // Load stored settings
     loadSettings();
+    
+    // Load session data
     loadSessionData();
     
-    // Set initial timer display
+    // Update UI
     updateTimerDisplay();
     updateSessionCount();
-    
-    // Apply theme
+    updateSettingsForm();
     applyTheme();
+    setupVisualCueListeners();
+    updateVisualCuePreview();
     
     // Setup event listeners
     setupEventListeners();
-    setupVisualCueListeners();
-    
-    // Initialize charts if they exist
-    if (sessionDurationChart && focusVsBreakChart) {
-        initCharts();
-    }
+    setupModalListeners();
 }
 
 // Event Listeners
@@ -885,6 +896,111 @@ function undoLastAction() {
     
     // Save the session data
     saveSessionData();
+}
+
+// Full App Reset Function
+function fullReset() {
+    // Clear all session data
+    sessionData = {
+        sessions: [],
+        currentSession: null
+    };
+    
+    // Reset timer state
+    timerState = {
+        isRunning: false,
+        isPaused: false,
+        isBreak: false,
+        isLongBreak: false,
+        isFlowState: false,
+        currentSeconds: timerState.settings.focusTime * 60,
+        completedSessions: 0,
+        timerInterval: null,
+        startTime: 0,
+        elapsedBeforePause: 0,
+        settings: {...timerState.settings}, // Keep current settings
+        lastAction: null,
+        enableVisualCues: timerState.enableVisualCues,
+        visualCueIntensity: timerState.visualCueIntensity
+    };
+    
+    // Reset UI
+    updateTimerDisplay();
+    updateSessionCount();
+    resetProgressRing();
+    
+    // Update timer status
+    timerStatusElement.textContent = 'All data reset. Ready to start fresh.';
+    
+    // Reset buttons
+    startButton.disabled = false;
+    pauseButton.disabled = true;
+    skipButton.disabled = true;
+    resetButton.disabled = true;
+    undoButton.disabled = true;
+    
+    // Save the cleared data
+    saveSessionData();
+    
+    // Close modal if open
+    closeModal();
+}
+
+// Reset progress ring to starting position
+function resetProgressRing() {
+    progressRingCircle.style.strokeDashoffset = progressRingCircle.style.strokeDasharray;
+    progressRingCircle.style.stroke = 'var(--focus-color)';
+    progressRingCircle.classList.remove('subtle-pulse');
+}
+
+// Modal functions
+function openModal() {
+    const modal = document.getElementById('resetModal');
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    const modal = document.getElementById('resetModal');
+    modal.classList.remove('active');
+}
+
+// Set up modal event listeners
+function setupModalListeners() {
+    const fullResetBtn = document.getElementById('fullResetBtn');
+    const modal = document.getElementById('resetModal');
+    const closeBtn = document.querySelector('.modal-close');
+    const cancelBtn = document.getElementById('cancelResetBtn');
+    const confirmBtn = document.getElementById('confirmResetBtn');
+    
+    if (fullResetBtn) {
+        fullResetBtn.addEventListener('click', openModal);
+    }
+    
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeModal);
+    }
+    
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closeModal);
+    }
+    
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', fullReset);
+    }
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
 }
 
 // Initialize the app

@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     
-                    <div class="timer-status" id="timerStatus">Ready to start</div>
+                    <div class="timer-status" id="timerStatus">Ready to begin your session</div>
                     
                     <div class="timer-controls">
                         <button class="control-btn" id="startBtn">Start</button>
@@ -51,7 +51,7 @@
                     
                     <div class="session-info">
                         <div class="session-count">
-                            <span id="sessionCount">0</span> sessions completed
+                            <span id="sessionCount">0</span> sessions completed today
                         </div>
                         <div class="flow-state-info" id="flowStateInfo"></div>
                     </div>
@@ -61,7 +61,7 @@
             <!-- Settings View -->
             <section id="settingsView" class="view-section">
                 <div class="settings-container">
-                    <h2>Settings</h2>
+                    <h2>Customize Your Experience</h2>
                     
                     <div class="settings-group">
                         <h3>Timer Settings</h3>
@@ -72,12 +72,12 @@
                         </div>
                         
                         <div class="setting-item">
-                            <label for="breakTime">Break Time (minutes)</label>
+                            <label for="breakTime">Short Break (minutes)</label>
                             <input type="number" id="breakTime" min="1" max="60" value="5">
                         </div>
                         
                         <div class="setting-item">
-                            <label for="longBreakTime">Long Break Time (minutes)</label>
+                            <label for="longBreakTime">Long Break (minutes)</label>
                             <input type="number" id="longBreakTime" min="5" max="120" value="15">
                         </div>
                         
@@ -88,7 +88,7 @@
                     </div>
                     
                     <div class="settings-group">
-                        <h3>Notification Settings</h3>
+                        <h3>Focus Aids</h3>
                         
                         <div class="setting-item checkbox">
                             <input type="checkbox" id="enableVisualCues" checked>
@@ -104,7 +104,7 @@
                                     <span>Visual cue preview</span>
                                 </div>
                                 <div class="preview-explanation">
-                                    This shows how the timer will pulse when in flow state. 
+                                    This shows how the timer will pulse when you're in a flow state. 
                                     Higher intensity means more noticeable pulsing.
                                 </div>
                             </div>
@@ -117,33 +117,33 @@
                     </div>
                     
                     <div class="settings-group">
-                        <h3>Theme Settings</h3>
+                        <h3>Appearance</h3>
                         
                         <div class="setting-item radio-group">
                             <div class="radio-item">
                                 <input type="radio" id="lightTheme" name="theme" value="light">
-                                <label for="lightTheme">Light</label>
+                                <label for="lightTheme">Light Mode</label>
                             </div>
                             
                             <div class="radio-item">
                                 <input type="radio" id="darkTheme" name="theme" value="dark" checked>
-                                <label for="darkTheme">Dark</label>
+                                <label for="darkTheme">Dark Mode</label>
                             </div>
                             
                             <div class="radio-item">
                                 <input type="radio" id="systemTheme" name="theme" value="system">
-                                <label for="systemTheme">System</label>
+                                <label for="systemTheme">Use System Setting</label>
                             </div>
                         </div>
                         
                         <div class="setting-item">
                             <label for="accentColor">Accent Color</label>
-                            <input type="color" id="accentColor" value="#4C8BF5">
+                            <input type="color" id="accentColor" value="#0a84ff">
                         </div>
                     </div>
                     
                     <div class="settings-actions">
-                        <button id="saveSettings" class="primary-btn">Save Settings</button>
+                        <button id="saveSettings" class="primary-btn">Save Changes</button>
                         <button id="resetSettings" class="secondary-btn">Reset to Defaults</button>
                     </div>
                 </div>
@@ -152,12 +152,12 @@
             <!-- Analytics View -->
             <section id="analyticsView" class="view-section">
                 <div class="analytics-container">
-                    <h2>Analytics</h2>
+                    <h2>Your Progress</h2>
                     
                     <div class="analytics-timeframe">
-                        <button class="timeframe-btn active" data-timeframe="day">Day</button>
-                        <button class="timeframe-btn" data-timeframe="week">Week</button>
-                        <button class="timeframe-btn" data-timeframe="month">Month</button>
+                        <button class="timeframe-btn active" data-timeframe="day">Today</button>
+                        <button class="timeframe-btn" data-timeframe="week">This Week</button>
+                        <button class="timeframe-btn" data-timeframe="month">This Month</button>
                     </div>
                     
                     <div class="analytics-summary">
@@ -173,7 +173,7 @@
                         
                         <div class="summary-card">
                             <div class="summary-value" id="flowStatePercentage">0%</div>
-                            <div class="summary-label">Flow State %</div>
+                            <div class="summary-label">Time in Flow State</div>
                         </div>
                         
                         <div class="summary-card">
@@ -195,18 +195,41 @@
                     </div>
                     
                     <div class="analytics-insights">
-                        <h3>Insights</h3>
+                        <h3>Personalized Insights</h3>
                         <div class="insights-container" id="insightsContainer">
-                            <p class="no-data-message">Complete more sessions to see personalized insights.</p>
+                            <p class="no-data-message">Complete more sessions to see your personalized insights.</p>
                         </div>
                     </div>
                     
                     <div class="analytics-actions">
-                        <button id="exportData" class="secondary-btn">Export Data</button>
+                        <button id="exportData" class="secondary-btn">Export My Data</button>
                     </div>
                 </div>
             </section>
         </main>
+
+        <footer class="app-footer">
+            <button id="fullResetBtn" class="danger-btn">Reset All Data</button>
+        </footer>
+
+        <!-- Reset Confirmation Modal -->
+        <div id="resetModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Are You Sure?</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>You're about to reset all your timer data and progress.</p>
+                    <p class="modal-warning">This action permanently deletes all your sessions, analytics, and progress history. This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="secondary-btn" id="cancelResetBtn">Keep My Data</button>
+                    <button class="danger-btn" id="confirmResetBtn">Reset Everything</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="app.js"></script>
