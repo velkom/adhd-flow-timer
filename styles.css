@@ -158,7 +158,9 @@ body {
     align-items: center;
     max-width: 800px;
     margin: 0 auto;
-    padding: var(--spacing-xl) 0;
+    padding: var(--spacing-lg) 0;
+    min-height: calc(100vh - 180px);
+    justify-content: center;
 }
 
 .timer-progress-ring {
@@ -647,6 +649,7 @@ body {
     .timer-progress-ring {
         width: 200px;
         height: 200px;
+        margin-bottom: var(--spacing-lg);
     }
     
     .timer-time {
@@ -659,17 +662,30 @@ body {
     
     .timer-status {
         font-size: 0.9rem;
+        margin-bottom: var(--spacing-md);
+        width: 100%;
+        text-align: center;
+        padding: 0 var(--spacing-md);
     }
     
     .timer-controls {
         grid-template-columns: 1fr;
         gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-md);
     }
     
     .timer-controls .control-btn {
         grid-column: 1 / -1;
         font-size: 0.9rem;
-        padding: var(--spacing-sm);
+        padding: var(--spacing-md);
+        margin-bottom: 4px;
+        height: 44px;
+    }
+
+    .timer-container {
+        padding: var(--spacing-md) 0;
+        width: 100%;
+        min-height: calc(100vh - 160px);
     }
     
     .analytics-summary {
@@ -720,6 +736,7 @@ body {
     .secondary-btn {
         padding: var(--spacing-sm) var(--spacing-md);
         font-size: 0.9rem;
+        height: 44px;
     }
     
     .timeframe-btn {
@@ -729,6 +746,12 @@ body {
     
     .session-info {
         font-size: 0.85rem;
+        margin-top: var(--spacing-md);
+    }
+
+    .app-footer {
+        padding: var(--spacing-md) var(--spacing-md);
+        position: relative;
     }
 }
 
@@ -746,35 +769,89 @@ body {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        padding: var(--spacing-md) 0;
+        padding: var(--spacing-sm) 0;
+        gap: var(--spacing-md);
+        min-height: calc(100vh - 120px);
     }
     
     .timer-progress-ring {
-        width: 180px;
-        height: 180px;
-        margin-bottom: var(--spacing-md);
-        margin-right: var(--spacing-lg);
+        width: 160px;
+        height: 160px;
+        margin-bottom: 0;
+        margin-right: var(--spacing-sm);
+    }
+
+    .progress-ring-circle-bg, .progress-ring-circle {
+        stroke-width: 8px;
     }
     
     .timer-time {
-        font-size: 2rem;
+        font-size: 1.8rem;
+    }
+
+    .timer-label {
+        font-size: 0.85rem;
     }
     
     .timer-controls {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: var(--spacing-xs);
+        margin-bottom: 0;
         max-width: 300px;
-        margin-bottom: var(--spacing-md);
+        height: 160px;
+    }
+    
+    .timer-controls .control-btn {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+        height: 46px;
+    }
+
+    .timer-controls .control-btn:nth-child(1),
+    .timer-controls .control-btn:nth-child(2) {
+        grid-column: span 1;
+    }
+
+    .timer-controls .control-btn:nth-child(3) {
+        grid-column: span 2;
+    }
+
+    .timer-controls .control-btn:nth-child(4),
+    .timer-controls .control-btn:nth-child(5) {
+        grid-column: span 1;
     }
     
     .session-info {
         width: 100%;
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
+        margin-top: var(--spacing-sm);
+    }
+
+    .timer-status {
+        margin-bottom: var(--spacing-xs);
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        text-align: center;
     }
     
     .settings-container,
     .analytics-container {
         max-height: calc(100vh - 80px);
         overflow-y: auto;
+    }
+
+    .app-footer {
+        padding: var(--spacing-xs) var(--spacing-md);
+    }
+
+    .app-footer .danger-btn {
+        padding: var(--spacing-xs) var(--spacing-md);
+        font-size: 0.85rem;
     }
 }
 
@@ -855,6 +932,10 @@ input:focus-visible {
     display: flex;
     justify-content: center;
     border-top: 1px solid var(--bg-tertiary);
+    width: 100%;
+    position: relative;
+    z-index: 10;
+    margin-top: var(--spacing-md);
 }
 
 /* Danger Button */
@@ -869,6 +950,7 @@ input:focus-visible {
     cursor: pointer;
     transition: all var(--transition-speed);
     box-shadow: 0 4px 12px rgba(255, 69, 58, 0.3);
+    min-height: 44px;
 }
 
 .danger-btn:hover {
