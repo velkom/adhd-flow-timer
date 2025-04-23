@@ -11,7 +11,7 @@ This application was created to provide a more flexible pomodoro timer that reco
 ## Resources
 
 - [GitHub Repository](https://github.com/user/adhd-flow-timer): Source code and development history
-- [Live Demo](https://flow-timer.example.com): Try the application online
+- [Live Demo](https://velkom.github.io/adhd-flow-timer/): Try the application online
 
 ## Technologies
 
