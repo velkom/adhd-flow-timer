@@ -18,16 +18,20 @@ let viewSections;
 let sessionDurationChart;
 let focusVsBreakChart;
 
-// Use the timer module constants
+// Directly reference the CIRCUMFERENCE constant
 const CIRCUMFERENCE = 2 * Math.PI * 120; // Fallback value in case TimerModule is not loaded
+
+// Global references to timer state and session data
+let timerState;
+let sessionData;
 
 // Helper functions to access timer state and session data
 function getTimerState() {
-    return window.TimerModule ? window.TimerModule.timerState : null;
+    return timerState;
 }
 
 function getSessionData() {
-    return window.TimerModule ? window.TimerModule.sessionData : null;
+    return sessionData;
 }
 
 // Initialize
@@ -78,6 +82,10 @@ function init() {
             CIRCUMFERENCE: window.TimerModule.CIRCUMFERENCE
         });
         
+        // Set global references to timer state and session data
+        timerState = window.TimerModule.timerState;
+        sessionData = window.TimerModule.sessionData;
+        
         // Setup chart references
         sessionDurationChart = document.getElementById('sessionDurationChart');
         focusVsBreakChart = document.getElementById('focusVsBreakChart');
@@ -126,48 +134,53 @@ function init() {
 function setupEventListeners() {
     console.log('Setting up event listeners');
     
-    // Timer controls
+    // Timer controls - use direct onclick handlers for better reliability
     if (startButton) {
-        startButton.addEventListener('click', function(e) {
-            console.log('Start button clicked');
+        startButton.onclick = function(e) {
+            console.log('Start button clicked (direct handler)');
             startTimer();
-        });
+        };
+        console.log('Start button handler set up');
     } else {
         console.error('Start button not found');
     }
     
     if (pauseButton) {
-        pauseButton.addEventListener('click', function(e) {
-            console.log('Pause button clicked');
+        pauseButton.onclick = function(e) {
+            console.log('Pause button clicked (direct handler)');
             pauseTimer();
-        });
+        };
+        console.log('Pause button handler set up');
     } else {
         console.error('Pause button not found');
     }
     
     if (skipButton) {
-        skipButton.addEventListener('click', function(e) {
-            console.log('Skip button clicked');
+        skipButton.onclick = function(e) {
+            console.log('Skip button clicked (direct handler)');
             handleSkipButton();
-        });
+        };
+        console.log('Skip button handler set up');
     } else {
         console.error('Skip button not found');
     }
     
     if (resetButton) {
-        resetButton.addEventListener('click', function(e) {
-            console.log('Reset button clicked');
+        resetButton.onclick = function(e) {
+            console.log('Reset button clicked (direct handler)');
             resetCurrentSession();
-        });
+        };
+        console.log('Reset button handler set up');
     } else {
         console.error('Reset button not found');
     }
     
     if (undoButton) {
-        undoButton.addEventListener('click', function(e) {
-            console.log('Undo button clicked');
+        undoButton.onclick = function(e) {
+            console.log('Undo button clicked (direct handler)');
             undoLastAction();
-        });
+        };
+        console.log('Undo button handler set up');
     } else {
         console.error('Undo button not found');
     }
@@ -1135,58 +1148,67 @@ function setupModalListeners() {
     });
     
     if (fullResetBtn) {
-        fullResetBtn.addEventListener('click', function(e) {
-            console.log('Full reset button clicked');
+        fullResetBtn.onclick = function(e) {
+            console.log('Full reset button clicked (direct handler)');
             openModal();
-        });
+        };
+        console.log('Full reset button handler set up');
     } else {
         console.error('Full reset button not found');
     }
     
     if (closeBtn) {
-        closeBtn.addEventListener('click', function(e) {
-            console.log('Close modal button clicked');
+        closeBtn.onclick = function(e) {
+            console.log('Close modal button clicked (direct handler)');
             closeModal();
-        });
+        };
+        console.log('Modal close button handler set up');
     }
     
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', function(e) {
-            console.log('Cancel reset button clicked');
+        cancelBtn.onclick = function(e) {
+            console.log('Cancel reset button clicked (direct handler)');
             closeModal();
-        });
+        };
+        console.log('Cancel reset button handler set up');
     }
     
     if (confirmBtn) {
-        confirmBtn.addEventListener('click', function(e) {
-            console.log('Confirm reset button clicked');
+        confirmBtn.onclick = function(e) {
+            console.log('Confirm reset button clicked (direct handler)');
             console.log('Before fullReset, timerState exists:', !!getTimerState());
             fullReset();
             console.log('After fullReset, timerState exists:', !!getTimerState());
-        });
+        };
+        console.log('Confirm reset button handler set up');
     }
     
     // Close modal when clicking outside
     if (modal) {
-        window.addEventListener('click', function(event) {
+        window.onclick = function(event) {
             if (event.target === modal) {
                 console.log('Clicked outside modal - closing');
                 closeModal();
             }
-        });
+        };
     }
     
     // Close modal with Escape key
-    document.addEventListener('keydown', function(event) {
+    document.onkeydown = function(event) {
         if (event.key === 'Escape' && modal && modal.classList.contains('active')) {
             console.log('Escape key pressed - closing modal');
             closeModal();
         }
-    });
+    };
 }
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded');
-    init();
+    
+    // A small delay to ensure TimerModule is fully initialized
+    setTimeout(function() {
+        console.log('Initializing app after ensuring TimerModule is loaded');
+        init();
+    }, 100);
 }); 
