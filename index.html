@@ -42,11 +42,11 @@
                     <div class="timer-status" id="timerStatus">Ready to begin your session</div>
                     
                     <div class="timer-controls">
-                        <button class="control-btn" id="startBtn">Start</button>
-                        <button class="control-btn" id="pauseBtn" disabled>Pause</button>
-                        <button class="control-btn" id="skipBtn" disabled>Skip to Break</button>
-                        <button class="control-btn" id="resetBtn" disabled>Reset</button>
-                        <button class="control-btn" id="undoBtn" disabled>Undo</button>
+                        <button class="control-btn" id="startBtn" onclick="startTimer()">Start</button>
+                        <button class="control-btn" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+                        <button class="control-btn" id="skipBtn" onclick="handleSkipButton()" disabled>Skip to Break</button>
+                        <button class="control-btn" id="resetBtn" onclick="resetCurrentSession()" disabled>Reset</button>
+                        <button class="control-btn" id="undoBtn" onclick="undoLastAction()" disabled>Undo</button>
                     </div>
                     
                     <div class="session-info">
@@ -143,8 +143,8 @@
                     </div>
                     
                     <div class="settings-actions">
-                        <button id="saveSettings" class="primary-btn">Save Changes</button>
-                        <button id="resetSettings" class="secondary-btn">Reset to Defaults</button>
+                        <button id="saveSettings" class="primary-btn" onclick="saveSettings()">Save Changes</button>
+                        <button id="resetSettings" class="secondary-btn" onclick="resetSettings()">Reset to Defaults</button>
                     </div>
                 </div>
             </section>
@@ -202,7 +202,7 @@
                     </div>
                     
                     <div class="analytics-actions">
-                        <button id="exportData" class="secondary-btn">Export My Data</button>
+                        <button id="exportData" class="secondary-btn" onclick="exportSessionData()">Export My Data</button>
                     </div>
                 </div>
             </section>
@@ -210,8 +210,8 @@
 
         <footer class="app-footer">
             <div class="footer-content">
-                <span class="version-number">v1.1.2</span>
-                <button id="fullResetBtn" class="danger-btn">Reset All Data</button>
+                <span class="version-number">v1.2.0</span>
+                <button id="fullResetBtn" class="danger-btn" onclick="openModal()">Reset All Data</button>
             </div>
         </footer>
 
@@ -227,8 +227,8 @@
                     <p class="modal-warning">This action permanently deletes all your sessions, analytics, and progress history. This cannot be undone.</p>
                 </div>
                 <div class="modal-footer">
-                    <button class="secondary-btn" id="cancelResetBtn">Keep My Data</button>
-                    <button class="danger-btn" id="confirmResetBtn">Reset Everything</button>
+                    <button class="secondary-btn" id="cancelResetBtn" onclick="closeModal()">Keep My Data</button>
+                    <button class="danger-btn" id="confirmResetBtn" onclick="fullReset()">Reset Everything</button>
                 </div>
             </div>
         </div>
