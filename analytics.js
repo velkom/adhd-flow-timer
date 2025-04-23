@@ -136,7 +136,39 @@ function initCharts() {
         });
     }
     
+    // Ensure charts don't keep growing
+    setupChartResizeLimits();
+    
     console.log('Charts initialized');
+}
+
+/**
+ * Setup limits to prevent charts from growing beyond container
+ */
+function setupChartResizeLimits() {
+    // Add resize observer to maintain proper chart sizes
+    const chartContainers = document.querySelectorAll('.chart-container');
+    
+    if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                // Destroy and reinitialize charts if container width changes significantly
+                if (entry.target.contains(document.getElementById('sessionDurationChart')) && 
+                    sessionDurationChartInstance) {
+                    sessionDurationChartInstance.resize();
+                }
+                
+                if (entry.target.contains(document.getElementById('focusVsBreakChart')) && 
+                    focusVsBreakChartInstance) {
+                    focusVsBreakChartInstance.resize();
+                }
+            }
+        });
+        
+        chartContainers.forEach(container => {
+            resizeObserver.observe(container);
+        });
+    }
 }
 
 // Update analytics view based on timeframe
