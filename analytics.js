@@ -9,46 +9,11 @@ const insightsContainerElement = document.getElementById('insightsContainer');
 
 // Initialize on document load
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize analytics
-    initAnalytics();
-});
-
-// Initialize analytics components
-function initAnalytics() {
-    console.log('Initializing analytics...');
+    console.log('Analytics module loaded');
     
     // Initialize charts
     initCharts();
-    
-    // Setup timeframe buttons
-    setupTimeframeButtons();
-    
-    // Default to day view
-    updateAnalyticsView('day');
-    
-    console.log('Analytics initialized');
-}
-
-// Setup timeframe button event listeners
-function setupTimeframeButtons() {
-    const timeframeButtons = document.querySelectorAll('.timeframe-btn');
-    
-    timeframeButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Update active button
-            timeframeButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Get selected timeframe
-            const timeframe = this.getAttribute('data-timeframe');
-            
-            // Update analytics view
-            updateAnalyticsView(timeframe);
-            
-            console.log('Timeframe changed to:', timeframe);
-        });
-    });
-}
+});
 
 // Chart instances
 let sessionDurationChartInstance = null;
@@ -170,35 +135,46 @@ function initCharts() {
             }
         });
     }
+    
+    console.log('Charts initialized');
 }
 
 // Update analytics view based on timeframe
 function updateAnalyticsView(timeframe) {
-    const sessions = window.sessionData?.sessions || [];
-    if (!sessions.length) {
+    console.log('Updating analytics view for timeframe:', timeframe);
+    
+    try {
+        const sessions = JSON.parse(localStorage.getItem('session_data') || '[]');
+        if (!sessions.length) {
+            showNoDataMessage();
+            return;
+        }
+        
+        // Filter sessions based on timeframe
+        const filteredSessions = filterSessionsByTimeframe(sessions, timeframe);
+        if (!filteredSessions.length) {
+            showNoDataMessage();
+            return;
+        }
+        
+        // Calculate statistics
+        const stats = calculateStats(filteredSessions);
+        
+        // Update summary cards
+        updateSummaryCards(stats);
+        
+        // Update charts
+        updateSessionDurationChart(filteredSessions, timeframe);
+        updateFocusVsBreakChart(stats);
+        
+        // Generate insights
+        generateInsights(stats, timeframe);
+        
+        console.log('Analytics view updated successfully');
+    } catch (error) {
+        console.error('Error updating analytics view:', error);
         showNoDataMessage();
-        return;
     }
-    
-    // Filter sessions based on timeframe
-    const filteredSessions = filterSessionsByTimeframe(sessions, timeframe);
-    if (!filteredSessions.length) {
-        showNoDataMessage();
-        return;
-    }
-    
-    // Calculate statistics
-    const stats = calculateStats(filteredSessions);
-    
-    // Update summary cards
-    updateSummaryCards(stats);
-    
-    // Update charts
-    updateSessionDurationChart(filteredSessions, timeframe);
-    updateFocusVsBreakChart(stats);
-    
-    // Generate insights
-    generateInsights(stats, timeframe);
 }
 
 // Filter sessions based on timeframe

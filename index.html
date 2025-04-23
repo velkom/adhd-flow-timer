@@ -22,11 +22,11 @@
         <nav class="main-nav">
             <div class="logo">Flow Timer</div>
             <div class="nav-links">
-                <button class="nav-link active" data-view="timer">Timer</button>
-                <button class="nav-link" data-view="settings">Settings</button>
-                <button class="nav-link" data-view="analytics">Analytics</button>
+                <button class="nav-link active" data-view="timer" onclick="switchView('timer')">Timer</button>
+                <button class="nav-link" data-view="settings" onclick="switchView('settings')">Settings</button>
+                <button class="nav-link" data-view="analytics" onclick="switchView('analytics')">Analytics</button>
             </div>
-            <button class="theme-toggle" id="themeToggle">🌙</button>
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
         </nav>
 
         <main class="main-content">
@@ -160,9 +160,9 @@
                     <h2>Your Progress</h2>
                     
                     <div class="analytics-timeframe">
-                        <button class="timeframe-btn active" data-timeframe="day">Today</button>
-                        <button class="timeframe-btn" data-timeframe="week">This Week</button>
-                        <button class="timeframe-btn" data-timeframe="month">This Month</button>
+                        <button class="timeframe-btn active" data-timeframe="day" onclick="switchTimeframe('day', this)">Today</button>
+                        <button class="timeframe-btn" data-timeframe="week" onclick="switchTimeframe('week', this)">This Week</button>
+                        <button class="timeframe-btn" data-timeframe="month" onclick="switchTimeframe('month', this)">This Month</button>
                     </div>
                     
                     <div class="analytics-summary">
