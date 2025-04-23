@@ -7,6 +7,49 @@ const flowStatePercentageElement = document.getElementById('flowStatePercentage'
 const completedSessionsElement = document.getElementById('completedSessions');
 const insightsContainerElement = document.getElementById('insightsContainer');
 
+// Initialize on document load
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize analytics
+    initAnalytics();
+});
+
+// Initialize analytics components
+function initAnalytics() {
+    console.log('Initializing analytics...');
+    
+    // Initialize charts
+    initCharts();
+    
+    // Setup timeframe buttons
+    setupTimeframeButtons();
+    
+    // Default to day view
+    updateAnalyticsView('day');
+    
+    console.log('Analytics initialized');
+}
+
+// Setup timeframe button event listeners
+function setupTimeframeButtons() {
+    const timeframeButtons = document.querySelectorAll('.timeframe-btn');
+    
+    timeframeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button
+            timeframeButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Get selected timeframe
+            const timeframe = this.getAttribute('data-timeframe');
+            
+            // Update analytics view
+            updateAnalyticsView(timeframe);
+            
+            console.log('Timeframe changed to:', timeframe);
+        });
+    });
+}
+
 // Chart instances
 let sessionDurationChartInstance = null;
 let focusVsBreakChartInstance = null;
@@ -26,103 +69,107 @@ function initCharts() {
     Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
     
     // Initialize session duration chart
-    const sessionDurationCtx = document.getElementById('sessionDurationChart').getContext('2d');
-    sessionDurationChartInstance = new Chart(sessionDurationCtx, {
-        type: 'bar',
-        data: {
-            labels: [],
-            datasets: [
-                {
-                    label: 'Planned Duration',
-                    data: [],
-                    backgroundColor: chartColors.planned,
-                    borderWidth: 0
-                },
-                {
-                    label: 'Focus Time',
-                    data: [],
-                    backgroundColor: chartColors.focus,
-                    borderWidth: 0
-                },
-                {
-                    label: 'Flow State',
-                    data: [],
-                    backgroundColor: chartColors.flowState,
-                    borderWidth: 0
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    stacked: true,
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    stacked: false,
-                    title: {
-                        display: true,
-                        text: 'Minutes'
+    const sessionDurationCtx = document.getElementById('sessionDurationChart')?.getContext('2d');
+    if (sessionDurationCtx) {
+        sessionDurationChartInstance = new Chart(sessionDurationCtx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Planned Duration',
+                        data: [],
+                        backgroundColor: chartColors.planned,
+                        borderWidth: 0
                     },
-                    ticks: {
-                        callback: (value) => `${value}m`
+                    {
+                        label: 'Focus Time',
+                        data: [],
+                        backgroundColor: chartColors.focus,
+                        borderWidth: 0
+                    },
+                    {
+                        label: 'Flow State',
+                        data: [],
+                        backgroundColor: chartColors.flowState,
+                        borderWidth: 0
                     }
-                }
+                ]
             },
-            plugins: {
-                legend: {
-                    position: 'top'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        stacked: true,
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        title: {
+                            display: true,
+                            text: 'Minutes'
+                        },
+                        ticks: {
+                            callback: (value) => `${value}m`
+                        }
+                    }
                 },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => {
-                            const label = context.dataset.label || '';
-                            const value = context.raw || 0;
-                            return `${label}: ${value} min`;
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const label = context.dataset.label || '';
+                                const value = context.raw || 0;
+                                return `${label}: ${value} min`;
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
     
     // Initialize focus vs. break chart
-    const focusVsBreakCtx = document.getElementById('focusVsBreakChart').getContext('2d');
-    focusVsBreakChartInstance = new Chart(focusVsBreakCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Focus Time', 'Flow State', 'Break Time'],
-            datasets: [{
-                data: [0, 0, 0],
-                backgroundColor: [chartColors.focus, chartColors.flowState, chartColors.break],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: (context) => {
-                            const label = context.label || '';
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                            return `${label}: ${value} min (${percentage}%)`;
+    const focusVsBreakCtx = document.getElementById('focusVsBreakChart')?.getContext('2d');
+    if (focusVsBreakCtx) {
+        focusVsBreakChartInstance = new Chart(focusVsBreakCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Focus Time', 'Flow State', 'Break Time'],
+                datasets: [{
+                    data: [0, 0, 0],
+                    backgroundColor: [chartColors.focus, chartColors.flowState, chartColors.break],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                return `${label}: ${value} min (${percentage}%)`;
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 }
 
 // Update analytics view based on timeframe
