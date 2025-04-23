@@ -1,22 +1,22 @@
 // DOM Elements
-const timerTimeElement = document.getElementById('timerTime');
-const timerLabelElement = document.getElementById('timerLabel');
-const timerStatusElement = document.getElementById('timerStatus');
-const startButton = document.getElementById('startBtn');
-const pauseButton = document.getElementById('pauseBtn');
-const skipButton = document.getElementById('skipBtn');
-const resetButton = document.getElementById('resetBtn');
-const undoButton = document.getElementById('undoBtn');
-const sessionCountElement = document.getElementById('sessionCount');
-const flowStateInfoElement = document.getElementById('flowStateInfo');
-const progressRingCircle = document.querySelector('.progress-ring-circle');
-const themeToggleButton = document.getElementById('themeToggle');
-const navLinks = document.querySelectorAll('.nav-link');
-const viewSections = document.querySelectorAll('.view-section');
+let timerTimeElement;
+let timerLabelElement;
+let timerStatusElement;
+let startButton;
+let pauseButton;
+let skipButton;
+let resetButton;
+let undoButton;
+let sessionCountElement;
+let flowStateInfoElement;
+let progressRingCircle;
+let themeToggleButton;
+let navLinks;
+let viewSections;
 
 // Chart elements
-const sessionDurationChart = document.getElementById('sessionDurationChart');
-const focusVsBreakChart = document.getElementById('focusVsBreakChart');
+let sessionDurationChart;
+let focusVsBreakChart;
 
 // Timer state
 let timerState = {
@@ -66,6 +66,13 @@ function init() {
     sessionCountElement = document.getElementById('sessionCount');
     flowStateInfoElement = document.getElementById('flowStateInfo');
     progressRingCircle = document.querySelector('.progress-ring-circle');
+    themeToggleButton = document.getElementById('themeToggle');
+    navLinks = document.querySelectorAll('.nav-link');
+    viewSections = document.querySelectorAll('.view-section');
+    
+    // Setup chart references
+    sessionDurationChart = document.getElementById('sessionDurationChart');
+    focusVsBreakChart = document.getElementById('focusVsBreakChart');
     
     // Initialize the progress ring
     if (progressRingCircle) {
@@ -90,56 +97,123 @@ function init() {
     // Setup event listeners
     setupEventListeners();
     setupModalListeners();
+    
+    console.log('Initialization complete');
 }
 
 // Event Listeners
 function setupEventListeners() {
+    console.log('Setting up event listeners');
+    
     // Timer controls
-    startButton.addEventListener('click', startTimer);
-    pauseButton.addEventListener('click', pauseTimer);
-    skipButton.addEventListener('click', handleSkipButton);
-    resetButton.addEventListener('click', resetCurrentSession);
-    undoButton.addEventListener('click', undoLastAction);
+    if (startButton) {
+        startButton.addEventListener('click', function(e) {
+            console.log('Start button clicked');
+            startTimer();
+        });
+    } else {
+        console.error('Start button not found');
+    }
+    
+    if (pauseButton) {
+        pauseButton.addEventListener('click', function(e) {
+            console.log('Pause button clicked');
+            pauseTimer();
+        });
+    } else {
+        console.error('Pause button not found');
+    }
+    
+    if (skipButton) {
+        skipButton.addEventListener('click', function(e) {
+            console.log('Skip button clicked');
+            handleSkipButton();
+        });
+    } else {
+        console.error('Skip button not found');
+    }
+    
+    if (resetButton) {
+        resetButton.addEventListener('click', function(e) {
+            console.log('Reset button clicked');
+            resetCurrentSession();
+        });
+    } else {
+        console.error('Reset button not found');
+    }
+    
+    if (undoButton) {
+        undoButton.addEventListener('click', function(e) {
+            console.log('Undo button clicked');
+            undoLastAction();
+        });
+    } else {
+        console.error('Undo button not found');
+    }
     
     // Navigation
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            const view = link.getAttribute('data-view');
-            changeView(view);
+    if (navLinks && navLinks.length > 0) {
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const view = link.getAttribute('data-view');
+                console.log('Navigation clicked: ' + view);
+                changeView(view);
+            });
         });
-    });
+    } else {
+        console.error('Nav links not found');
+    }
     
     // Theme toggle
-    themeToggleButton.addEventListener('click', toggleTheme);
+    if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', function(e) {
+            console.log('Theme toggle clicked');
+            toggleTheme();
+        });
+    } else {
+        console.error('Theme toggle button not found');
+    }
     
     // Settings form
     const saveSettingsBtn = document.getElementById('saveSettings');
     if (saveSettingsBtn) {
-        saveSettingsBtn.addEventListener('click', saveSettings);
+        saveSettingsBtn.addEventListener('click', function(e) {
+            console.log('Save settings clicked');
+            saveSettings();
+        });
     }
     
     const resetSettingsBtn = document.getElementById('resetSettings');
     if (resetSettingsBtn) {
-        resetSettingsBtn.addEventListener('click', resetSettings);
+        resetSettingsBtn.addEventListener('click', function(e) {
+            console.log('Reset settings clicked');
+            resetSettings();
+        });
     }
     
     // Analytics timeframe buttons
     const timeframeButtons = document.querySelectorAll('.timeframe-btn');
-    timeframeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const timeframe = btn.getAttribute('data-timeframe');
-            updateAnalyticsView(timeframe);
-            
-            // Update active state
-            timeframeButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    if (timeframeButtons && timeframeButtons.length > 0) {
+        timeframeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const timeframe = btn.getAttribute('data-timeframe');
+                console.log('Timeframe clicked: ' + timeframe);
+                updateAnalyticsView(timeframe);
+                
+                // Update active state
+                timeframeButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
         });
-    });
+    }
     
     // Export data button
     const exportDataBtn = document.getElementById('exportData');
     if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', exportSessionData);
+        exportDataBtn.addEventListener('click', function(e) {
+            console.log('Export data clicked');
+            exportSessionData();
+        });
     }
 }
 
@@ -1011,4 +1085,7 @@ function setupModalListeners() {
 }
 
 // Initialize the app
-document.addEventListener('DOMContentLoaded', init); 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded');
+    init();
+}); 

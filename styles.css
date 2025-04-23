@@ -103,6 +103,8 @@ body {
     cursor: pointer;
     border-radius: var(--border-radius-full);
     transition: all var(--transition-speed);
+    position: relative;
+    z-index: 5;
 }
 
 .nav-link:hover {
@@ -253,6 +255,8 @@ body {
     margin-bottom: var(--spacing-xl);
     width: 100%;
     max-width: 450px;
+    position: relative;
+    z-index: 5;
 }
 
 .timer-controls .control-btn:nth-child(1),
@@ -277,11 +281,9 @@ body {
     cursor: pointer;
     transition: all var(--transition-speed);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     text-align: center;
-    line-height: 1.2;
+    position: relative;
+    z-index: 1;
 }
 
 .control-btn:hover:not(:disabled) {
@@ -715,6 +717,8 @@ body {
         margin-bottom: var(--spacing-md);
         width: 90%;
         max-width: 100%;
+        position: relative;
+        z-index: 5;
     }
     
     .timer-controls .control-btn {
@@ -726,6 +730,8 @@ body {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
     }
 
     .timer-container {
