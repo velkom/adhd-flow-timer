@@ -18,39 +18,8 @@ let viewSections;
 let sessionDurationChart;
 let focusVsBreakChart;
 
-// Timer state
-let timerState = {
-    isRunning: false,
-    isPaused: false,
-    isBreak: false,
-    isFlowState: false,
-    currentSeconds: 25 * 60, // 25 minutes by default
-    focusTime: 25 * 60,
-    breakTime: 5 * 60,
-    longBreakTime: 15 * 60,
-    sessionsBeforeLongBreak: 4,
-    completedSessions: 0,
-    timerInterval: null,
-    startTime: null,
-    elapsedBeforePause: 0,
-    lastAction: null, // Track the last action for undo functionality
-    
-    // Settings
-    enableVisualCues: true,
-    enableSoundNotifications: false,
-    visualCueIntensity: 5,
-    theme: 'dark',
-    accentColor: '#4C8BF5'
-};
-
-// Session data for analytics
-let sessionData = {
-    sessions: [],
-    currentSession: null
-};
-
-// Constants
-const CIRCUMFERENCE = 2 * Math.PI * 120; // Circumference of the progress ring
+// Use the timer module
+const { timerState, sessionData, CIRCUMFERENCE } = window.TimerModule;
 
 // Initialize
 function init() {
@@ -219,90 +188,53 @@ function setupEventListeners() {
 
 // Timer Functions
 function startTimer() {
-    if (timerState.isRunning && !timerState.isPaused) return;
+    console.log('Start timer called');
     
-    if (!timerState.isRunning) {
-        // Starting a new timer
-        timerState.isRunning = true;
-        timerState.startTime = Date.now() - (timerState.elapsedBeforePause * 1000);
-        timerState.elapsedBeforePause = 0;
-        
-        // Create a new session record if starting a focus session
-        if (!timerState.isBreak) {
-            sessionData.currentSession = {
-                start: new Date(),
-                plannedDuration: timerState.focusTime,
-                actualDuration: 0,
-                isCompleted: false,
-                flowStateDuration: 0,
-                type: 'focus'
-            };
-        } else {
-            sessionData.currentSession = {
-                start: new Date(),
-                plannedDuration: timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime,
-                actualDuration: 0,
-                isCompleted: false,
-                type: 'break'
-            };
-        }
-    } else {
-        // Resuming from pause
-        timerState.isPaused = false;
-        timerState.startTime = Date.now() - (timerState.elapsedBeforePause * 1000);
-    }
+    const elements = {
+        startButton,
+        pauseButton,
+        skipButton,
+        resetButton,
+        timerStatusElement
+    };
     
-    // Update UI
-    startButton.disabled = true;
-    pauseButton.disabled = false;
-    skipButton.disabled = false;
-    resetButton.disabled = false;
+    const callbacks = {
+        updateTimerCallback: updateTimer,
+        updateFlowStateCallback: updateFlowStateInfo
+    };
     
-    timerState.timerInterval = setInterval(updateTimer, 1000);
-    timerStatusElement.textContent = timerState.isBreak ? 'Taking a break' : 'Focusing';
+    window.TimerModule.startTimer(elements, callbacks);
 }
 
 function pauseTimer() {
-    if (!timerState.isRunning || timerState.isPaused) return;
+    console.log('Pause timer called');
     
-    clearInterval(timerState.timerInterval);
-    timerState.isPaused = true;
-    timerState.elapsedBeforePause = getElapsedSeconds();
+    const elements = {
+        startButton,
+        pauseButton,
+        timerStatusElement
+    };
     
-    // Update UI
-    startButton.disabled = false;
-    pauseButton.disabled = true;
-    timerStatusElement.textContent = 'Paused';
+    window.TimerModule.pauseTimer(elements);
 }
 
 function updateTimer() {
-    const elapsedSeconds = getElapsedSeconds();
-    const timeLeft = timerState.isBreak 
-        ? (timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime) - elapsedSeconds
-        : timerState.focusTime - elapsedSeconds;
+    console.log('Update timer called');
     
-    // Check if timer has ended
-    if (timeLeft <= 0) {
-        handleTimerEnd();
-        return;
-    }
+    const elements = {
+        progressRingCircle,
+        timerTimeElement,
+        timerLabelElement,
+        timerStatusElement
+    };
     
-    // Check for flow state (continuing past the planned focus time)
-    if (!timerState.isBreak && elapsedSeconds > timerState.focusTime) {
-        if (!timerState.isFlowState) {
-            enterFlowState();
-        }
-        // Update flow state information
-        updateFlowStateInfo(elapsedSeconds - timerState.focusTime);
-    }
+    const callbacks = {
+        completeSessionCallback: completeSession,
+        enterFlowStateCallback: enterFlowState,
+        updateFlowStateCallback: updateFlowStateInfo
+    };
     
-    // Update timer display
-    timerState.currentSeconds = Math.max(0, timerState.isBreak 
-        ? (timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime) - elapsedSeconds
-        : timerState.isFlowState ? -(elapsedSeconds - timerState.focusTime) : timerState.focusTime - elapsedSeconds);
-    
-    updateTimerDisplay();
-    updateProgressRing(elapsedSeconds);
+    window.TimerModule.updateTimerInternal(elements, callbacks);
 }
 
 function handleTimerEnd() {
@@ -320,17 +252,17 @@ function handleTimerEnd() {
 }
 
 function enterFlowState() {
-    timerState.isFlowState = true;
-    timerLabelElement.textContent = 'Flow State';
-    timerStatusElement.textContent = 'In flow state - timer continues';
+    console.log('Enter flow state called');
     
-    // Visual indication
-    if (timerState.enableVisualCues) {
-        progressRingCircle.classList.add('subtle-pulse');
-        progressRingCircle.style.stroke = 'var(--warning-color)';
-    }
+    const elements = {
+        timerLabelElement,
+        timerStatusElement,
+        progressRingCircle
+    };
     
-    // Subtle notification
+    window.TimerModule.enterFlowState(elements);
+    
+    // Sound notification
     if (timerState.enableSoundNotifications) {
         playSound('flow');
     }
@@ -338,7 +270,9 @@ function enterFlowState() {
 
 function updateFlowStateInfo(flowSeconds) {
     const minutes = Math.floor(flowSeconds / 60);
-    flowStateInfoElement.textContent = `Flow state: +${minutes}m`;
+    if (flowStateInfoElement) {
+        flowStateInfoElement.textContent = `Flow state: +${minutes}m`;
+    }
     
     if (sessionData.currentSession) {
         sessionData.currentSession.flowStateDuration = flowSeconds;
@@ -463,43 +397,15 @@ function completeSession(type) {
 
 // Helper Functions
 function getElapsedSeconds() {
-    return Math.floor((Date.now() - timerState.startTime) / 1000);
+    return window.TimerModule.getElapsedSeconds();
 }
 
 function updateTimerDisplay() {
-    const absSeconds = Math.abs(timerState.currentSeconds);
-    const minutes = Math.floor(absSeconds / 60);
-    const seconds = absSeconds % 60;
-    
-    timerTimeElement.textContent = `${timerState.isFlowState ? '-' : ''}${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    window.TimerModule.updateTimerDisplay(timerTimeElement);
 }
 
 function updateProgressRing(elapsedSeconds) {
-    const totalTime = timerState.isBreak 
-        ? (timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime)
-        : timerState.focusTime;
-    
-    let percentage = Math.min(elapsedSeconds / totalTime, 1);
-    
-    // For flow state, keep the ring full but change color
-    if (timerState.isFlowState) {
-        percentage = 1;
-    }
-    
-    const dashoffset = CIRCUMFERENCE * (1 - percentage);
-    progressRingCircle.style.strokeDashoffset = dashoffset;
-    progressRingCircle.style.strokeDasharray = CIRCUMFERENCE;
-    
-    // Update color based on progress
-    if (!timerState.isFlowState && !timerState.isBreak) {
-        if (percentage < 0.33) {
-            progressRingCircle.style.stroke = 'var(--focus-color)';
-        } else if (percentage < 0.66) {
-            progressRingCircle.style.stroke = 'var(--warning-color)';
-        } else {
-            progressRingCircle.style.stroke = 'var(--error-color)';
-        }
-    }
+    window.TimerModule.updateProgressRing(progressRingCircle, elapsedSeconds);
 }
 
 function updateSessionCount() {
@@ -983,56 +889,11 @@ function undoLastAction() {
 function fullReset() {
     console.log('Full reset function called');
     
-    // Clear all session data
-    sessionData = {
-        sessions: [],
-        currentSession: null
-    };
+    // Clear all session data and reset timer state
+    window.TimerModule.resetSessionData();
+    window.TimerModule.resetTimerState(true);
     
-    // Get current settings before reset
-    const currentSettings = {
-        focusTime: timerState.focusTime || 25 * 60,
-        breakTime: timerState.breakTime || 5 * 60,
-        longBreakTime: timerState.longBreakTime || 15 * 60,
-        sessionsBeforeLongBreak: timerState.sessionsBeforeLongBreak || 4,
-        enableVisualCues: timerState.enableVisualCues !== undefined ? timerState.enableVisualCues : true,
-        enableSoundNotifications: timerState.enableSoundNotifications !== undefined ? timerState.enableSoundNotifications : false,
-        visualCueIntensity: timerState.visualCueIntensity || 5,
-        theme: timerState.theme || 'dark',
-        accentColor: timerState.accentColor || '#0a84ff'
-    };
-    
-    console.log('Preserving settings:', currentSettings);
-    
-    // Reset timer state
-    timerState = {
-        isRunning: false,
-        isPaused: false,
-        isBreak: false,
-        isLongBreak: false,
-        isFlowState: false,
-        currentSeconds: currentSettings.focusTime,
-        completedSessions: 0,
-        timerInterval: null,
-        startTime: 0,
-        elapsedBeforePause: 0,
-        lastAction: null,
-        
-        // Preserve settings
-        focusTime: currentSettings.focusTime,
-        breakTime: currentSettings.breakTime,
-        longBreakTime: currentSettings.longBreakTime,
-        sessionsBeforeLongBreak: currentSettings.sessionsBeforeLongBreak,
-        enableVisualCues: currentSettings.enableVisualCues,
-        enableSoundNotifications: currentSettings.enableSoundNotifications,
-        visualCueIntensity: currentSettings.visualCueIntensity,
-        theme: currentSettings.theme,
-        accentColor: currentSettings.accentColor
-    };
-    
-    console.log('Reset timer state:', timerState);
-    
-    // Reset UI
+    // Update UI
     updateTimerDisplay();
     updateSessionCount();
     
@@ -1057,9 +918,6 @@ function fullReset() {
     
     // Save the cleared data
     saveSessionData();
-    
-    // Also save settings to ensure they're preserved
-    saveSettings();
     
     // Close modal if open
     closeModal();
