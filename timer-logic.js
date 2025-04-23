@@ -1,6 +1,6 @@
 /**
  * timer-logic.js - Core timer functionality for Flow Timer
- * v1.1.0
+ * v1.1.1
  */
 
 // Constants
@@ -245,8 +245,13 @@ function resetTimerState(preserveSettings = true) {
         clearInterval(timerState.timerInterval);
     }
     
-    // Reset to default state
-    timerState = createDefaultTimerState();
+    // Get default state
+    const defaultState = createDefaultTimerState();
+    
+    // Reset to default state by updating properties instead of replacing the object
+    Object.keys(defaultState).forEach(key => {
+        timerState[key] = defaultState[key];
+    });
     
     // Restore settings if needed
     if (preserveSettings && currentSettings) {
@@ -262,6 +267,7 @@ function resetTimerState(preserveSettings = true) {
         timerState.currentSeconds = currentSettings.focusTime;
     }
     
+    console.log('Timer state reset with settings preserved:', preserveSettings);
     return timerState;
 }
 
@@ -269,7 +275,14 @@ function resetTimerState(preserveSettings = true) {
  * Reset session data
  */
 function resetSessionData() {
-    sessionData = createDefaultSessionData();
+    const defaultSessionData = createDefaultSessionData();
+    
+    // Reset by updating properties instead of replacing the object
+    Object.keys(defaultSessionData).forEach(key => {
+        sessionData[key] = defaultSessionData[key];
+    });
+    
+    console.log('Session data reset');
     return sessionData;
 }
 

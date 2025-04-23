@@ -18,56 +18,108 @@ let viewSections;
 let sessionDurationChart;
 let focusVsBreakChart;
 
-// Use the timer module
-const { timerState, sessionData, CIRCUMFERENCE } = window.TimerModule;
+// Use the timer module constants
+const CIRCUMFERENCE = 2 * Math.PI * 120; // Fallback value in case TimerModule is not loaded
+
+// Helper functions to access timer state and session data
+function getTimerState() {
+    return window.TimerModule ? window.TimerModule.timerState : null;
+}
+
+function getSessionData() {
+    return window.TimerModule ? window.TimerModule.sessionData : null;
+}
 
 // Initialize
 function init() {
-    // Setup basic references
-    timerTimeElement = document.getElementById('timerTime');
-    timerLabelElement = document.getElementById('timerLabel');
-    timerStatusElement = document.getElementById('timerStatus');
-    startButton = document.getElementById('startBtn');
-    pauseButton = document.getElementById('pauseBtn');
-    skipButton = document.getElementById('skipBtn');
-    resetButton = document.getElementById('resetBtn');
-    undoButton = document.getElementById('undoBtn');
-    sessionCountElement = document.getElementById('sessionCount');
-    flowStateInfoElement = document.getElementById('flowStateInfo');
-    progressRingCircle = document.querySelector('.progress-ring-circle');
-    themeToggleButton = document.getElementById('themeToggle');
-    navLinks = document.querySelectorAll('.nav-link');
-    viewSections = document.querySelectorAll('.view-section');
+    console.log('Initializing app...');
     
-    // Setup chart references
-    sessionDurationChart = document.getElementById('sessionDurationChart');
-    focusVsBreakChart = document.getElementById('focusVsBreakChart');
-    
-    // Initialize the progress ring
-    if (progressRingCircle) {
-        progressRingCircle.style.strokeDasharray = CIRCUMFERENCE;
-        progressRingCircle.style.strokeDashoffset = CIRCUMFERENCE;
+    try {
+        // Setup basic references
+        timerTimeElement = document.getElementById('timerTime');
+        timerLabelElement = document.getElementById('timerLabel');
+        timerStatusElement = document.getElementById('timerStatus');
+        startButton = document.getElementById('startBtn');
+        pauseButton = document.getElementById('pauseBtn');
+        skipButton = document.getElementById('skipBtn');
+        resetButton = document.getElementById('resetBtn');
+        undoButton = document.getElementById('undoBtn');
+        sessionCountElement = document.getElementById('sessionCount');
+        flowStateInfoElement = document.getElementById('flowStateInfo');
+        progressRingCircle = document.querySelector('.progress-ring-circle');
+        themeToggleButton = document.getElementById('themeToggle');
+        navLinks = document.querySelectorAll('.nav-link');
+        viewSections = document.querySelectorAll('.view-section');
+        
+        console.log('Element references:', {
+            timerTimeElement: !!timerTimeElement,
+            timerLabelElement: !!timerLabelElement,
+            timerStatusElement: !!timerStatusElement,
+            startButton: !!startButton,
+            pauseButton: !!pauseButton,
+            skipButton: !!skipButton,
+            resetButton: !!resetButton,
+            undoButton: !!undoButton,
+            sessionCountElement: !!sessionCountElement,
+            flowStateInfoElement: !!flowStateInfoElement,
+            progressRingCircle: !!progressRingCircle,
+            themeToggleButton: !!themeToggleButton
+        });
+        
+        // Check if TimerModule is accessible
+        if (!window.TimerModule) {
+            console.error('TimerModule not found! Make sure timer-logic.js is loaded before app.js');
+            return;
+        }
+        
+        console.log('TimerModule found:', {
+            timerState: !!window.TimerModule.timerState,
+            sessionData: !!window.TimerModule.sessionData,
+            CIRCUMFERENCE: window.TimerModule.CIRCUMFERENCE
+        });
+        
+        // Setup chart references
+        sessionDurationChart = document.getElementById('sessionDurationChart');
+        focusVsBreakChart = document.getElementById('focusVsBreakChart');
+        
+        // Initialize the progress ring
+        if (progressRingCircle) {
+            progressRingCircle.style.strokeDasharray = CIRCUMFERENCE;
+            progressRingCircle.style.strokeDashoffset = CIRCUMFERENCE;
+            console.log('Progress ring initialized');
+        } else {
+            console.error('Progress ring not found during initialization');
+        }
+        
+        // Load stored settings
+        loadSettings();
+        
+        // Load session data
+        loadSessionData();
+        
+        // Update UI
+        updateTimerDisplay();
+        updateSessionCount();
+        updateSettingsForm();
+        applyTheme();
+        setupVisualCueListeners();
+        updateVisualCuePreview();
+        
+        // Setup event listeners
+        setupEventListeners();
+        setupModalListeners();
+        
+        console.log('Initialization complete. Current state:', {
+            timerState: {
+                isRunning: getTimerState().isRunning,
+                isPaused: getTimerState().isPaused,
+                isBreak: getTimerState().isBreak,
+                currentSeconds: getTimerState().currentSeconds
+            }
+        });
+    } catch (error) {
+        console.error('Error during initialization:', error);
     }
-    
-    // Load stored settings
-    loadSettings();
-    
-    // Load session data
-    loadSessionData();
-    
-    // Update UI
-    updateTimerDisplay();
-    updateSessionCount();
-    updateSettingsForm();
-    applyTheme();
-    setupVisualCueListeners();
-    updateVisualCuePreview();
-    
-    // Setup event listeners
-    setupEventListeners();
-    setupModalListeners();
-    
-    console.log('Initialization complete');
 }
 
 // Event Listeners
@@ -189,6 +241,12 @@ function setupEventListeners() {
 // Timer Functions
 function startTimer() {
     console.log('Start timer called');
+    console.log('Current timerState:', {
+        isRunning: getTimerState().isRunning,
+        isPaused: getTimerState().isPaused,
+        isBreak: getTimerState().isBreak,
+        currentSeconds: getTimerState().currentSeconds
+    });
     
     const elements = {
         startButton,
@@ -203,7 +261,21 @@ function startTimer() {
         updateFlowStateCallback: updateFlowStateInfo
     };
     
+    console.log('Calling TimerModule.startTimer with elements:', {
+        startButton: !!elements.startButton,
+        pauseButton: !!elements.pauseButton,
+        skipButton: !!elements.skipButton,
+        resetButton: !!elements.resetButton,
+        timerStatusElement: !!elements.timerStatusElement
+    });
+    
     window.TimerModule.startTimer(elements, callbacks);
+    
+    console.log('TimerModule.startTimer completed, timerState:', {
+        isRunning: getTimerState().isRunning,
+        isPaused: getTimerState().isPaused,
+        timerInterval: !!getTimerState().timerInterval
+    });
 }
 
 function pauseTimer() {
@@ -238,14 +310,14 @@ function updateTimer() {
 }
 
 function handleTimerEnd() {
-    if (timerState.isBreak) {
+    if (getTimerState().isBreak) {
         // Break ended, switch to focus mode
-        clearInterval(timerState.timerInterval);
+        clearInterval(getTimerState().timerInterval);
         completeSession('break');
         switchToFocusMode();
     } else {
         // Focus time ended, but don't interrupt - enter flow state
-        if (!timerState.isFlowState) {
+        if (!getTimerState().isFlowState) {
             enterFlowState();
         }
     }
@@ -263,7 +335,7 @@ function enterFlowState() {
     window.TimerModule.enterFlowState(elements);
     
     // Sound notification
-    if (timerState.enableSoundNotifications) {
+    if (getTimerState().enableSoundNotifications) {
         playSound('flow');
     }
 }
@@ -274,13 +346,13 @@ function updateFlowStateInfo(flowSeconds) {
         flowStateInfoElement.textContent = `Flow state: +${minutes}m`;
     }
     
-    if (sessionData.currentSession) {
-        sessionData.currentSession.flowStateDuration = flowSeconds;
+    if (getSessionData().currentSession) {
+        getSessionData().currentSession.flowStateDuration = flowSeconds;
     }
 }
 
 function handleSkipButton() {
-    if (timerState.isBreak) {
+    if (getTimerState().isBreak) {
         skipToWork();
     } else {
         skipToBreak();
@@ -288,77 +360,140 @@ function handleSkipButton() {
 }
 
 function skipToBreak() {
-    if (!timerState.isRunning || timerState.isBreak) return;
+    if (!getTimerState().isRunning || getTimerState().isBreak) return;
     
     // Save current state for undo
     saveStateForUndo('skipToBreak');
     
     // Complete the current focus session
-    clearInterval(timerState.timerInterval);
+    clearInterval(getTimerState().timerInterval);
     completeSession('focus');
     switchToBreakMode();
 }
 
 function skipToWork() {
-    if (!timerState.isRunning || !timerState.isBreak) return;
+    if (!getTimerState().isRunning || !getTimerState().isBreak) return;
     
     // Save current state for undo
     saveStateForUndo('skipToWork');
     
     // Complete the current break session
-    clearInterval(timerState.timerInterval);
+    clearInterval(getTimerState().timerInterval);
     completeSession('break');
     switchToFocusMode();
 }
 
 function switchToFocusMode() {
-    timerState.isRunning = false;
-    timerState.isPaused = false;
-    timerState.isBreak = false;
-    timerState.isFlowState = false;
-    timerState.elapsedBeforePause = 0;
-    timerState.currentSeconds = timerState.focusTime;
+    console.log('Switching to focus mode');
+    
+    getTimerState().isRunning = false;
+    getTimerState().isPaused = false;
+    getTimerState().isBreak = false;
+    getTimerState().isFlowState = false;
+    getTimerState().elapsedBeforePause = 0;
+    getTimerState().currentSeconds = getTimerState().focusTime;
+    
+    console.log('Focus mode timerState updated:', {
+        isRunning: getTimerState().isRunning,
+        isPaused: getTimerState().isPaused,
+        isBreak: getTimerState().isBreak,
+        currentSeconds: getTimerState().currentSeconds
+    });
     
     // Update UI
-    timerLabelElement.textContent = 'Focus Time';
-    timerStatusElement.textContent = 'Ready to start';
-    startButton.disabled = false;
-    pauseButton.disabled = true;
-    skipButton.disabled = true;
-    skipButton.textContent = 'Skip to Break';
-    resetButton.disabled = true;
-    undoButton.disabled = !timerState.lastAction;
-    progressRingCircle.classList.remove('subtle-pulse');
-    progressRingCircle.style.stroke = 'var(--focus-color)';
-    flowStateInfoElement.textContent = '';
+    if (timerLabelElement) {
+        timerLabelElement.textContent = 'Focus Time';
+        console.log('Timer label updated');
+    } else {
+        console.error('Timer label element not found');
+    }
+    
+    if (timerStatusElement) {
+        timerStatusElement.textContent = 'Ready to start';
+        console.log('Timer status updated');
+    } else {
+        console.error('Timer status element not found');
+    }
+    
+    if (startButton) {
+        startButton.disabled = false;
+        console.log('Start button enabled');
+    } else {
+        console.error('Start button not found');
+    }
+    
+    if (pauseButton) {
+        pauseButton.disabled = true;
+        console.log('Pause button disabled');
+    } else {
+        console.error('Pause button not found');
+    }
+    
+    if (skipButton) {
+        skipButton.disabled = true;
+        skipButton.textContent = 'Skip to Break';
+        console.log('Skip button updated');
+    } else {
+        console.error('Skip button not found');
+    }
+    
+    if (resetButton) {
+        resetButton.disabled = true;
+        console.log('Reset button disabled');
+    } else {
+        console.error('Reset button not found');
+    }
+    
+    if (undoButton) {
+        undoButton.disabled = !getTimerState().lastAction;
+        console.log('Undo button updated');
+    } else {
+        console.error('Undo button not found');
+    }
+    
+    if (progressRingCircle) {
+        progressRingCircle.classList.remove('subtle-pulse');
+        progressRingCircle.style.stroke = 'var(--focus-color)';
+        console.log('Progress ring updated');
+    } else {
+        console.error('Progress ring not found');
+    }
+    
+    if (flowStateInfoElement) {
+        flowStateInfoElement.textContent = '';
+        console.log('Flow state info cleared');
+    } else {
+        console.error('Flow state info element not found');
+    }
     
     // Reset progress ring
     updateProgressRing(0);
     updateTimerDisplay();
+    console.log('Switch to focus mode completed');
 }
 
 function switchToBreakMode() {
-    timerState.isRunning = false;
-    timerState.isPaused = false;
-    timerState.isBreak = true;
-    timerState.isFlowState = false;
-    timerState.elapsedBeforePause = 0;
+    getTimerState().isRunning = false;
+    getTimerState().isPaused = false;
+    getTimerState().isBreak = true;
+    getTimerState().isFlowState = false;
+    getTimerState().elapsedBeforePause = 0;
     
     // Check if it's time for a long break
-    timerState.isLongBreak = timerState.completedSessions % timerState.sessionsBeforeLongBreak === 0 
-                             && timerState.completedSessions > 0;
+    getTimerState().isLongBreak = getTimerState().completedSessions % getTimerState().sessionsBeforeLongBreak === 0 
+                             && getTimerState().completedSessions > 0;
     
-    timerState.currentSeconds = timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime;
+    getTimerState().currentSeconds = getTimerState().isLongBreak ? getTimerState().longBreakTime : getTimerState().breakTime;
     
     // Update UI
-    timerLabelElement.textContent = timerState.isLongBreak ? 'Long Break' : 'Break Time';
+    timerLabelElement.textContent = getTimerState().isLongBreak ? 'Long Break' : 'Break Time';
     timerStatusElement.textContent = 'Ready to start break';
     startButton.disabled = false;
     pauseButton.disabled = true;
     skipButton.disabled = true;
     skipButton.textContent = 'Skip to Focus';
     resetButton.disabled = true;
-    undoButton.disabled = !timerState.lastAction;
+    undoButton.disabled = !getTimerState().lastAction;
     progressRingCircle.classList.remove('subtle-pulse');
     progressRingCircle.style.stroke = 'var(--break-color)';
     flowStateInfoElement.textContent = '';
@@ -369,20 +504,20 @@ function switchToBreakMode() {
 }
 
 function completeSession(type) {
-    if (!sessionData.currentSession) return;
+    if (!getSessionData().currentSession) return;
     
     const endTime = new Date();
     const elapsedSeconds = getElapsedSeconds();
     
-    sessionData.currentSession.end = endTime;
-    sessionData.currentSession.actualDuration = elapsedSeconds;
-    sessionData.currentSession.isCompleted = true;
+    getSessionData().currentSession.end = endTime;
+    getSessionData().currentSession.actualDuration = elapsedSeconds;
+    getSessionData().currentSession.isCompleted = true;
     
-    sessionData.sessions.push(sessionData.currentSession);
-    sessionData.currentSession = null;
+    getSessionData().sessions.push(getSessionData().currentSession);
+    getSessionData().currentSession = null;
     
     if (type === 'focus') {
-        timerState.completedSessions++;
+        getTimerState().completedSessions++;
         updateSessionCount();
     }
     
@@ -409,7 +544,7 @@ function updateProgressRing(elapsedSeconds) {
 }
 
 function updateSessionCount() {
-    sessionCountElement.textContent = timerState.completedSessions;
+    sessionCountElement.textContent = getTimerState().completedSessions;
 }
 
 // Settings and Theme Functions
@@ -420,27 +555,27 @@ function loadSettings() {
             const settings = JSON.parse(savedSettings);
             
             // Update timer settings
-            timerState.focusTime = settings.focusTime ?? 25 * 60;
-            timerState.breakTime = settings.breakTime ?? 5 * 60;
-            timerState.longBreakTime = settings.longBreakTime ?? 15 * 60;
-            timerState.sessionsBeforeLongBreak = settings.sessionsBeforeLongBreak ?? 4;
+            getTimerState().focusTime = settings.focusTime ?? 25 * 60;
+            getTimerState().breakTime = settings.breakTime ?? 5 * 60;
+            getTimerState().longBreakTime = settings.longBreakTime ?? 15 * 60;
+            getTimerState().sessionsBeforeLongBreak = settings.sessionsBeforeLongBreak ?? 4;
             
             // Update notification settings
-            timerState.enableVisualCues = settings.enableVisualCues ?? true;
-            timerState.enableSoundNotifications = settings.enableSoundNotifications ?? false;
-            timerState.visualCueIntensity = settings.visualCueIntensity ?? 5;
+            getTimerState().enableVisualCues = settings.enableVisualCues ?? true;
+            getTimerState().enableSoundNotifications = settings.enableSoundNotifications ?? false;
+            getTimerState().visualCueIntensity = settings.visualCueIntensity ?? 5;
             
             // Update theme settings
-            timerState.theme = settings.theme ?? 'dark';
-            timerState.accentColor = settings.accentColor ?? '#4C8BF5';
+            getTimerState().theme = settings.theme ?? 'dark';
+            getTimerState().accentColor = settings.accentColor ?? '#4C8BF5';
             
             // Update session count
-            timerState.completedSessions = settings.completedSessions ?? 0;
+            getTimerState().completedSessions = settings.completedSessions ?? 0;
             
             // Update current time
-            timerState.currentSeconds = timerState.isBreak 
-                ? (timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime)
-                : timerState.focusTime;
+            getTimerState().currentSeconds = getTimerState().isBreak 
+                ? (getTimerState().isLongBreak ? getTimerState().longBreakTime : getTimerState().breakTime)
+                : getTimerState().focusTime;
             
             // Update form elements
             updateSettingsForm();
@@ -463,15 +598,15 @@ function saveSettings() {
     const accentColorInput = document.getElementById('accentColor');
     
     // Update timer settings
-    timerState.focusTime = parseInt(focusTimeInput.value, 10) * 60;
-    timerState.breakTime = parseInt(breakTimeInput.value, 10) * 60;
-    timerState.longBreakTime = parseInt(longBreakTimeInput.value, 10) * 60;
-    timerState.sessionsBeforeLongBreak = parseInt(sessionsBeforeLongBreakInput.value, 10);
+    getTimerState().focusTime = parseInt(focusTimeInput.value, 10) * 60;
+    getTimerState().breakTime = parseInt(breakTimeInput.value, 10) * 60;
+    getTimerState().longBreakTime = parseInt(longBreakTimeInput.value, 10) * 60;
+    getTimerState().sessionsBeforeLongBreak = parseInt(sessionsBeforeLongBreakInput.value, 10);
     
     // Update notification settings
-    timerState.enableVisualCues = enableVisualCuesInput.checked;
-    timerState.enableSoundNotifications = enableSoundNotificationsInput.checked;
-    timerState.visualCueIntensity = parseInt(visualCueIntensityInput.value, 10);
+    getTimerState().enableVisualCues = enableVisualCuesInput.checked;
+    getTimerState().enableSoundNotifications = enableSoundNotificationsInput.checked;
+    getTimerState().visualCueIntensity = parseInt(visualCueIntensityInput.value, 10);
     
     // Update theme settings
     let selectedTheme = 'dark';
@@ -480,30 +615,30 @@ function saveSettings() {
             selectedTheme = radio.value;
         }
     });
-    timerState.theme = selectedTheme;
-    timerState.accentColor = accentColorInput.value;
+    getTimerState().theme = selectedTheme;
+    getTimerState().accentColor = accentColorInput.value;
     
     // Save to localStorage
     const settingsToSave = {
-        focusTime: timerState.focusTime,
-        breakTime: timerState.breakTime,
-        longBreakTime: timerState.longBreakTime,
-        sessionsBeforeLongBreak: timerState.sessionsBeforeLongBreak,
-        enableVisualCues: timerState.enableVisualCues,
-        enableSoundNotifications: timerState.enableSoundNotifications,
-        visualCueIntensity: timerState.visualCueIntensity,
-        theme: timerState.theme,
-        accentColor: timerState.accentColor,
-        completedSessions: timerState.completedSessions
+        focusTime: getTimerState().focusTime,
+        breakTime: getTimerState().breakTime,
+        longBreakTime: getTimerState().longBreakTime,
+        sessionsBeforeLongBreak: getTimerState().sessionsBeforeLongBreak,
+        enableVisualCues: getTimerState().enableVisualCues,
+        enableSoundNotifications: getTimerState().enableSoundNotifications,
+        visualCueIntensity: getTimerState().visualCueIntensity,
+        theme: getTimerState().theme,
+        accentColor: getTimerState().accentColor,
+        completedSessions: getTimerState().completedSessions
     };
     
     localStorage.setItem('flowTimerSettings', JSON.stringify(settingsToSave));
     
     // Update current timer if not running
-    if (!timerState.isRunning) {
-        timerState.currentSeconds = timerState.isBreak 
-            ? (timerState.isLongBreak ? timerState.longBreakTime : timerState.breakTime)
-            : timerState.focusTime;
+    if (!getTimerState().isRunning) {
+        getTimerState().currentSeconds = getTimerState().isBreak 
+            ? (getTimerState().isLongBreak ? getTimerState().longBreakTime : getTimerState().breakTime)
+            : getTimerState().focusTime;
         updateTimerDisplay();
     }
     
@@ -513,8 +648,8 @@ function saveSettings() {
     // Show success message
     timerStatusElement.textContent = 'Settings saved';
     setTimeout(() => {
-        timerStatusElement.textContent = timerState.isRunning 
-            ? (timerState.isBreak ? 'Taking a break' : (timerState.isFlowState ? 'In flow state - timer continues' : 'Focusing'))
+        timerStatusElement.textContent = getTimerState().isRunning 
+            ? (getTimerState().isBreak ? 'Taking a break' : (getTimerState().isFlowState ? 'In flow state - timer continues' : 'Focusing'))
             : 'Ready to start';
     }, 1500);
     
@@ -524,15 +659,15 @@ function saveSettings() {
 
 function resetSettings() {
     // Reset to defaults
-    timerState.focusTime = 25 * 60;
-    timerState.breakTime = 5 * 60;
-    timerState.longBreakTime = 15 * 60;
-    timerState.sessionsBeforeLongBreak = 4;
-    timerState.enableVisualCues = true;
-    timerState.enableSoundNotifications = false;
-    timerState.visualCueIntensity = 5;
-    timerState.theme = 'dark';
-    timerState.accentColor = '#4C8BF5';
+    getTimerState().focusTime = 25 * 60;
+    getTimerState().breakTime = 5 * 60;
+    getTimerState().longBreakTime = 15 * 60;
+    getTimerState().sessionsBeforeLongBreak = 4;
+    getTimerState().enableVisualCues = true;
+    getTimerState().enableSoundNotifications = false;
+    getTimerState().visualCueIntensity = 5;
+    getTimerState().theme = 'dark';
+    getTimerState().accentColor = '#4C8BF5';
     
     // Update form elements
     updateSettingsForm();
@@ -548,19 +683,19 @@ function updateSettingsForm() {
     const longBreakTimeInput = document.getElementById('longBreakTime');
     const sessionsBeforeLongBreakInput = document.getElementById('sessionsBeforeLongBreak');
     
-    if (focusTimeInput) focusTimeInput.value = timerState.focusTime / 60;
-    if (breakTimeInput) breakTimeInput.value = timerState.breakTime / 60;
-    if (longBreakTimeInput) longBreakTimeInput.value = timerState.longBreakTime / 60;
-    if (sessionsBeforeLongBreakInput) sessionsBeforeLongBreakInput.value = timerState.sessionsBeforeLongBreak;
+    if (focusTimeInput) focusTimeInput.value = getTimerState().focusTime / 60;
+    if (breakTimeInput) breakTimeInput.value = getTimerState().breakTime / 60;
+    if (longBreakTimeInput) longBreakTimeInput.value = getTimerState().longBreakTime / 60;
+    if (sessionsBeforeLongBreakInput) sessionsBeforeLongBreakInput.value = getTimerState().sessionsBeforeLongBreak;
     
     // Update notification settings inputs
     const enableVisualCuesInput = document.getElementById('enableVisualCues');
     const enableSoundNotificationsInput = document.getElementById('enableSoundNotifications');
     const visualCueIntensityInput = document.getElementById('visualCueIntensity');
     
-    if (enableVisualCuesInput) enableVisualCuesInput.checked = timerState.enableVisualCues;
-    if (enableSoundNotificationsInput) enableSoundNotificationsInput.checked = timerState.enableSoundNotifications;
-    if (visualCueIntensityInput) visualCueIntensityInput.value = timerState.visualCueIntensity;
+    if (enableVisualCuesInput) enableVisualCuesInput.checked = getTimerState().enableVisualCues;
+    if (enableSoundNotificationsInput) enableSoundNotificationsInput.checked = getTimerState().enableSoundNotifications;
+    if (visualCueIntensityInput) visualCueIntensityInput.value = getTimerState().visualCueIntensity;
     
     // Update theme settings inputs
     const themeRadios = document.querySelectorAll('input[name="theme"]');
@@ -568,11 +703,11 @@ function updateSettingsForm() {
     
     if (themeRadios) {
         themeRadios.forEach(radio => {
-            radio.checked = radio.value === timerState.theme;
+            radio.checked = radio.value === getTimerState().theme;
         });
     }
     
-    if (accentColorInput) accentColorInput.value = timerState.accentColor;
+    if (accentColorInput) accentColorInput.value = getTimerState().accentColor;
     
     // Add visual cue preview example
     updateVisualCuePreview();
@@ -580,24 +715,24 @@ function updateSettingsForm() {
 
 function applyTheme() {
     // Apply theme to document
-    document.documentElement.setAttribute('data-theme', timerState.theme);
+    document.documentElement.setAttribute('data-theme', getTimerState().theme);
     
     // Update accent color
-    document.documentElement.style.setProperty('--accent-color', timerState.accentColor);
-    document.documentElement.style.setProperty('--focus-color', timerState.accentColor);
+    document.documentElement.style.setProperty('--accent-color', getTimerState().accentColor);
+    document.documentElement.style.setProperty('--focus-color', getTimerState().accentColor);
     
     // Update theme toggle button
-    themeToggleButton.textContent = timerState.theme === 'dark' ? '🌙' : '☀️';
+    themeToggleButton.textContent = getTimerState().theme === 'dark' ? '🌙' : '☀️';
 }
 
 function toggleTheme() {
-    const newTheme = timerState.theme === 'dark' ? 'light' : 'dark';
-    timerState.theme = newTheme;
+    const newTheme = getTimerState().theme === 'dark' ? 'light' : 'dark';
+    getTimerState().theme = newTheme;
     
     // Update radio buttons in settings if visible
     const themeRadios = document.querySelectorAll('input[name="theme"]');
     themeRadios.forEach(radio => {
-        radio.checked = radio.value === timerState.theme;
+        radio.checked = radio.value === getTimerState().theme;
     });
     
     // Apply theme
@@ -605,7 +740,7 @@ function toggleTheme() {
     
     // Save settings
     const settings = JSON.parse(localStorage.getItem('flowTimerSettings') || '{}');
-    settings.theme = timerState.theme;
+    settings.theme = getTimerState().theme;
     localStorage.setItem('flowTimerSettings', JSON.stringify(settings));
 }
 
@@ -643,7 +778,7 @@ function loadSessionData() {
             const parsedData = JSON.parse(savedSessionData);
             
             // Parse date strings back to Date objects
-            sessionData.sessions = parsedData.sessions.map(session => {
+            getSessionData().sessions = parsedData.sessions.map(session => {
                 return {
                     ...session,
                     start: new Date(session.start),
@@ -652,9 +787,9 @@ function loadSessionData() {
             });
             
             // Update session count if needed
-            const focusSessions = sessionData.sessions.filter(s => s.type === 'focus' && s.isCompleted);
-            if (focusSessions.length > timerState.completedSessions) {
-                timerState.completedSessions = focusSessions.length;
+            const focusSessions = getSessionData().sessions.filter(s => s.type === 'focus' && s.isCompleted);
+            if (focusSessions.length > getTimerState().completedSessions) {
+                getTimerState().completedSessions = focusSessions.length;
                 updateSessionCount();
             }
         }
@@ -665,7 +800,7 @@ function loadSessionData() {
 
 function saveSessionData() {
     try {
-        localStorage.setItem('flowTimerSessionData', JSON.stringify(sessionData));
+        localStorage.setItem('flowTimerSessionData', JSON.stringify(getSessionData()));
     } catch (error) {
         console.error('Error saving session data:', error);
     }
@@ -674,7 +809,7 @@ function saveSessionData() {
 function exportSessionData() {
     try {
         // Create a blob with the data
-        const dataStr = JSON.stringify(sessionData, null, 2);
+        const dataStr = JSON.stringify(getSessionData(), null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         
         // Create download link
@@ -735,11 +870,11 @@ function updateVisualCuePreview() {
     const visualCuePreview = document.getElementById('visualCuePreview');
     if (!visualCuePreview) return;
     
-    if (timerState.enableVisualCues) {
+    if (getTimerState().enableVisualCues) {
         visualCuePreview.classList.remove('hidden');
         
         // Set the intensity based on the slider
-        const intensity = timerState.visualCueIntensity / 10;
+        const intensity = getTimerState().visualCueIntensity / 10;
         visualCuePreview.style.animation = `subtle-pulse ${3 - (intensity * 2)}s infinite`;
         visualCuePreview.style.opacity = 0.5 + (intensity * 0.5);
     } else {
@@ -754,14 +889,14 @@ function setupVisualCueListeners() {
     
     if (visualCueIntensityInput) {
         visualCueIntensityInput.addEventListener('input', () => {
-            timerState.visualCueIntensity = parseInt(visualCueIntensityInput.value, 10);
+            getTimerState().visualCueIntensity = parseInt(visualCueIntensityInput.value, 10);
             updateVisualCuePreview();
         });
     }
     
     if (enableVisualCuesInput) {
         enableVisualCuesInput.addEventListener('change', () => {
-            timerState.enableVisualCues = enableVisualCuesInput.checked;
+            getTimerState().enableVisualCues = enableVisualCuesInput.checked;
             updateVisualCuePreview();
         });
     }
@@ -769,16 +904,16 @@ function setupVisualCueListeners() {
 
 // Reset current session
 function resetCurrentSession() {
-    if (!timerState.isRunning) return;
+    if (!getTimerState().isRunning) return;
     
     // Save current state for undo
     saveStateForUndo('reset');
     
     // Clear current timer
-    clearInterval(timerState.timerInterval);
+    clearInterval(getTimerState().timerInterval);
     
     // Reset to beginning of current mode
-    if (timerState.isBreak) {
+    if (getTimerState().isBreak) {
         switchToBreakMode();
     } else {
         switchToFocusMode();
@@ -792,16 +927,16 @@ function resetCurrentSession() {
 
 // Save current state for undo functionality
 function saveStateForUndo(actionType) {
-    timerState.lastAction = {
+    getTimerState().lastAction = {
         type: actionType,
-        isBreak: timerState.isBreak,
-        isRunning: timerState.isRunning,
-        isPaused: timerState.isPaused,
-        isFlowState: timerState.isFlowState,
-        currentSeconds: timerState.currentSeconds,
-        elapsedBeforePause: timerState.elapsedBeforePause,
-        startTime: timerState.startTime,
-        sessionData: sessionData.currentSession ? {...sessionData.currentSession} : null
+        isBreak: getTimerState().isBreak,
+        isRunning: getTimerState().isRunning,
+        isPaused: getTimerState().isPaused,
+        isFlowState: getTimerState().isFlowState,
+        currentSeconds: getTimerState().currentSeconds,
+        elapsedBeforePause: getTimerState().elapsedBeforePause,
+        startTime: getTimerState().startTime,
+        sessionData: getSessionData().currentSession ? {...getSessionData().currentSession} : null
     };
     
     // Enable undo button
@@ -810,45 +945,45 @@ function saveStateForUndo(actionType) {
 
 // Undo last action
 function undoLastAction() {
-    if (!timerState.lastAction) return;
+    if (!getTimerState().lastAction) return;
     
-    clearInterval(timerState.timerInterval);
+    clearInterval(getTimerState().timerInterval);
     
-    const lastAction = timerState.lastAction;
+    const lastAction = getTimerState().lastAction;
     
     // Restore previous state
-    timerState.isBreak = lastAction.isBreak;
-    timerState.isRunning = lastAction.isRunning;
-    timerState.isPaused = lastAction.isPaused;
-    timerState.isFlowState = lastAction.isFlowState;
-    timerState.currentSeconds = lastAction.currentSeconds;
-    timerState.elapsedBeforePause = lastAction.elapsedBeforePause;
-    timerState.startTime = lastAction.startTime;
+    getTimerState().isBreak = lastAction.isBreak;
+    getTimerState().isRunning = lastAction.isRunning;
+    getTimerState().isPaused = lastAction.isPaused;
+    getTimerState().isFlowState = lastAction.isFlowState;
+    getTimerState().currentSeconds = lastAction.currentSeconds;
+    getTimerState().elapsedBeforePause = lastAction.elapsedBeforePause;
+    getTimerState().startTime = lastAction.startTime;
     
     // Restore session data
     if (lastAction.type === 'skipToBreak' || lastAction.type === 'skipToWork') {
         // Remove the last session if we just completed it
-        if (sessionData.sessions.length > 0) {
-            sessionData.sessions.pop();
+        if (getSessionData().sessions.length > 0) {
+            getSessionData().sessions.pop();
         }
         
         // Restore the current session
-        sessionData.currentSession = lastAction.sessionData;
+        getSessionData().currentSession = lastAction.sessionData;
         
         // If we skipped to break, decrement the session count
         if (lastAction.type === 'skipToBreak') {
-            timerState.completedSessions--;
+            getTimerState().completedSessions--;
             updateSessionCount();
         }
     }
     
     // Update UI based on restored state
-    if (timerState.isBreak) {
-        timerLabelElement.textContent = timerState.isLongBreak ? 'Long Break' : 'Break Time';
+    if (getTimerState().isBreak) {
+        timerLabelElement.textContent = getTimerState().isLongBreak ? 'Long Break' : 'Break Time';
         progressRingCircle.style.stroke = 'var(--break-color)';
     } else {
-        timerLabelElement.textContent = timerState.isFlowState ? 'Flow State' : 'Focus Time';
-        if (timerState.isFlowState) {
+        timerLabelElement.textContent = getTimerState().isFlowState ? 'Flow State' : 'Focus Time';
+        if (getTimerState().isFlowState) {
             progressRingCircle.style.stroke = 'var(--warning-color)';
             progressRingCircle.classList.add('subtle-pulse');
         } else {
@@ -859,26 +994,26 @@ function undoLastAction() {
     
     // Update timer display and buttons
     updateTimerDisplay();
-    updateProgressRing(timerState.isRunning ? getElapsedSeconds() : 0);
+    updateProgressRing(getTimerState().isRunning ? getElapsedSeconds() : 0);
     
     // Update button states
-    startButton.disabled = timerState.isRunning && !timerState.isPaused;
-    pauseButton.disabled = !timerState.isRunning || timerState.isPaused;
-    skipButton.textContent = timerState.isBreak ? 'Skip to Focus' : 'Skip to Break';
+    startButton.disabled = getTimerState().isRunning && !getTimerState().isPaused;
+    pauseButton.disabled = !getTimerState().isRunning || getTimerState().isPaused;
+    skipButton.textContent = getTimerState().isBreak ? 'Skip to Focus' : 'Skip to Break';
     
     // Resume timer if it was running
-    if (timerState.isRunning && !timerState.isPaused) {
-        timerState.timerInterval = setInterval(updateTimer, 1000);
-        timerStatusElement.textContent = timerState.isBreak ? 'Taking a break' : 
-            (timerState.isFlowState ? 'In flow state - timer continues' : 'Focusing');
-    } else if (timerState.isPaused) {
+    if (getTimerState().isRunning && !getTimerState().isPaused) {
+        getTimerState().timerInterval = setInterval(updateTimer, 1000);
+        timerStatusElement.textContent = getTimerState().isBreak ? 'Taking a break' : 
+            (getTimerState().isFlowState ? 'In flow state - timer continues' : 'Focusing');
+    } else if (getTimerState().isPaused) {
         timerStatusElement.textContent = 'Paused';
     } else {
         timerStatusElement.textContent = 'Ready to start';
     }
     
     // Clear the lastAction
-    timerState.lastAction = null;
+    getTimerState().lastAction = null;
     undoButton.disabled = true;
     
     // Save the session data
@@ -888,10 +1023,27 @@ function undoLastAction() {
 // Full App Reset Function
 function fullReset() {
     console.log('Full reset function called');
+    console.log('Initial timerState:', {
+        isRunning: getTimerState().isRunning,
+        isPaused: getTimerState().isPaused,
+        isBreak: getTimerState().isBreak,
+        currentSeconds: getTimerState().currentSeconds,
+        timerInterval: !!getTimerState().timerInterval
+    });
     
     // Clear all session data and reset timer state
-    window.TimerModule.resetSessionData();
-    window.TimerModule.resetTimerState(true);
+    const resetSessionResult = window.TimerModule.resetSessionData();
+    console.log('Session data reset, returned:', !!resetSessionResult);
+    
+    const resetTimerResult = window.TimerModule.resetTimerState(true);
+    console.log('Timer state reset, returned:', !!resetTimerResult);
+    console.log('After reset, timerState:', {
+        isRunning: getTimerState().isRunning,
+        isPaused: getTimerState().isPaused,
+        isBreak: getTimerState().isBreak,
+        currentSeconds: getTimerState().currentSeconds,
+        timerInterval: !!getTimerState().timerInterval
+    });
     
     // Update UI
     updateTimerDisplay();
@@ -902,11 +1054,17 @@ function fullReset() {
         progressRingCircle.style.strokeDashoffset = CIRCUMFERENCE;
         progressRingCircle.style.stroke = 'var(--focus-color)';
         progressRingCircle.classList.remove('subtle-pulse');
+        console.log('Progress ring updated');
+    } else {
+        console.error('Progress ring element not found');
     }
     
     // Update timer status
     if (timerStatusElement) {
         timerStatusElement.textContent = 'All data reset. Ready to start fresh.';
+        console.log('Timer status updated');
+    } else {
+        console.error('Timer status element not found');
     }
     
     // Reset buttons
@@ -915,12 +1073,15 @@ function fullReset() {
     if (skipButton) skipButton.disabled = true;
     if (resetButton) resetButton.disabled = true;
     if (undoButton) undoButton.disabled = true;
+    console.log('Button states updated');
     
     // Save the cleared data
     saveSessionData();
+    console.log('Session data saved');
     
     // Close modal if open
     closeModal();
+    console.log('Modal closed');
     
     console.log('Full reset completed');
 }
@@ -999,7 +1160,9 @@ function setupModalListeners() {
     if (confirmBtn) {
         confirmBtn.addEventListener('click', function(e) {
             console.log('Confirm reset button clicked');
+            console.log('Before fullReset, timerState exists:', !!getTimerState());
             fullReset();
+            console.log('After fullReset, timerState exists:', !!getTimerState());
         });
     }
     
