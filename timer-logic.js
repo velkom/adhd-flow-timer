@@ -1,6 +1,6 @@
 /**
  * timer-logic.js - Core timer functionality for Flow Timer
- * v1.2.0
+ * v1.3.0
  */
 
 // Constants

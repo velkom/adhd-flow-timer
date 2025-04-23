@@ -2,6 +2,7 @@
   "name": "Flow Timer - ADHD-Friendly Pomodoro",
   "short_name": "Flow Timer",
   "description": "An ADHD-friendly Pomodoro timer that recognizes and supports flow states",
+  "version": "1.3.0",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#121212",
