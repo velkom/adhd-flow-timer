@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <style>
+    circle { 
+      fill: #0a84ff; 
+    }
+    @media (prefers-color-scheme: dark) {
+      circle { 
+        fill: #0a84ff; 
+      }
+    }
+    path {
+      fill: white;
+    }
+  </style>
+  <circle cx="50" cy="50" r="45" />
+  <path d="M50 20 A30 30 0 1 1 49.999 20 M50 30 A20 20 0 1 0 50.001 30" stroke="white" stroke-width="5" fill="none" />
+  <path d="M50 35 L50 50 L65 50" stroke="white" stroke-width="5" stroke-linecap="round" />
+</svg> 
