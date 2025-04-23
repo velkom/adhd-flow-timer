@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Info - Flow Timer</title>
+    <!-- Favicon links -->
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .info-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        .info-section {
+            margin-bottom: 3rem;
+        }
+        .creator-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="main-nav">
+            <div class="logo">Flow Timer</div>
+        </nav>
+
+        <main class="main-content">
+            <div class="info-container">
+                <a href="index.html" class="back-link">← Back to Timer</a>
+                
+                <h1>About Flow Timer</h1>
+                
+                <div class="info-section">
+                    <h2>Creator</h2>
+                    <div class="creator-info">
+                        <div>
+                            <h3>Ilya Fisiuk</h3>
+                            <p>Flow Timer was created by <a href="https://fissk.xyz" target="_blank">Ilya Fisiuk</a>.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h2>What is Flow Timer?</h2>
+                    <p>Flow Timer is an ADHD-friendly pomodoro timer application that recognizes and supports flow states. Unlike traditional pomodoro timers that interrupt you when you're in the zone, Flow Timer detects when you're in a flow state and allows you to continue working without disruption.</p>
+                </div>
+                
+                <div class="info-section">
+                    <h2>Features</h2>
+                    <ul>
+                        <li>Traditional pomodoro functionality with customizable focus and break periods</li>
+                        <li>Flow state detection and support</li>
+                        <li>Visual cues to indicate your current state</li>
+                        <li>Dark mode support</li>
+                        <li>Analytics to track your productivity</li>
+                        <li>Responsive design that works on all devices</li>
+                    </ul>
+                </div>
+                
+                <div class="info-section">
+                    <h2>Version History</h2>
+                    <ul>
+                        <li><strong>v1.2.0</strong> - Major rewrite for better reliability and button functionality</li>
+                        <li><strong>v1.1.0</strong> - Restructured timer logic into separate module</li>
+                        <li><strong>v1.0.0</strong> - Initial release</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span class="version-number">v1.2.0</span>
+                <a href="index.html" class="footer-link">Back to Timer</a>
+            </div>
+        </footer>
+    </div>
+</body>
+</html> 

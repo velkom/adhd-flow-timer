@@ -1012,11 +1012,24 @@ input:focus-visible {
 
 .footer-content {
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    max-width: 1200px;
     width: 100%;
-    max-width: 800px;
-    position: relative;
+}
+
+.footer-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.footer-link:hover {
+    opacity: 1;
+    text-decoration: underline;
 }
 
 .version-number {
