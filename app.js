@@ -981,11 +981,28 @@ function undoLastAction() {
 
 // Full App Reset Function
 function fullReset() {
+    console.log('Full reset function called');
+    
     // Clear all session data
     sessionData = {
         sessions: [],
         currentSession: null
     };
+    
+    // Get current settings before reset
+    const currentSettings = {
+        focusTime: timerState.focusTime || 25 * 60,
+        breakTime: timerState.breakTime || 5 * 60,
+        longBreakTime: timerState.longBreakTime || 15 * 60,
+        sessionsBeforeLongBreak: timerState.sessionsBeforeLongBreak || 4,
+        enableVisualCues: timerState.enableVisualCues !== undefined ? timerState.enableVisualCues : true,
+        enableSoundNotifications: timerState.enableSoundNotifications !== undefined ? timerState.enableSoundNotifications : false,
+        visualCueIntensity: timerState.visualCueIntensity || 5,
+        theme: timerState.theme || 'dark',
+        accentColor: timerState.accentColor || '#0a84ff'
+    };
+    
+    console.log('Preserving settings:', currentSettings);
     
     // Reset timer state
     timerState = {
@@ -994,37 +1011,60 @@ function fullReset() {
         isBreak: false,
         isLongBreak: false,
         isFlowState: false,
-        currentSeconds: timerState.settings.focusTime * 60,
+        currentSeconds: currentSettings.focusTime,
         completedSessions: 0,
         timerInterval: null,
         startTime: 0,
         elapsedBeforePause: 0,
-        settings: {...timerState.settings}, // Keep current settings
         lastAction: null,
-        enableVisualCues: timerState.enableVisualCues,
-        visualCueIntensity: timerState.visualCueIntensity
+        
+        // Preserve settings
+        focusTime: currentSettings.focusTime,
+        breakTime: currentSettings.breakTime,
+        longBreakTime: currentSettings.longBreakTime,
+        sessionsBeforeLongBreak: currentSettings.sessionsBeforeLongBreak,
+        enableVisualCues: currentSettings.enableVisualCues,
+        enableSoundNotifications: currentSettings.enableSoundNotifications,
+        visualCueIntensity: currentSettings.visualCueIntensity,
+        theme: currentSettings.theme,
+        accentColor: currentSettings.accentColor
     };
+    
+    console.log('Reset timer state:', timerState);
     
     // Reset UI
     updateTimerDisplay();
     updateSessionCount();
-    resetProgressRing();
+    
+    if (progressRingCircle) {
+        progressRingCircle.style.strokeDasharray = CIRCUMFERENCE;
+        progressRingCircle.style.strokeDashoffset = CIRCUMFERENCE;
+        progressRingCircle.style.stroke = 'var(--focus-color)';
+        progressRingCircle.classList.remove('subtle-pulse');
+    }
     
     // Update timer status
-    timerStatusElement.textContent = 'All data reset. Ready to start fresh.';
+    if (timerStatusElement) {
+        timerStatusElement.textContent = 'All data reset. Ready to start fresh.';
+    }
     
     // Reset buttons
-    startButton.disabled = false;
-    pauseButton.disabled = true;
-    skipButton.disabled = true;
-    resetButton.disabled = true;
-    undoButton.disabled = true;
+    if (startButton) startButton.disabled = false;
+    if (pauseButton) pauseButton.disabled = true;
+    if (skipButton) skipButton.disabled = true;
+    if (resetButton) resetButton.disabled = true;
+    if (undoButton) undoButton.disabled = true;
     
     // Save the cleared data
     saveSessionData();
     
+    // Also save settings to ensure they're preserved
+    saveSettings();
+    
     // Close modal if open
     closeModal();
+    
+    console.log('Full reset completed');
 }
 
 // Reset progress ring to starting position
@@ -1036,49 +1076,89 @@ function resetProgressRing() {
 
 // Modal functions
 function openModal() {
+    console.log('Opening modal');
     const modal = document.getElementById('resetModal');
-    modal.classList.add('active');
+    if (modal) {
+        modal.classList.add('active');
+        console.log('Modal opened');
+    } else {
+        console.error('Modal element not found');
+    }
 }
 
 function closeModal() {
+    console.log('Closing modal');
     const modal = document.getElementById('resetModal');
-    modal.classList.remove('active');
+    if (modal) {
+        modal.classList.remove('active');
+        console.log('Modal closed');
+    } else {
+        console.error('Modal element not found');
+    }
 }
 
 // Set up modal event listeners
 function setupModalListeners() {
+    console.log('Setting up modal listeners');
+    
     const fullResetBtn = document.getElementById('fullResetBtn');
     const modal = document.getElementById('resetModal');
     const closeBtn = document.querySelector('.modal-close');
     const cancelBtn = document.getElementById('cancelResetBtn');
     const confirmBtn = document.getElementById('confirmResetBtn');
     
+    console.log('Modal elements:', {
+        fullResetBtn: !!fullResetBtn,
+        modal: !!modal,
+        closeBtn: !!closeBtn,
+        cancelBtn: !!cancelBtn,
+        confirmBtn: !!confirmBtn
+    });
+    
     if (fullResetBtn) {
-        fullResetBtn.addEventListener('click', openModal);
+        fullResetBtn.addEventListener('click', function(e) {
+            console.log('Full reset button clicked');
+            openModal();
+        });
+    } else {
+        console.error('Full reset button not found');
     }
     
     if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
+        closeBtn.addEventListener('click', function(e) {
+            console.log('Close modal button clicked');
+            closeModal();
+        });
     }
     
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', function(e) {
+            console.log('Cancel reset button clicked');
+            closeModal();
+        });
     }
     
     if (confirmBtn) {
-        confirmBtn.addEventListener('click', fullReset);
+        confirmBtn.addEventListener('click', function(e) {
+            console.log('Confirm reset button clicked');
+            fullReset();
+        });
     }
     
     // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
+    if (modal) {
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                console.log('Clicked outside modal - closing');
+                closeModal();
+            }
+        });
+    }
     
     // Close modal with Escape key
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') {
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && modal && modal.classList.contains('active')) {
+            console.log('Escape key pressed - closing modal');
             closeModal();
         }
     });
