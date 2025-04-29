@@ -1,0 +1,20 @@
+# Flow Timer - ADHD-Friendly Pomodoro
+
+> A responsive web-based timer application designed specifically for people with ADHD, supporting flow states rather than interrupting them.
+
+This application was created to provide a more flexible pomodoro timer that recognizes when users are in productive flow states and allows them to continue working without disruption.
+
+## Creator
+
+- [Ilya Fisiuk](https://fissk.xyz): Developer and designer of Flow Timer, specializing in accessibility-focused web applications
+
+## Resources
+
+- [GitHub Repository](https://github.com/user/adhd-flow-timer): Source code and development history
+- [Live Demo](https://velkom.github.io/adhd-flow-timer/): Try the application online
+
+## Technologies
+
+- [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript): Core application logic 
+- [CSS3](https://developer.mozilla.org/en-US/docs/Web/CSS): Responsive design with dark/light mode support
+- [Chart.js](https://www.chartjs.org/): Used for analytics visualization 
