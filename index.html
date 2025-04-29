@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -258,4 +259,253 @@
     <script src="app.js"></script>
     <script src="analytics.js"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Flow Timer - ADHD-Friendly Pomodoro</title>
+    <!-- Favicon links -->
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <nav class="main-nav">
+            <div class="logo">Flow Timer</div>
+            <div class="nav-links">
+                <button class="nav-link active" data-view="timer" onclick="switchView('timer')">Timer</button>
+                <button class="nav-link" data-view="settings" onclick="switchView('settings')">Settings</button>
+                <button class="nav-link" data-view="analytics" onclick="switchView('analytics')">Analytics</button>
+            </div>
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+        </nav>
+
+        <main class="main-content">
+            <!-- Timer View -->
+            <section id="timerView" class="view-section active">
+                <div class="timer-container">
+                    <div class="timer-progress-ring">
+                        <svg class="progress-ring" viewBox="0 0 300 300" width="100%" height="100%">
+                            <circle class="progress-ring-circle-bg" stroke-width="12" fill="transparent" r="120" cx="150" cy="150"></circle>
+                            <circle class="progress-ring-circle" stroke-width="12" fill="transparent" r="120" cx="150" cy="150"></circle>
+                        </svg>
+                        <div class="timer-display">
+                            <div class="timer-time" id="timerTime">25:00</div>
+                            <div class="timer-label" id="timerLabel">Focus Time</div>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-status" id="timerStatus">Ready to begin your session</div>
+                    
+                    <div class="timer-controls">
+                        <button class="control-btn" id="startBtn" onclick="startTimer()">Start</button>
+                        <button class="control-btn" id="pauseBtn" onclick="pauseTimer()" disabled>Pause</button>
+                        <button class="control-btn" id="skipBtn" onclick="handleSkipButton()" disabled>Skip to Break</button>
+                        <button class="control-btn" id="resetBtn" onclick="resetCurrentSession()" disabled>Reset</button>
+                        <button class="control-btn" id="undoBtn" onclick="undoLastAction()" disabled>Undo</button>
+                    </div>
+                    
+                    <div class="session-info">
+                        <div class="session-count">
+                            <span id="sessionCount">0</span> sessions completed today
+                        </div>
+                        <div class="flow-state-info" id="flowStateInfo"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings View -->
+            <section id="settingsView" class="view-section">
+                <div class="settings-container">
+                    <h2>Customize Your Experience</h2>
+                    
+                    <div class="settings-group">
+                        <h3>Timer Settings</h3>
+                        
+                        <div class="setting-item">
+                            <label for="focusTime">Focus Time (minutes)</label>
+                            <input type="number" id="focusTime" min="1" max="120" value="25">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="breakTime">Short Break (minutes)</label>
+                            <input type="number" id="breakTime" min="1" max="60" value="5">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="longBreakTime">Long Break (minutes)</label>
+                            <input type="number" id="longBreakTime" min="5" max="120" value="15">
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="sessionsBeforeLongBreak">Sessions before Long Break</label>
+                            <input type="number" id="sessionsBeforeLongBreak" min="1" max="10" value="4">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Focus Aids</h3>
+                        
+                        <div class="setting-item checkbox">
+                            <input type="checkbox" id="enableVisualCues" checked>
+                            <label for="enableVisualCues">Enable Visual Cues</label>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="visualCueIntensity">Visual Cue Intensity</label>
+                            <input type="range" id="visualCueIntensity" min="1" max="10" value="5">
+                            <div class="visual-cue-preview-container">
+                                <div id="visualCuePreview" class="visual-cue-preview">
+                                    <div class="preview-circle"></div>
+                                    <span>Visual cue preview</span>
+                                </div>
+                                <div class="preview-explanation">
+                                    This shows how the timer will pulse when you're in a flow state. 
+                                    Higher intensity means more noticeable pulsing.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item checkbox">
+                            <input type="checkbox" id="enableSoundNotifications">
+                            <label for="enableSoundNotifications">Enable Sound Notifications</label>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-group">
+                        <h3>Appearance</h3>
+                        
+                        <div class="setting-item radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="lightTheme" name="theme" value="light">
+                                <label for="lightTheme">Light Mode</label>
+                            </div>
+                            
+                            <div class="radio-item">
+                                <input type="radio" id="darkTheme" name="theme" value="dark" checked>
+                                <label for="darkTheme">Dark Mode</label>
+                            </div>
+                            
+                            <div class="radio-item">
+                                <input type="radio" id="systemTheme" name="theme" value="system">
+                                <label for="systemTheme">Use System Setting</label>
+                            </div>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="accentColor">Accent Color</label>
+                            <input type="color" id="accentColor" value="#0a84ff">
+                        </div>
+                    </div>
+                    
+                    <div class="settings-actions">
+                        <button id="saveSettings" class="primary-btn" onclick="saveSettings()">Save Changes</button>
+                        <button id="resetSettings" class="secondary-btn" onclick="resetSettings()">Reset to Defaults</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics View -->
+            <section id="analyticsView" class="view-section">
+                <div class="analytics-container">
+                    <h2>Your Progress</h2>
+                    
+                    <div class="analytics-timeframe">
+                        <button class="timeframe-btn active" data-timeframe="day" onclick="switchTimeframe('day', this)">Today</button>
+                        <button class="timeframe-btn" data-timeframe="week" onclick="switchTimeframe('week', this)">This Week</button>
+                        <button class="timeframe-btn" data-timeframe="month" onclick="switchTimeframe('month', this)">This Month</button>
+                    </div>
+                    
+                    <div class="analytics-summary">
+                        <div class="summary-card">
+                            <div class="summary-value" id="totalFocusTime">0h 0m</div>
+                            <div class="summary-label">Total Focus Time</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-value" id="avgSessionLength">0m</div>
+                            <div class="summary-label">Avg. Session Length</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-value" id="flowStatePercentage">0%</div>
+                            <div class="summary-label">Time in Flow State</div>
+                        </div>
+                        
+                        <div class="summary-card">
+                            <div class="summary-value" id="completedSessions">0</div>
+                            <div class="summary-label">Sessions Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-charts">
+                        <div class="chart-container">
+                            <h3>Session Duration</h3>
+                            <canvas id="sessionDurationChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h3>Focus vs Break Time</h3>
+                            <canvas id="focusVsBreakChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-insights">
+                        <h3>Personalized Insights</h3>
+                        <div class="insights-container" id="insightsContainer">
+                            <p class="no-data-message">Complete more sessions to see your personalized insights.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-actions">
+                        <button id="exportData" class="secondary-btn" onclick="exportSessionData()">Export My Data</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <div class="footer-content">
+                <span class="version-number">v1.3.0</span>
+                <button id="fullResetBtn" class="danger-btn" onclick="openModal()">Reset All Data</button>
+                <a href="info.html" class="footer-link">Info</a>
+            </div>
+        </footer>
+
+        <!-- Reset Confirmation Modal -->
+        <div id="resetModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Are You Sure?</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>You're about to reset all your timer data and progress.</p>
+                    <p class="modal-warning">This action permanently deletes all your sessions, analytics, and progress history. This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="secondary-btn" id="cancelResetBtn" onclick="closeModal()">Keep My Data</button>
+                    <button class="danger-btn" id="confirmResetBtn" onclick="fullReset()">Reset Everything</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="timer-logic.js"></script>
+    <script src="app.js"></script>
+    <script src="analytics.js"></script>
+</body>
+>>>>>>> a3770046ce6fb38291f9704607873be9bdbeb3d9
 </html> 
