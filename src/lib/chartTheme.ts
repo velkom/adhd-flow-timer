@@ -3,7 +3,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 const FALLBACK_LEGEND = 'rgba(255, 255, 255, 0.45)';
 const FALLBACK_TICK = 'rgba(255, 255, 255, 0.2)';
 const FALLBACK_GRID = 'rgba(255, 255, 255, 0.06)';
-const FALLBACK_FONT_FAMILY = 'Inter, system-ui, -apple-system, sans-serif';
+const FALLBACK_FONT_FAMILY = 'Barlow Condensed, Arial Narrow, sans-serif';
 
 function subscribeDataTheme(onChange: () => void): () => void {
   const el = document.documentElement;
@@ -41,7 +41,7 @@ export function readChartThemeColors(): ChartThemeColors {
   const legend = cs.getPropertyValue('--color-chart-legend').trim();
   const tick = cs.getPropertyValue('--color-chart-tick').trim();
   const grid = cs.getPropertyValue('--color-chart-grid').trim();
-  const fontFamily = cs.getPropertyValue('--font-body').trim();
+  const fontFamily = cs.getPropertyValue('--font-display').trim();
   return {
     legend: legend || FALLBACK_LEGEND,
     tick: tick || FALLBACK_TICK,
