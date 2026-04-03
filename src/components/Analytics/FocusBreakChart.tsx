@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useChartThemeColors } from '../../lib/chartTheme';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -18,7 +19,11 @@ interface FocusBreakChartProps {
 
 export function FocusBreakChart({ stats }: FocusBreakChartProps) {
   const compact = useCompactLayout();
-  const focusOnly = stats.totalFocusMinutes - stats.totalFlowMinutes;
+  const chartColors = useChartThemeColors();
+  const focusOnly = Math.max(
+    0,
+    stats.totalFocusMinutes - stats.totalFlowMinutes,
+  );
   const hasData = stats.totalFocusMinutes > 0 || stats.totalBreakMinutes > 0;
 
   const chartOptions = useMemo(
@@ -30,7 +35,7 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
         legend: {
           position: 'bottom' as const,
           labels: {
-            color: 'var(--color-text-secondary)',
+            color: chartColors.legend,
             padding: compact ? 12 : 16,
             font: { size: compact ? 10 : 11 },
             boxWidth: compact ? 10 : 12,
@@ -51,30 +56,36 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
         },
       },
     }),
-    [compact],
+    [chartColors.legend, compact],
   );
 
-  if (!hasData) {
-    return <div className="chart-empty">No data yet</div>;
-  }
-
   return (
-    <Doughnut
-      data={{
-        labels: ['Focus', 'Flow', 'Break'],
-        datasets: [
-          {
-            data: [focusOnly, stats.totalFlowMinutes, stats.totalBreakMinutes],
-            backgroundColor: [
-              'rgba(0, 212, 255, 0.8)',
-              'rgba(255, 214, 10, 0.8)',
-              'rgba(48, 209, 88, 0.8)',
+    <div className="chart-card__canvas">
+      {!hasData ? (
+        <div className="chart-empty">No data yet</div>
+      ) : (
+        <Doughnut
+          data={{
+            labels: ['Focus', 'Flow', 'Break'],
+            datasets: [
+              {
+                data: [
+                  focusOnly,
+                  stats.totalFlowMinutes,
+                  stats.totalBreakMinutes,
+                ],
+                backgroundColor: [
+                  'rgba(0, 212, 255, 0.8)',
+                  'rgba(255, 214, 10, 0.8)',
+                  'rgba(48, 209, 88, 0.8)',
+                ],
+                borderWidth: 0,
+              },
             ],
-            borderWidth: 0,
-          },
-        ],
-      }}
-      options={chartOptions}
-    />
+          }}
+          options={chartOptions}
+        />
+      )}
+    </div>
   );
 }

@@ -51,6 +51,47 @@ function recordSession(prevTimer: TimerState, _nextTimer: TimerState) {
   useSessionStore.getState().addSession(session);
 }
 
+/** Persist a completed or skipped break when transitioning to idle focus. */
+function recordBreakSessionIfEnded(
+  prevTimer: TimerState,
+  nextTimer: TimerState,
+  tickElapsed?: number,
+) {
+  const wasBreak =
+    prevTimer.phase === 'shortBreak' || prevTimer.phase === 'longBreak';
+  if (
+    !wasBreak ||
+    nextTimer.phase !== 'focus' ||
+    nextTimer.status !== 'idle'
+  ) {
+    return;
+  }
+
+  const settings = getSettings();
+  const plannedDuration =
+    prevTimer.phase === 'shortBreak'
+      ? settings.shortBreakDuration
+      : settings.longBreakDuration;
+
+  const now = new Date();
+  const elapsed =
+    tickElapsed !== undefined ? tickElapsed : prevTimer.elapsedSeconds;
+  const startTime = new Date(now.getTime() - elapsed * 1000);
+
+  const session: Session = {
+    id: crypto.randomUUID(),
+    type: 'break',
+    startedAt: startTime.toISOString(),
+    endedAt: now.toISOString(),
+    plannedDuration,
+    actualDuration: elapsed,
+    flowStateDuration: 0,
+    completed: true,
+  };
+
+  useSessionStore.getState().addSession(session);
+}
+
 export const useTimerStore = create<TimerStoreState>((set, get) => ({
   timer: createInitialState(getSettings()),
   startedAt: null,
@@ -60,9 +101,13 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
 
   dispatch: (action) => {
     const settings = getSettings();
+    const prev = get().timer;
     set((state) => ({
       timer: timerReducer(state.timer, action, settings),
     }));
+    if (action.type === 'TICK') {
+      recordBreakSessionIfEnded(prev, get().timer, action.elapsed);
+    }
   },
 
   start: () => {
@@ -148,6 +193,7 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
     const next = timerReducer(timer, { type: 'SKIP' }, settings);
 
     recordSession(prev, next);
+    recordBreakSessionIfEnded(prev, next);
 
     set({
       timer: next,

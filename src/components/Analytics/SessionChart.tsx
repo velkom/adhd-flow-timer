@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useChartThemeColors } from '../../lib/chartTheme';
 import { useCompactLayout } from '../../lib/useCompactLayout';
 import {
   Chart as ChartJS,
@@ -22,6 +23,7 @@ interface SessionChartProps {
 
 export function SessionChart({ sessions, timeframe }: SessionChartProps) {
   const compact = useCompactLayout();
+  const chartColors = useChartThemeColors();
 
   const data = useMemo(() => {
     const focus = sessions
@@ -60,7 +62,7 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
         legend: {
           position: 'top' as const,
           labels: {
-            color: 'var(--color-text-secondary)',
+            color: chartColors.legend,
             font: { size: compact ? 10 : 12 },
             boxWidth: compact ? 10 : 12,
           },
@@ -77,7 +79,7 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
           stacked: true,
           grid: { display: false },
           ticks: {
-            color: 'var(--color-text-tertiary)',
+            color: chartColors.tick,
             font: { size: compact ? 9 : 11 },
             maxRotation: compact ? 50 : 0,
             autoSkip: true,
@@ -86,20 +88,24 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
         y: {
           stacked: true,
           ticks: {
-            color: 'var(--color-text-tertiary)',
+            color: chartColors.tick,
             font: { size: compact ? 9 : 11 },
             callback: (tickValue: string | number) => `${tickValue}m`,
           },
-          grid: { color: 'rgba(255,255,255,0.05)' },
+          grid: { color: chartColors.grid },
         },
       },
     }),
-    [compact],
+    [chartColors.grid, chartColors.legend, chartColors.tick, compact],
   );
 
-  if (data.labels.length === 0) {
-    return <div className="chart-empty">No sessions yet</div>;
-  }
-
-  return <Bar data={data} options={chartOptions} />;
+  return (
+    <div className="chart-card__canvas">
+      {data.labels.length === 0 ? (
+        <div className="chart-empty">No sessions yet</div>
+      ) : (
+        <Bar data={data} options={chartOptions} />
+      )}
+    </div>
+  );
 }

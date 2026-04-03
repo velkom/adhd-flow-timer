@@ -22,6 +22,11 @@
   --color-break: #30d158;
   --color-flow: #ffd60a;
 
+  /* Chart.js (resolved via getComputedStyle for canvas) */
+  --color-chart-grid: rgba(255, 255, 255, 0.06);
+  --color-chart-tick: var(--color-text-tertiary);
+  --color-chart-legend: var(--color-text-secondary);
+
   /* Spacing scale */
   --space-1: 4px;
   --space-2: 8px;
@@ -89,4 +94,6 @@
 
   --color-accent: #007aff;
   --color-accent-glow: rgba(0, 122, 255, 0.2);
+
+  --color-chart-grid: rgba(0, 0, 0, 0.08);
 }
