@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   formatTime,
   formatTimerDisplay,
+  formatOvertimePastDisplay,
+  formatOvertimePastAriaLabel,
   formatDuration,
   formatSessionLabel,
 } from './formatters';
@@ -44,6 +46,27 @@ describe('formatTimerDisplay', () => {
     expect(formatTimerDisplay(157.46699999999987)).toBe('02:37');
     expect(formatTimerDisplay(-65.999)).toBe('-01:05');
     expect(formatTimerDisplay(0.9)).toBe('00:00');
+  });
+});
+
+describe('formatOvertimePastDisplay', () => {
+  it('formats as positive MM:SS without minus', () => {
+    expect(formatOvertimePastDisplay(0)).toBe('00:00');
+    expect(formatOvertimePastDisplay(65)).toBe('01:05');
+    expect(formatOvertimePastDisplay(251)).toBe('04:11');
+  });
+
+  it('accepts negative input as magnitude', () => {
+    expect(formatOvertimePastDisplay(-65)).toBe('01:05');
+  });
+});
+
+describe('formatOvertimePastAriaLabel', () => {
+  it('describes time past planned focus', () => {
+    expect(formatOvertimePastAriaLabel(0)).toBe('0 seconds past planned focus');
+    expect(formatOvertimePastAriaLabel(65)).toBe('1 minute and 5 seconds past planned focus');
+    expect(formatOvertimePastAriaLabel(60)).toBe('1 minute past planned focus');
+    expect(formatOvertimePastAriaLabel(1)).toBe('1 second past planned focus');
   });
 });
 

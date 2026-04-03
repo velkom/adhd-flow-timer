@@ -18,6 +18,7 @@ export function TimerView() {
   const settings = useSettingsStore((s) => s.settings);
 
   const [debugOpen, setDebugOpen] = useState(false);
+  const [finishConfirmOpen, setFinishConfirmOpen] = useState(false);
 
   const prevPhase = useRef<TimerPhase>(timer.phase);
   const prevStatus = useRef<TimerStatus>(timer.status);
@@ -89,6 +90,16 @@ export function TimerView() {
     skip();
   }, [skip]);
 
+  const handleFinishRequest = useCallback(() => {
+    setFinishConfirmOpen(true);
+  }, []);
+
+  const handleConfirmFinish = useCallback(() => {
+    setFinishConfirmOpen(false);
+    playSound('click');
+    skip();
+  }, [skip]);
+
   const handleReset = useCallback(() => {
     playSound('click');
     reset();
@@ -128,7 +139,6 @@ export function TimerView() {
         />
         <TimerDisplay
           remainingSeconds={timer.remainingSeconds}
-          elapsedSeconds={timer.elapsedSeconds}
           phase={timer.phase}
           status={timer.status}
           debugActive={debugOpen}
@@ -151,8 +161,39 @@ export function TimerView() {
         onPause={handlePause}
         onResume={handleResume}
         onSkip={handleSkip}
+        onFinishRequest={handleFinishRequest}
         onReset={handleReset}
       />
+
+      {finishConfirmOpen && (
+        <div
+          className="modal-overlay"
+          onClick={() => setFinishConfirmOpen(false)}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Finish session?</h3>
+            <p className="modal-body">
+              End this focus block and move on (same as Skip).
+            </p>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn--secondary"
+                onClick={() => setFinishConfirmOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn--primary"
+                onClick={handleConfirmFinish}
+              >
+                Finish
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {debugOpen && (
         <DebugPanel

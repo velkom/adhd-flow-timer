@@ -1,4 +1,5 @@
 import { useSettingsStore } from '../stores/settingsStore';
+import { DEFAULT_SETTINGS } from './types';
 
 export type SoundEffect =
   | 'start'
@@ -44,7 +45,34 @@ const DEFAULT_VOLUMES: Record<SoundEffect, number> = {
   flowPulse: 0.2,
 };
 
+/** Absolute ceiling per effect after master gain (reduces harsh peaks at max in-app volume). */
+const EFFECT_VOLUME_CAPS: Record<SoundEffect, number> = {
+  start: 0.35,
+  complete: 0.35,
+  breakStart: 0.28,
+  breakEnd: 0.3,
+  click: 0.22,
+  flowPulse: 0.15,
+};
+
 const audioCache = new Map<SoundEffect, HTMLAudioElement>();
+
+function clamp01(n: number): number {
+  return Math.min(1, Math.max(0, n));
+}
+
+function resolveEffectiveVolume(effect: SoundEffect, baseVolume?: number): number {
+  const rawMaster = useSettingsStore.getState().settings.soundVolume;
+  const master = clamp01(
+    typeof rawMaster === 'number' && !Number.isNaN(rawMaster)
+      ? rawMaster
+      : DEFAULT_SETTINGS.soundVolume,
+  );
+  const base = baseVolume ?? DEFAULT_VOLUMES[effect];
+  const scaled = base * master;
+  const cap = EFFECT_VOLUME_CAPS[effect];
+  return clamp01(Math.min(scaled, cap));
+}
 
 function getAudioUrl(file: string): string {
   const base = import.meta.env.BASE_URL ?? '/';
@@ -73,7 +101,7 @@ export function preloadSounds(): void {
  */
 export function forcePlay(effect: SoundEffect, volume?: number): void {
   const audio = getOrCreateAudio(effect);
-  audio.volume = volume ?? DEFAULT_VOLUMES[effect];
+  audio.volume = resolveEffectiveVolume(effect, volume);
   audio.currentTime = 0;
   audio.play().catch(() => {
     /* browser blocked autoplay — ignore */

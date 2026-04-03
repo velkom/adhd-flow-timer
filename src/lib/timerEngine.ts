@@ -62,7 +62,11 @@ export function timerReducer(
 
     case 'RESUME': {
       if (state.status !== 'paused') return state;
-      return { ...state, status: 'running' };
+      const nextStatus =
+        state.phase === 'focus' && state.remainingSeconds <= 0
+          ? 'flowState'
+          : 'running';
+      return { ...state, status: nextStatus };
     }
 
     case 'TICK': {

@@ -71,6 +71,18 @@ describe('RESUME action', () => {
     const state = stateAfter({ type: 'RESUME' });
     expect(state.status).toBe('idle');
   });
+
+  it('resumes to flowState when paused in focus overtime', () => {
+    const state = stateAfter(
+      { type: 'START' },
+      { type: 'TICK', elapsed: 25 * 60 + 251 },
+      { type: 'PAUSE' },
+      { type: 'RESUME' },
+    );
+    expect(state.status).toBe('flowState');
+    expect(state.remainingSeconds).toBe(-251);
+    expect(state.phase).toBe('focus');
+  });
 });
 
 describe('TICK action', () => {

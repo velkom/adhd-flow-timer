@@ -123,6 +123,31 @@ export function SettingsView() {
             }
           />
         </label>
+
+        {settings.enableSoundNotifications && (
+          <>
+            <label className="setting-field">
+              <span className="setting-label">
+                Sound volume ({Math.round(settings.soundVolume * 100)}%)
+              </span>
+              <input
+                type="range"
+                className="setting-range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={settings.soundVolume}
+                onChange={(e) =>
+                  update('soundVolume', Number(e.target.value))
+                }
+              />
+            </label>
+            <p className="setting-hint">
+              Browsers cannot read your device volume. If sounds feel loud,
+              lower this slider or your system volume.
+            </p>
+          </>
+        )}
       </section>
 
       <section className="settings-group">

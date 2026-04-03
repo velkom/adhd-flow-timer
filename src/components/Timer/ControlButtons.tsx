@@ -13,6 +13,7 @@ interface ControlButtonsProps {
   onPause: () => void;
   onResume: () => void;
   onSkip: () => void;
+  onFinishRequest: () => void;
   onReset: () => void;
 }
 
@@ -23,6 +24,7 @@ export function ControlButtons({
   onPause,
   onResume,
   onSkip,
+  onFinishRequest,
   onReset,
 }: ControlButtonsProps) {
   const isActive = status === 'running' || status === 'flowState';
@@ -87,7 +89,7 @@ export function ControlButtons({
       {(isActive || isPaused) && (
         <button
           className="control-btn control-btn--stop"
-          onClick={onSkip}
+          onClick={onFinishRequest}
           aria-label="Finish session"
         >
           <Icon icon={stopFill} width={20} />

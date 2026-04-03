@@ -24,6 +24,8 @@ export interface TimerSettings {
   sessionsBeforeLongBreak: number;
   enableVisualCues: boolean;
   enableSoundNotifications: boolean;
+  /** App-relative master gain for UI sounds (0–1); does not read OS volume. */
+  soundVolume: number;
   visualCueIntensity: number;
   theme: 'dark' | 'light' | 'system';
   accentColor: string;
@@ -67,6 +69,7 @@ export const DEFAULT_SETTINGS: TimerSettings = {
   sessionsBeforeLongBreak: 4,
   enableVisualCues: true,
   enableSoundNotifications: false,
+  soundVolume: 0.45,
   visualCueIntensity: 5,
   theme: 'dark',
   accentColor: '#00d4ff',

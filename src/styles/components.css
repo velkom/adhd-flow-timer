@@ -358,6 +358,13 @@
   color: var(--color-text-secondary);
 }
 
+.setting-hint {
+  margin: calc(var(--space-2) * -1) 0 var(--space-4);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--color-text-tertiary);
+}
+
 .setting-input {
   width: 100%;
   padding: var(--space-2) var(--space-3);
@@ -470,6 +477,15 @@
 
 .btn--secondary:hover {
   background: var(--color-bg-elevated);
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-bg-primary);
+}
+
+.btn--primary:hover {
+  filter: brightness(1.08);
 }
 
 .btn--danger {

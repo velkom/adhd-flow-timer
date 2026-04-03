@@ -1,22 +1,25 @@
 import { useRef, useCallback } from 'react';
 import { Icon } from '@iconify/react';
 import bugLine from '@iconify-icons/mingcute/bug-line';
-import { formatTimerDisplay } from '../../lib/formatters';
+import {
+  formatTimerDisplay,
+  formatOvertimePastDisplay,
+  formatOvertimePastAriaLabel,
+} from '../../lib/formatters';
 import type { TimerPhase, TimerStatus } from '../../lib/types';
 
 const TRIPLE_CLICK_WINDOW_MS = 500;
 
 interface TimerDisplayProps {
   remainingSeconds: number;
-  elapsedSeconds: number;
   phase: TimerPhase;
   status: TimerStatus;
   debugActive?: boolean;
   onDebugToggle?: () => void;
 }
 
-function phaseLabel(phase: TimerPhase, status: TimerStatus): string {
-  if (status === 'flowState') return 'Timer complete';
+function phaseLabel(phase: TimerPhase, isFocusOvertime: boolean): string {
+  if (isFocusOvertime) return 'Past planned focus';
   switch (phase) {
     case 'focus':
       return 'Focus';
@@ -32,17 +35,15 @@ function statusLabel(status: TimerStatus): string {
     case 'idle':
       return 'Ready';
     case 'running':
+    case 'flowState':
       return 'Focusing';
     case 'paused':
       return 'Paused';
-    case 'flowState':
-      return 'Keep going — you\'re in the zone!';
   }
 }
 
 export function TimerDisplay({
   remainingSeconds,
-  elapsedSeconds,
   phase,
   status,
   debugActive,
@@ -70,28 +71,33 @@ export function TimerDisplay({
     }, TRIPLE_CLICK_WINDOW_MS);
   }, [onDebugToggle]);
 
-  const isFlow = status === 'flowState';
-  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+  const isFocusOvertime =
+    phase === 'focus' && remainingSeconds <= 0 && status !== 'idle';
+  const pastSeconds = Math.floor(Math.abs(remainingSeconds));
 
   return (
     <div className="timer-display" role="timer" aria-live="polite">
       <span
         className="timer-digits"
         aria-label={
-          isFlow
-            ? `${elapsedMinutes} minutes elapsed`
+          isFocusOvertime
+            ? formatOvertimePastAriaLabel(pastSeconds)
             : `${Math.abs(remainingSeconds)} seconds remaining`
         }
         onClick={handleDigitsClick}
       >
-        {isFlow ? `${elapsedMinutes} min` : formatTimerDisplay(remainingSeconds)}
+        {isFocusOvertime
+          ? formatOvertimePastDisplay(pastSeconds)
+          : formatTimerDisplay(remainingSeconds)}
         {debugActive && (
           <span className="debug-indicator" aria-label="Debug mode active">
             <Icon icon={bugLine} width={14} />
           </span>
         )}
       </span>
-      <span className="timer-phase-label">{phaseLabel(phase, status)}</span>
+      <span className="timer-phase-label">
+        {phaseLabel(phase, isFocusOvertime)}
+      </span>
       <span className="timer-status-label">{statusLabel(status)}</span>
     </div>
   );
