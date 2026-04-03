@@ -1,10 +1,9 @@
-import {
-  Play,
-  Pause,
-  SkipForward,
-  RotateCcw,
-  Square,
-} from 'lucide-react';
+import { Icon } from '@iconify/react';
+import playFill from '@iconify-icons/mingcute/play-fill';
+import pauseFill from '@iconify-icons/mingcute/pause-fill';
+import skipForwardFill from '@iconify-icons/mingcute/skip-forward-fill';
+import refreshAnticlockwise1Line from '@iconify-icons/mingcute/refresh-anticlockwise-1-line';
+import stopFill from '@iconify-icons/mingcute/stop-fill';
 import type { TimerStatus, TimerPhase } from '../../lib/types';
 
 interface ControlButtonsProps {
@@ -42,7 +41,7 @@ export function ControlButtons({
           disabled={isIdle}
           aria-label="Reset"
         >
-          <RotateCcw size={22} />
+          <Icon icon={refreshAnticlockwise1Line} width={22} />
         </button>
         <button
           className="control-btn control-btn--secondary"
@@ -50,7 +49,7 @@ export function ControlButtons({
           disabled={isIdle}
           aria-label={skipLabel}
         >
-          <SkipForward size={22} />
+          <Icon icon={skipForwardFill} width={22} />
         </button>
       </div>
 
@@ -61,7 +60,7 @@ export function ControlButtons({
           onClick={onStart}
           aria-label="Start timer"
         >
-          <Play size={28} />
+          <Icon icon={playFill} width={28} />
         </button>
       )}
 
@@ -71,7 +70,7 @@ export function ControlButtons({
           onClick={onPause}
           aria-label="Pause timer"
         >
-          <Pause size={28} />
+          <Icon icon={pauseFill} width={28} />
         </button>
       )}
 
@@ -81,7 +80,7 @@ export function ControlButtons({
           onClick={onResume}
           aria-label="Resume timer"
         >
-          <Play size={28} />
+          <Icon icon={playFill} width={28} />
         </button>
       )}
 
@@ -91,7 +90,7 @@ export function ControlButtons({
           onClick={onSkip}
           aria-label="Finish session"
         >
-          <Square size={20} />
+          <Icon icon={stopFill} width={20} />
           <span>Finish</span>
         </button>
       )}

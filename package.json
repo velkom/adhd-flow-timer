@@ -20,8 +20,9 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@iconify-icons/mingcute": "^1.2.9",
+    "@iconify/react": "^6.0.2",
     "chart.js": "^4.5.1",
-    "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.4",

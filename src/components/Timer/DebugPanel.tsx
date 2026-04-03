@@ -1,4 +1,8 @@
-import { Bug, Zap, Clock, X } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import bugLine from '@iconify-icons/mingcute/bug-line';
+import flashLine from '@iconify-icons/mingcute/flash-line';
+import timeLine from '@iconify-icons/mingcute/time-line';
+import closeLine from '@iconify-icons/mingcute/close-line';
 import type { TimerStatus } from '../../lib/types';
 
 const SPEED_OPTIONS = [1, 4, 8, 16] as const;
@@ -30,7 +34,7 @@ export function DebugPanel({
     <div className="debug-panel">
       <div className="debug-panel-header">
         <div className="debug-panel-title">
-          <Bug size={14} />
+          <Icon icon={bugLine} width={14} />
           <span>Debug Controls</span>
         </div>
         <button
@@ -38,13 +42,13 @@ export function DebugPanel({
           onClick={onClose}
           aria-label="Close debug panel"
         >
-          <X size={16} />
+          <Icon icon={closeLine} width={16} />
         </button>
       </div>
 
       <div className="debug-section">
         <div className="debug-section-label">
-          <Zap size={12} />
+          <Icon icon={flashLine} width={12} />
           <span>Speed</span>
         </div>
         <div className="debug-pills">
@@ -62,7 +66,7 @@ export function DebugPanel({
 
       <div className="debug-section">
         <div className="debug-section-label">
-          <Clock size={12} />
+          <Icon icon={timeLine} width={12} />
           <span>Skip Forward</span>
         </div>
         <div className="debug-pills">

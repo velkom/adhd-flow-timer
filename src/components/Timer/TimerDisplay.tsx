@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react';
-import { Bug } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import bugLine from '@iconify-icons/mingcute/bug-line';
 import { formatTimerDisplay } from '../../lib/formatters';
 import type { TimerPhase, TimerStatus } from '../../lib/types';
 
@@ -79,7 +80,7 @@ export function TimerDisplay({
         {formatTimerDisplay(remainingSeconds)}
         {debugActive && (
           <span className="debug-indicator" aria-label="Debug mode active">
-            <Bug size={14} />
+            <Icon icon={bugLine} width={14} />
           </span>
         )}
       </span>
