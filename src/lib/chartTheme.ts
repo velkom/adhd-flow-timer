@@ -1,8 +1,9 @@
 import { useMemo, useSyncExternalStore } from 'react';
 
-const FALLBACK_LEGEND = '#7e7e7e';
-const FALLBACK_TICK = '#555555';
+const FALLBACK_LEGEND = 'rgba(255, 255, 255, 0.45)';
+const FALLBACK_TICK = 'rgba(255, 255, 255, 0.2)';
 const FALLBACK_GRID = 'rgba(255, 255, 255, 0.06)';
+const FALLBACK_FONT_FAMILY = 'Inter, system-ui, -apple-system, sans-serif';
 
 function subscribeDataTheme(onChange: () => void): () => void {
   const el = document.documentElement;
@@ -24,6 +25,7 @@ export interface ChartThemeColors {
   legend: string;
   tick: string;
   grid: string;
+  fontFamily: string;
 }
 
 export function readChartThemeColors(): ChartThemeColors {
@@ -32,16 +34,19 @@ export function readChartThemeColors(): ChartThemeColors {
       legend: FALLBACK_LEGEND,
       tick: FALLBACK_TICK,
       grid: FALLBACK_GRID,
+      fontFamily: FALLBACK_FONT_FAMILY,
     };
   }
   const cs = getComputedStyle(document.documentElement);
   const legend = cs.getPropertyValue('--color-chart-legend').trim();
   const tick = cs.getPropertyValue('--color-chart-tick').trim();
   const grid = cs.getPropertyValue('--color-chart-grid').trim();
+  const fontFamily = cs.getPropertyValue('--font-body').trim();
   return {
     legend: legend || FALLBACK_LEGEND,
     tick: tick || FALLBACK_TICK,
     grid: grid || FALLBACK_GRID,
+    fontFamily: fontFamily || FALLBACK_FONT_FAMILY,
   };
 }
 

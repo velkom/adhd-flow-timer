@@ -1,26 +1,33 @@
 :root {
-  /* Surface colors */
-  --color-bg-primary: #121212;
-  --color-bg-secondary: #1d1d1d;
-  --color-bg-tertiary: #2a2a2a;
-  --color-bg-elevated: #333333;
+  /* Surfaces — typography-system warm clock palette */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0d0d0d;
+  --color-bg-tertiary: #141414;
+  --color-bg-elevated: #1f1f1f;
 
-  /* Text colors */
-  --color-text-primary: #f1f1f1;
-  --color-text-secondary: #7e7e7e;
-  --color-text-tertiary: #555555;
+  /* Text hierarchy */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.45);
+  --color-text-tertiary: rgba(255, 255, 255, 0.2);
 
-  /* Accent colors */
-  --color-accent: #00d4ff;
-  --color-accent-glow: rgba(0, 212, 255, 0.35);
+  /* Accent — warm orange */
+  --color-accent: #ff8c00;
+  --color-accent-glow: rgba(255, 140, 0, 0.3);
   --color-success: #30d158;
-  --color-warning: #ffd60a;
+  --color-warning: #ffab00;
   --color-error: #ff453a;
 
-  /* Timer-specific */
-  --color-focus: #00d4ff;
+  /* Timer phases */
+  --color-focus: #ff8c00;
+  --color-focus-glow: rgba(255, 140, 0, 0.3);
   --color-break: #30d158;
-  --color-flow: #ffd60a;
+  --color-break-glow: rgba(48, 209, 88, 0.3);
+  --color-flow: #ffab00;
+  --color-flow-glow: rgba(255, 171, 0, 0.3);
+  --color-flow-subtle: rgba(255, 171, 0, 0.15);
+
+  /* Text/icons on accent fills (buttons, active chips) */
+  --color-on-accent: #000000;
 
   /* Chart.js (resolved via getComputedStyle for canvas) */
   --color-chart-grid: rgba(255, 255, 255, 0.06);
@@ -42,38 +49,67 @@
   --layout-content-max-width: 560px;
   --layout-padding-x: clamp(var(--space-3), 4vw, var(--space-6));
 
-  /* Radii */
+  /* Radii (app chrome; reference card radii available if needed) */
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 24px;
   --radius-xl: 30px;
   --radius-full: 9999px;
 
-  /* Typography */
-  --font-display: 'Barlow Condensed', sans-serif;
+  /* Font families */
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-mono: 'Fragment Mono', 'SF Mono', 'Fira Code', monospace;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 2rem;
+  /* Type scale — Major Third 1.250, base 16px */
+  --text-3xs: 0.512rem;
+  --text-2xs: 0.64rem;
+  --text-xs: 0.8rem;
+  --text-sm: 1rem;
+  --text-md: 1.25rem;
+  --text-lg: 1.563rem;
+  --text-xl: 1.953rem;
+  --text-2xl: 2.441rem;
+  --text-3xl: 3.052rem;
+  --text-4xl: 3.815rem;
+  --text-5xl: 4.768rem;
+  --text-6xl: 5.96rem;
+
+  /* Font weights */
+  --weight-thin: 100;
+  --weight-extralight: 200;
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Line heights */
+  --leading-none: 1;
+  --leading-tight: 1.15;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* Letter spacing */
+  --tracking-tight: -0.06em;
+  --tracking-snug: -0.03em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+  --tracking-widest: 0.18em;
 
   /*
-   * Fluid type — shrinks when the viewport (or container, where used) is narrow.
-   * Fixed --text-* steps remain for body copy; use --text-fluid-* for tight UI.
+   * Fluid type — viewport-aware, capped near Major Third steps
    */
-  --text-fluid-view-title: clamp(1.125rem, 0.65rem + 2.4vw, 1.5rem);
-  --text-fluid-nav: clamp(0.6875rem, 0.55rem + 0.55vw, 0.875rem);
-  --text-fluid-timeframe: clamp(0.6875rem, 0.52rem + 0.65vw, 0.875rem);
-  --text-fluid-stat: clamp(1rem, 0.65rem + 2.2vw, 1.5rem);
-  --text-fluid-control: clamp(0.8125rem, 0.72rem + 0.45vw, 1rem);
-  --text-fluid-control-sm: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem);
-  --text-fluid-modal-title: clamp(1.0625rem, 0.88rem + 0.85vw, 1.25rem);
-  --text-fluid-btn: clamp(0.75rem, 0.68rem + 0.4vw, 0.875rem);
-  --text-fluid-phase: clamp(0.6875rem, 0.6rem + 0.35vw, 0.875rem);
+  --text-fluid-view-title: clamp(1.125rem, 0.6rem + 2.2vw, var(--text-xl));
+  --text-fluid-nav: clamp(0.64rem, 0.52rem + 0.45vw, var(--text-xs));
+  --text-fluid-timeframe: clamp(0.64rem, 0.5rem + 0.55vw, var(--text-xs));
+  --text-fluid-stat: clamp(1rem, 0.55rem + 2vw, var(--text-2xl));
+  --text-fluid-control: clamp(0.875rem, 0.72rem + 0.4vw, var(--text-sm));
+  --text-fluid-control-sm: clamp(0.75rem, 0.65rem + 0.35vw, 0.9375rem);
+  --text-fluid-modal-title: clamp(1.0625rem, 0.85rem + 0.75vw, var(--text-md));
+  --text-fluid-btn: clamp(0.75rem, 0.65rem + 0.35vw, var(--text-xs));
+  --text-fluid-phase: clamp(0.64rem, 0.55rem + 0.35vw, var(--text-xs));
 
   /* Transitions */
   --duration-fast: 150ms;
@@ -89,11 +125,19 @@
   --color-bg-elevated: #d1d1d6;
 
   --color-text-primary: #1d1d1f;
-  --color-text-secondary: #6e6e73;
-  --color-text-tertiary: #aeaeb2;
+  --color-text-secondary: rgba(0, 0, 0, 0.45);
+  --color-text-tertiary: rgba(0, 0, 0, 0.25);
 
-  --color-accent: #007aff;
-  --color-accent-glow: rgba(0, 122, 255, 0.2);
+  --color-accent: #e07600;
+  --color-accent-glow: rgba(224, 118, 0, 0.25);
+  --color-focus: #e07600;
+  --color-focus-glow: rgba(224, 118, 0, 0.25);
+  --color-flow: #d97700;
+  --color-flow-glow: rgba(217, 119, 0, 0.22);
+  --color-flow-subtle: rgba(217, 119, 0, 0.12);
+  --color-warning: #d97700;
+
+  --color-on-accent: #ffffff;
 
   --color-chart-grid: rgba(0, 0, 0, 0.08);
 }

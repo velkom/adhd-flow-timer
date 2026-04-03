@@ -37,7 +37,10 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
           labels: {
             color: chartColors.legend,
             padding: compact ? 12 : 16,
-            font: { size: compact ? 10 : 11 },
+            font: {
+              family: chartColors.fontFamily,
+              size: compact ? 10 : 11,
+            },
             boxWidth: compact ? 10 : 12,
           },
         },
@@ -56,7 +59,7 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
         },
       },
     }),
-    [chartColors.legend, compact],
+    [chartColors.fontFamily, chartColors.legend, compact],
   );
 
   return (
@@ -75,8 +78,8 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
                   stats.totalBreakMinutes,
                 ],
                 backgroundColor: [
-                  'rgba(0, 212, 255, 0.8)',
-                  'rgba(255, 214, 10, 0.8)',
+                  'rgba(255, 140, 0, 0.8)',
+                  'rgba(255, 171, 0, 0.8)',
                   'rgba(48, 209, 88, 0.8)',
                 ],
                 borderWidth: 0,

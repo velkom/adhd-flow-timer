@@ -41,13 +41,13 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
               Math.min(s.actualDuration, s.plannedDuration) / 60,
             ),
           ),
-          backgroundColor: 'rgba(0, 212, 255, 0.7)',
+          backgroundColor: 'rgba(255, 140, 0, 0.7)',
           borderRadius: 6,
         },
         {
           label: 'Flow',
           data: focus.map((s) => Math.round(s.flowStateDuration / 60)),
-          backgroundColor: 'rgba(255, 214, 10, 0.7)',
+          backgroundColor: 'rgba(255, 171, 0, 0.7)',
           borderRadius: 6,
         },
       ],
@@ -63,7 +63,10 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
           position: 'top' as const,
           labels: {
             color: chartColors.legend,
-            font: { size: compact ? 10 : 12 },
+            font: {
+              family: chartColors.fontFamily,
+              size: compact ? 10 : 12,
+            },
             boxWidth: compact ? 10 : 12,
           },
         },
@@ -80,7 +83,10 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
           grid: { display: false },
           ticks: {
             color: chartColors.tick,
-            font: { size: compact ? 9 : 11 },
+            font: {
+              family: chartColors.fontFamily,
+              size: compact ? 9 : 11,
+            },
             maxRotation: compact ? 50 : 0,
             autoSkip: true,
           },
@@ -89,14 +95,23 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
           stacked: true,
           ticks: {
             color: chartColors.tick,
-            font: { size: compact ? 9 : 11 },
+            font: {
+              family: chartColors.fontFamily,
+              size: compact ? 9 : 11,
+            },
             callback: (tickValue: string | number) => `${tickValue}m`,
           },
           grid: { color: chartColors.grid },
         },
       },
     }),
-    [chartColors.grid, chartColors.legend, chartColors.tick, compact],
+    [
+      chartColors.fontFamily,
+      chartColors.grid,
+      chartColors.legend,
+      chartColors.tick,
+      compact,
+    ],
   );
 
   return (
