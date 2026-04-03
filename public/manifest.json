@@ -1,0 +1,10 @@
+{
+  "name": "Flow Timer",
+  "short_name": "FlowTimer",
+  "description": "ADHD-friendly Pomodoro flow timer",
+  "start_url": "/adhd-flow-timer/",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "icons": []
+}
