@@ -39,6 +39,12 @@ describe('formatTimerDisplay', () => {
   it('formats large values correctly', () => {
     expect(formatTimerDisplay(3661)).toBe('61:01');
   });
+
+  it('truncates fractional seconds from floating-point arithmetic', () => {
+    expect(formatTimerDisplay(157.46699999999987)).toBe('02:37');
+    expect(formatTimerDisplay(-65.999)).toBe('-01:05');
+    expect(formatTimerDisplay(0.9)).toBe('00:00');
+  });
 });
 
 describe('formatDuration', () => {

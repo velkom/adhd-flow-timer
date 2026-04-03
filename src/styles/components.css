@@ -172,6 +172,7 @@
   font-weight: 300;
   line-height: 1;
   letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
   color: var(--color-text-primary);
 }
 
