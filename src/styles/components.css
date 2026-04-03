@@ -736,6 +736,10 @@
   gap: var(--space-2);
 }
 
+.debug-pills--wrap {
+  flex-wrap: wrap;
+}
+
 .debug-pill {
   flex: 1;
   padding: var(--space-2) var(--space-3);

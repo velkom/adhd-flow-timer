@@ -3,7 +3,10 @@ import bugLine from '@iconify-icons/mingcute/bug-line';
 import flashLine from '@iconify-icons/mingcute/flash-line';
 import timeLine from '@iconify-icons/mingcute/time-line';
 import closeLine from '@iconify-icons/mingcute/close-line';
+import volumeLine from '@iconify-icons/mingcute/volume-line';
 import type { TimerStatus } from '../../lib/types';
+import { forcePlay, ALL_SOUND_EFFECTS, SOUND_LABELS } from '../../lib/sounds';
+import type { SoundEffect } from '../../lib/sounds';
 
 const SPEED_OPTIONS = [1, 4, 8, 16] as const;
 
@@ -29,6 +32,10 @@ export function DebugPanel({
   onClose,
 }: DebugPanelProps) {
   const isIdle = timerStatus === 'idle';
+
+  const handleSoundPreview = (effect: SoundEffect) => {
+    forcePlay(effect);
+  };
 
   return (
     <div className="debug-panel">
@@ -78,6 +85,24 @@ export function DebugPanel({
               disabled={isIdle}
             >
               {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="debug-section">
+        <div className="debug-section-label">
+          <Icon icon={volumeLine} width={12} />
+          <span>Sound Preview</span>
+        </div>
+        <div className="debug-pills debug-pills--wrap">
+          {ALL_SOUND_EFFECTS.map((effect) => (
+            <button
+              key={effect}
+              className="debug-pill debug-pill--action"
+              onClick={() => handleSoundPreview(effect)}
+            >
+              {SOUND_LABELS[effect]}
             </button>
           ))}
         </div>

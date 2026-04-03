@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTimerStore } from '../../stores/timerStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { ProgressRing } from './ProgressRing';
@@ -7,6 +7,8 @@ import { DurationPresets } from './DurationPresets';
 import { SessionTimeline } from './SessionTimeline';
 import { ControlButtons } from './ControlButtons';
 import { DebugPanel } from './DebugPanel';
+import { playSound, preloadSounds } from '../../lib/sounds';
+import type { TimerPhase, TimerStatus } from '../../lib/types';
 
 export function TimerView() {
   const timer = useTimerStore((s) => s.timer);
@@ -17,6 +19,47 @@ export function TimerView() {
 
   const [debugOpen, setDebugOpen] = useState(false);
 
+  const prevPhase = useRef<TimerPhase>(timer.phase);
+  const prevStatus = useRef<TimerStatus>(timer.status);
+
+  useEffect(() => {
+    preloadSounds();
+  }, []);
+
+  useEffect(() => {
+    const oldPhase = prevPhase.current;
+    const oldStatus = prevStatus.current;
+    prevPhase.current = timer.phase;
+    prevStatus.current = timer.status;
+
+    if (oldPhase === timer.phase && oldStatus === timer.status) return;
+
+    // Focus timer expired → entered flow state
+    if (oldStatus === 'running' && timer.status === 'flowState') {
+      playSound('complete');
+      return;
+    }
+
+    // Break auto-completed → back to idle focus
+    const wasBreakRunning =
+      oldStatus === 'running' &&
+      (oldPhase === 'shortBreak' || oldPhase === 'longBreak');
+    if (wasBreakRunning && timer.status === 'idle' && timer.phase === 'focus') {
+      playSound('breakEnd');
+      return;
+    }
+
+    // Skipped from focus → now idle on a break phase
+    if (
+      oldPhase === 'focus' &&
+      timer.status === 'idle' &&
+      (timer.phase === 'shortBreak' || timer.phase === 'longBreak')
+    ) {
+      playSound('breakStart');
+      return;
+    }
+  }, [timer.phase, timer.status]);
+
   const toggleDebug = useCallback(() => {
     setDebugOpen((prev) => {
       if (prev) {
@@ -25,6 +68,31 @@ export function TimerView() {
       return !prev;
     });
   }, [setDebugSpeed]);
+
+  const handleStart = useCallback(() => {
+    playSound('start');
+    start();
+  }, [start]);
+
+  const handlePause = useCallback(() => {
+    playSound('click');
+    pause();
+  }, [pause]);
+
+  const handleResume = useCallback(() => {
+    playSound('click');
+    resume();
+  }, [resume]);
+
+  const handleSkip = useCallback(() => {
+    playSound('click');
+    skip();
+  }, [skip]);
+
+  const handleReset = useCallback(() => {
+    playSound('click');
+    reset();
+  }, [reset]);
 
   const phaseDuration =
     timer.phase === 'focus'
@@ -60,9 +128,9 @@ export function TimerView() {
         />
         <TimerDisplay
           remainingSeconds={timer.remainingSeconds}
+          elapsedSeconds={timer.elapsedSeconds}
           phase={timer.phase}
           status={timer.status}
-          flowSeconds={timer.flowSeconds}
           debugActive={debugOpen}
           onDebugToggle={toggleDebug}
         />
@@ -79,11 +147,11 @@ export function TimerView() {
       <ControlButtons
         status={timer.status}
         phase={timer.phase}
-        onStart={start}
-        onPause={pause}
-        onResume={resume}
-        onSkip={skip}
-        onReset={reset}
+        onStart={handleStart}
+        onPause={handlePause}
+        onResume={handleResume}
+        onSkip={handleSkip}
+        onReset={handleReset}
       />
 
       {debugOpen && (

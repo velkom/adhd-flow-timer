@@ -8,15 +8,15 @@ const TRIPLE_CLICK_WINDOW_MS = 500;
 
 interface TimerDisplayProps {
   remainingSeconds: number;
+  elapsedSeconds: number;
   phase: TimerPhase;
   status: TimerStatus;
-  flowSeconds: number;
   debugActive?: boolean;
   onDebugToggle?: () => void;
 }
 
 function phaseLabel(phase: TimerPhase, status: TimerStatus): string {
-  if (status === 'flowState') return 'Flow State';
+  if (status === 'flowState') return 'Timer complete';
   switch (phase) {
     case 'focus':
       return 'Focus';
@@ -36,15 +36,15 @@ function statusLabel(status: TimerStatus): string {
     case 'paused':
       return 'Paused';
     case 'flowState':
-      return 'In the zone';
+      return 'Keep going — you\'re in the zone!';
   }
 }
 
 export function TimerDisplay({
   remainingSeconds,
+  elapsedSeconds,
   phase,
   status,
-  flowSeconds,
   debugActive,
   onDebugToggle,
 }: TimerDisplayProps) {
@@ -70,14 +70,21 @@ export function TimerDisplay({
     }, TRIPLE_CLICK_WINDOW_MS);
   }, [onDebugToggle]);
 
+  const isFlow = status === 'flowState';
+  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+
   return (
     <div className="timer-display" role="timer" aria-live="polite">
       <span
         className="timer-digits"
-        aria-label={`${Math.abs(remainingSeconds)} seconds remaining`}
+        aria-label={
+          isFlow
+            ? `${elapsedMinutes} minutes elapsed`
+            : `${Math.abs(remainingSeconds)} seconds remaining`
+        }
         onClick={handleDigitsClick}
       >
-        {formatTimerDisplay(remainingSeconds)}
+        {isFlow ? `${elapsedMinutes} min` : formatTimerDisplay(remainingSeconds)}
         {debugActive && (
           <span className="debug-indicator" aria-label="Debug mode active">
             <Icon icon={bugLine} width={14} />
@@ -86,11 +93,6 @@ export function TimerDisplay({
       </span>
       <span className="timer-phase-label">{phaseLabel(phase, status)}</span>
       <span className="timer-status-label">{statusLabel(status)}</span>
-      {status === 'flowState' && flowSeconds > 0 && (
-        <span className="timer-flow-badge">
-          +{Math.floor(flowSeconds / 60)}m in flow
-        </span>
-      )}
     </div>
   );
 }
