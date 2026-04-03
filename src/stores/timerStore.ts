@@ -12,6 +12,9 @@ interface TimerStoreState {
   pausedElapsed: number;
   intervalId: ReturnType<typeof setInterval> | null;
 
+  /** Debug-only: multiplies wall-clock speed (ephemeral, not persisted) */
+  debugSpeedMultiplier: number;
+
   dispatch: (action: TimerAction) => void;
   start: () => void;
   pause: () => void;
@@ -20,6 +23,8 @@ interface TimerStoreState {
   reset: () => void;
   setPreset: (seconds: number) => void;
   cleanup: () => void;
+  setDebugSpeed: (multiplier: number) => void;
+  addDebugTime: (seconds: number) => void;
 }
 
 function getSettings() {
@@ -51,6 +56,7 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
   startedAt: null,
   pausedElapsed: 0,
   intervalId: null,
+  debugSpeedMultiplier: 1,
 
   dispatch: (action) => {
     const settings = getSettings();
@@ -67,9 +73,10 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
     const next = timerReducer(timer, { type: 'START' }, settings);
 
     const id = setInterval(() => {
-      const { startedAt, pausedElapsed } = get();
+      const { startedAt, pausedElapsed, debugSpeedMultiplier } = get();
       if (!startedAt) return;
-      const wallElapsed = (Date.now() - startedAt) / 1000 + pausedElapsed;
+      const wallElapsed =
+        (Date.now() - startedAt) / 1000 * debugSpeedMultiplier + pausedElapsed;
       get().dispatch({ type: 'TICK', elapsed: wallElapsed });
 
       const current = get().timer;
@@ -87,11 +94,13 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
   },
 
   pause: () => {
-    const { timer, startedAt, pausedElapsed, intervalId } = get();
+    const { timer, startedAt, pausedElapsed, intervalId, debugSpeedMultiplier } = get();
     if (timer.status !== 'running' && timer.status !== 'flowState') return;
 
     if (intervalId) clearInterval(intervalId);
-    const wallElapsed = startedAt ? (Date.now() - startedAt) / 1000 : 0;
+    const wallElapsed = startedAt
+      ? (Date.now() - startedAt) / 1000 * debugSpeedMultiplier
+      : 0;
 
     const settings = getSettings();
     set({
@@ -110,9 +119,10 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
     const next = timerReducer(timer, { type: 'RESUME' }, settings);
 
     const id = setInterval(() => {
-      const { startedAt, pausedElapsed } = get();
+      const { startedAt, pausedElapsed, debugSpeedMultiplier } = get();
       if (!startedAt) return;
-      const wallElapsed = (Date.now() - startedAt) / 1000 + pausedElapsed;
+      const wallElapsed =
+        (Date.now() - startedAt) / 1000 * debugSpeedMultiplier + pausedElapsed;
       get().dispatch({ type: 'TICK', elapsed: wallElapsed });
 
       const current = get().timer;
@@ -168,5 +178,26 @@ export const useTimerStore = create<TimerStoreState>((set, get) => ({
     const { intervalId } = get();
     if (intervalId) clearInterval(intervalId);
     set({ intervalId: null, startedAt: null, pausedElapsed: 0 });
+  },
+
+  setDebugSpeed: (multiplier) => {
+    const { startedAt, pausedElapsed, debugSpeedMultiplier } = get();
+    if (startedAt) {
+      const segmentReal = (Date.now() - startedAt) / 1000;
+      const segmentScaled = segmentReal * debugSpeedMultiplier;
+      set({
+        debugSpeedMultiplier: multiplier,
+        pausedElapsed: pausedElapsed + segmentScaled,
+        startedAt: Date.now(),
+      });
+    } else {
+      set({ debugSpeedMultiplier: multiplier });
+    }
+  },
+
+  addDebugTime: (seconds) => {
+    const { timer } = get();
+    if (timer.status === 'idle') return;
+    set((state) => ({ pausedElapsed: state.pausedElapsed + seconds }));
   },
 }));

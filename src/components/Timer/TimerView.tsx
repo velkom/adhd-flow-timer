@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { useTimerStore } from '../../stores/timerStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { ProgressRing } from './ProgressRing';
@@ -5,11 +6,25 @@ import { TimerDisplay } from './TimerDisplay';
 import { DurationPresets } from './DurationPresets';
 import { SessionTimeline } from './SessionTimeline';
 import { ControlButtons } from './ControlButtons';
+import { DebugPanel } from './DebugPanel';
 
 export function TimerView() {
   const timer = useTimerStore((s) => s.timer);
-  const { start, pause, resume, skip, reset, setPreset } = useTimerStore();
+  const debugSpeedMultiplier = useTimerStore((s) => s.debugSpeedMultiplier);
+  const { start, pause, resume, skip, reset, setPreset, setDebugSpeed, addDebugTime } =
+    useTimerStore();
   const settings = useSettingsStore((s) => s.settings);
+
+  const [debugOpen, setDebugOpen] = useState(false);
+
+  const toggleDebug = useCallback(() => {
+    setDebugOpen((prev) => {
+      if (prev) {
+        setDebugSpeed(1);
+      }
+      return !prev;
+    });
+  }, [setDebugSpeed]);
 
   const phaseDuration =
     timer.phase === 'focus'
@@ -48,6 +63,8 @@ export function TimerView() {
           phase={timer.phase}
           status={timer.status}
           flowSeconds={timer.flowSeconds}
+          debugActive={debugOpen}
+          onDebugToggle={toggleDebug}
         />
       </div>
 
@@ -68,6 +85,16 @@ export function TimerView() {
         onSkip={skip}
         onReset={reset}
       />
+
+      {debugOpen && (
+        <DebugPanel
+          speedMultiplier={debugSpeedMultiplier}
+          timerStatus={timer.status}
+          onSetSpeed={setDebugSpeed}
+          onAddTime={addDebugTime}
+          onClose={toggleDebug}
+        />
+      )}
     </div>
   );
 }
