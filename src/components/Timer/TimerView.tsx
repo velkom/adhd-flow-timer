@@ -3,7 +3,6 @@ import { useTimerStore } from '../../stores/timerStore';
 import { useSettingsStore } from '../../stores/settingsStore';
 import { ProgressRing } from './ProgressRing';
 import { TimerDisplay } from './TimerDisplay';
-import { DurationPresets } from './DurationPresets';
 import { SessionTimeline } from './SessionTimeline';
 import { ControlButtons } from './ControlButtons';
 import { DebugPanel } from './DebugPanel';
@@ -26,6 +25,12 @@ export function TimerView() {
   useEffect(() => {
     preloadSounds();
   }, []);
+
+  useEffect(() => {
+    if (timer.status === 'idle' && timer.phase === 'focus') {
+      setPreset(settings.focusDuration);
+    }
+  }, [settings.focusDuration, timer.status, timer.phase, setPreset]);
 
   useEffect(() => {
     const oldPhase = prevPhase.current;
@@ -119,51 +124,45 @@ export function TimerView() {
         ? timer.elapsedSeconds / phaseDuration
         : 0;
 
-  const isActive = timer.status !== 'idle';
-
   return (
     <div className="timer-view">
-      <DurationPresets
-        currentDuration={
-          timer.phase === 'focus' ? timer.remainingSeconds + timer.elapsedSeconds : phaseDuration
-        }
-        onSelect={setPreset}
-        disabled={isActive}
-      />
+      <h2 className="view-title">Focus</h2>
 
-      <div className="timer-ring-container">
-        <ProgressRing
-          progress={progress}
-          phase={timer.phase}
-          status={timer.status}
+      <div className="timer-view-body">
+        <div className="timer-ring-container">
+          <ProgressRing
+            progress={progress}
+            phase={timer.phase}
+            status={timer.status}
+          />
+          <TimerDisplay
+            remainingSeconds={timer.remainingSeconds}
+            phase={timer.phase}
+            status={timer.status}
+            debugActive={debugOpen}
+            onDebugToggle={toggleDebug}
+          />
+        </div>
+
+        <SessionTimeline
+          totalSlots={settings.sessionsBeforeLongBreak}
+          completedSessions={
+            timer.completedSessions % settings.sessionsBeforeLongBreak
+          }
+          currentActive={timer.status === 'running' || timer.status === 'flowState'}
         />
-        <TimerDisplay
-          remainingSeconds={timer.remainingSeconds}
-          phase={timer.phase}
+
+        <ControlButtons
           status={timer.status}
-          debugActive={debugOpen}
-          onDebugToggle={toggleDebug}
+          phase={timer.phase}
+          onStart={handleStart}
+          onPause={handlePause}
+          onResume={handleResume}
+          onSkip={handleSkip}
+          onFinishRequest={handleFinishRequest}
+          onReset={handleReset}
         />
       </div>
-
-      <SessionTimeline
-        totalSlots={settings.sessionsBeforeLongBreak}
-        completedSessions={
-          timer.completedSessions % settings.sessionsBeforeLongBreak
-        }
-        currentActive={timer.status === 'running' || timer.status === 'flowState'}
-      />
-
-      <ControlButtons
-        status={timer.status}
-        phase={timer.phase}
-        onStart={handleStart}
-        onPause={handlePause}
-        onResume={handleResume}
-        onSkip={handleSkip}
-        onFinishRequest={handleFinishRequest}
-        onReset={handleReset}
-      />
 
       {finishConfirmOpen && (
         <div

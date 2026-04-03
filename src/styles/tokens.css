@@ -68,7 +68,6 @@
   --text-fluid-control-sm: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem);
   --text-fluid-modal-title: clamp(1.0625rem, 0.88rem + 0.85vw, 1.25rem);
   --text-fluid-btn: clamp(0.75rem, 0.68rem + 0.4vw, 0.875rem);
-  --text-fluid-preset: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem);
   --text-fluid-phase: clamp(0.6875rem, 0.6rem + 0.35vw, 0.875rem);
 
   /* Transitions */

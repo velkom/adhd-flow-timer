@@ -27,6 +27,10 @@ export function App() {
   useThemeSync();
   const [view, setView] = useState<View>('timer');
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
   return (
     <Layout activeView={view} onViewChange={setView}>
       {view === 'timer' && <TimerView />}

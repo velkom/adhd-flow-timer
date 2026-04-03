@@ -31,11 +31,24 @@ export function ControlButtons({
   const isPaused = status === 'paused';
   const isIdle = status === 'idle';
 
+  const showPauseIcon = isActive;
+
+  const handlePrimaryClick = () => {
+    if (isIdle) onStart();
+    else if (isActive) onPause();
+    else onResume();
+  };
+
+  const primaryAriaLabel = isIdle
+    ? 'Start timer'
+    : isActive
+      ? 'Pause timer'
+      : 'Resume timer';
+
   const skipLabel = phase === 'focus' ? 'Skip to Break' : 'Skip to Focus';
 
   return (
     <div className="control-buttons">
-      {/* Top row: Reset + Skip */}
       <div className="control-buttons-row control-buttons-row--secondary">
         <button
           className="control-btn control-btn--secondary"
@@ -55,39 +68,29 @@ export function ControlButtons({
         </button>
       </div>
 
-      {/* Main action button */}
-      {isIdle && (
-        <button
-          className="control-btn control-btn--primary"
-          onClick={onStart}
-          aria-label="Start timer"
-        >
-          <Icon icon={playFill} width={28} />
-        </button>
-      )}
-
-      {isActive && (
-        <button
-          className="control-btn control-btn--primary control-btn--pause"
-          onClick={onPause}
-          aria-label="Pause timer"
-        >
-          <Icon icon={pauseFill} width={28} />
-        </button>
-      )}
-
-      {isPaused && (
-        <button
-          className="control-btn control-btn--primary"
-          onClick={onResume}
-          aria-label="Resume timer"
-        >
-          <Icon icon={playFill} width={28} />
-        </button>
-      )}
+      <button
+        type="button"
+        className={`control-btn control-btn--primary ${showPauseIcon ? 'control-btn--pause' : ''}`}
+        onClick={handlePrimaryClick}
+        aria-label={primaryAriaLabel}
+      >
+        <span className="control-btn__icon-morph" aria-hidden>
+          <span
+            className={`control-btn__icon-layer ${showPauseIcon ? '' : 'control-btn__icon-layer--visible'}`}
+          >
+            <Icon icon={playFill} width={28} />
+          </span>
+          <span
+            className={`control-btn__icon-layer ${showPauseIcon ? 'control-btn__icon-layer--visible' : ''}`}
+          >
+            <Icon icon={pauseFill} width={28} />
+          </span>
+        </span>
+      </button>
 
       {(isActive || isPaused) && (
         <button
+          type="button"
           className="control-btn control-btn--stop"
           onClick={onFinishRequest}
           aria-label="Finish session"

@@ -89,49 +89,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  min-height: 0;
+  padding-bottom: var(--space-6);
+}
+
+.timer-view .view-title {
+  align-self: stretch;
+}
+
+.timer-view-body {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   gap: var(--space-6);
-  padding-block: var(--space-6);
-  width: 100%;
-}
-
-/* Duration Presets */
-.duration-presets {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.preset-pill {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-full);
-  font-size: var(--text-fluid-preset);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  background: var(--color-bg-secondary);
-  transition: all var(--duration-fast) var(--ease-out);
-}
-
-.preset-pill:hover:not(:disabled) {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text-primary);
-}
-
-.preset-pill--active {
-  background: var(--color-accent);
-  color: #fff;
-}
-
-.preset-pill--active:hover:not(:disabled) {
-  background: var(--color-accent);
-  color: #fff;
-  filter: brightness(1.1);
-}
-
-.preset-pill:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
 }
 
 /* Progress Ring */
@@ -315,6 +290,32 @@
 
 .control-btn--pause {
   background: var(--color-bg-secondary);
+}
+
+.control-btn__icon-morph {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.control-btn__icon-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+  pointer-events: none;
+}
+
+.control-btn__icon-layer--visible {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .control-btn--secondary {
