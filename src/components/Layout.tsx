@@ -10,7 +10,9 @@ interface LayoutProps {
 export function Layout({ activeView, onViewChange, children }: LayoutProps) {
   return (
     <div className="app-layout">
-      <main className="app-main">{children}</main>
+      <main className="app-main">
+        <div className="app-content">{children}</div>
+      </main>
       <nav className="app-nav" role="tablist" aria-label="Main navigation">
         {(['timer', 'settings', 'analytics'] as const).map((view) => (
           <button

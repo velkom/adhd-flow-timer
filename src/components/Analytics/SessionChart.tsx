@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useCompactLayout } from '../../lib/useCompactLayout';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -7,6 +8,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import type { TooltipItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { formatSessionLabel } from '../../lib/formatters';
 import type { Session, Timeframe } from '../../lib/types';
@@ -19,6 +21,8 @@ interface SessionChartProps {
 }
 
 export function SessionChart({ sessions, timeframe }: SessionChartProps) {
+  const compact = useCompactLayout();
+
   const data = useMemo(() => {
     const focus = sessions
       .filter((s) => s.type === 'focus')
@@ -48,40 +52,54 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
     };
   }, [sessions, timeframe]);
 
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'top' as const,
+          labels: {
+            color: 'var(--color-text-secondary)',
+            font: { size: compact ? 10 : 12 },
+            boxWidth: compact ? 10 : 12,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx: TooltipItem<'bar'>) =>
+              `${ctx.dataset.label ?? ''}: ${ctx.raw}m`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          ticks: {
+            color: 'var(--color-text-tertiary)',
+            font: { size: compact ? 9 : 11 },
+            maxRotation: compact ? 50 : 0,
+            autoSkip: true,
+          },
+        },
+        y: {
+          stacked: true,
+          ticks: {
+            color: 'var(--color-text-tertiary)',
+            font: { size: compact ? 9 : 11 },
+            callback: (tickValue: string | number) => `${tickValue}m`,
+          },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+        },
+      },
+    }),
+    [compact],
+  );
+
   if (data.labels.length === 0) {
     return <div className="chart-empty">No sessions yet</div>;
   }
 
-  return (
-    <Bar
-      data={data}
-      options={{
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top', labels: { color: 'var(--color-text-secondary)' } },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => `${ctx.dataset.label}: ${ctx.raw}m`,
-            },
-          },
-        },
-        scales: {
-          x: {
-            stacked: true,
-            grid: { display: false },
-            ticks: { color: 'var(--color-text-tertiary)' },
-          },
-          y: {
-            stacked: true,
-            ticks: {
-              color: 'var(--color-text-tertiary)',
-              callback: (v) => `${v}m`,
-            },
-            grid: { color: 'rgba(255,255,255,0.05)' },
-          },
-        },
-      }}
-    />
-  );
+  return <Bar data={data} options={chartOptions} />;
 }

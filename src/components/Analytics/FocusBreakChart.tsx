@@ -1,10 +1,13 @@
+import { useMemo } from 'react';
 import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
   Legend,
 } from 'chart.js';
+import type { TooltipItem } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
+import { useCompactLayout } from '../../lib/useCompactLayout';
 import type { SessionStats } from '../../lib/types';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -14,8 +17,42 @@ interface FocusBreakChartProps {
 }
 
 export function FocusBreakChart({ stats }: FocusBreakChartProps) {
+  const compact = useCompactLayout();
   const focusOnly = stats.totalFocusMinutes - stats.totalFlowMinutes;
   const hasData = stats.totalFocusMinutes > 0 || stats.totalBreakMinutes > 0;
+
+  const chartOptions = useMemo(
+    () => ({
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '65%',
+      plugins: {
+        legend: {
+          position: 'bottom' as const,
+          labels: {
+            color: 'var(--color-text-secondary)',
+            padding: compact ? 12 : 16,
+            font: { size: compact ? 10 : 11 },
+            boxWidth: compact ? 10 : 12,
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx: TooltipItem<'doughnut'>) => {
+              const total = (ctx.dataset.data as number[]).reduce(
+                (a, b) => a + b,
+                0,
+              );
+              const raw = ctx.raw as number;
+              const pct = total > 0 ? Math.round((raw / total) * 100) : 0;
+              return `${ctx.label}: ${raw}m (${pct}%)`;
+            },
+          },
+        },
+      },
+    }),
+    [compact],
+  );
 
   if (!hasData) {
     return <div className="chart-empty">No data yet</div>;
@@ -37,29 +74,7 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
           },
         ],
       }}
-      options={{
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '65%',
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: { color: 'var(--color-text-secondary)', padding: 16 },
-          },
-          tooltip: {
-            callbacks: {
-              label: (ctx) => {
-                const total = (ctx.dataset.data as number[]).reduce(
-                  (a, b) => a + b,
-                  0,
-                );
-                const pct = total > 0 ? Math.round(((ctx.raw as number) / total) * 100) : 0;
-                return `${ctx.label}: ${ctx.raw}m (${pct}%)`;
-              },
-            },
-          },
-        },
-      }}
+      options={chartOptions}
     />
   );
 }

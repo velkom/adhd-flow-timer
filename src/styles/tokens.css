@@ -33,6 +33,10 @@
   --space-10: 40px;
   --space-12: 48px;
 
+  /* Layout: single content column + responsive gutters */
+  --layout-content-max-width: 560px;
+  --layout-padding-x: clamp(var(--space-3), 4vw, var(--space-6));
+
   /* Radii */
   --radius-sm: 8px;
   --radius-md: 16px;
@@ -51,7 +55,21 @@
   --text-xl: 1.25rem;
   --text-2xl: 1.5rem;
   --text-3xl: 2rem;
-  --text-timer: clamp(4rem, 15vw, 6rem);
+
+  /*
+   * Fluid type — shrinks when the viewport (or container, where used) is narrow.
+   * Fixed --text-* steps remain for body copy; use --text-fluid-* for tight UI.
+   */
+  --text-fluid-view-title: clamp(1.125rem, 0.65rem + 2.4vw, 1.5rem);
+  --text-fluid-nav: clamp(0.6875rem, 0.55rem + 0.55vw, 0.875rem);
+  --text-fluid-timeframe: clamp(0.6875rem, 0.52rem + 0.65vw, 0.875rem);
+  --text-fluid-stat: clamp(1rem, 0.65rem + 2.2vw, 1.5rem);
+  --text-fluid-control: clamp(0.8125rem, 0.72rem + 0.45vw, 1rem);
+  --text-fluid-control-sm: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem);
+  --text-fluid-modal-title: clamp(1.0625rem, 0.88rem + 0.85vw, 1.25rem);
+  --text-fluid-btn: clamp(0.75rem, 0.68rem + 0.4vw, 0.875rem);
+  --text-fluid-preset: clamp(0.75rem, 0.68rem + 0.35vw, 0.875rem);
+  --text-fluid-phase: clamp(0.6875rem, 0.6rem + 0.35vw, 0.875rem);
 
   /* Transitions */
   --duration-fast: 150ms;
