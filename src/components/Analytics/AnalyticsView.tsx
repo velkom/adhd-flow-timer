@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
-import { useSessionStore } from '../../stores/sessionStore';
-import { analyzeTimePatterns } from '../../lib/sessionCalculations';
-import { formatTime } from '../../lib/formatters';
-import type { Timeframe } from '../../lib/types';
+import { useSessionStore } from '@/stores/sessionStore';
+import { analyzeTimePatterns } from '@/lib/sessionCalculations';
+import { formatTime } from '@/lib/formatters';
+import type { Timeframe } from '@/lib/types';
 import { SessionChart } from './SessionChart';
 import { FocusBreakChart } from './FocusBreakChart';
+import viewTitleStyles from '@/components/viewTitle.module.css';
+import btnStyles from '@/components/buttons.module.css';
+import styles from './Analytics.module.css';
 
 const TIMEFRAMES: { label: string; value: Timeframe }[] = [
   { label: 'Today', value: 'day' },
@@ -40,11 +43,11 @@ export function AnalyticsView() {
   };
 
   return (
-    <div className="analytics-view">
-      <h2 className="view-title">Your Progress</h2>
+    <div className={styles.analyticsView}>
+      <h2 className={viewTitleStyles.viewTitle}>Your Progress</h2>
 
       <div
-        className="timeframe-selector"
+        className={styles.timeframeSelector}
         role="tablist"
         aria-label="Time period"
       >
@@ -56,7 +59,7 @@ export function AnalyticsView() {
             role="tab"
             aria-selected={timeframe === value}
             aria-controls={panelId}
-            className={`timeframe-btn ${timeframe === value ? 'timeframe-btn--active' : ''}`}
+            className={`${styles.timeframeBtn} ${timeframe === value ? styles.timeframeBtnActive : ''}`}
             onClick={() => setTimeframe(value)}
           >
             {label}
@@ -70,61 +73,65 @@ export function AnalyticsView() {
         aria-labelledby={`analytics-tab-${timeframe}`}
       >
         {isEmpty ? (
-          <div className="analytics-empty">
-            <p className="analytics-empty-title">
+          <div className={styles.analyticsEmpty}>
+            <p className={styles.analyticsEmptyTitle}>
               No focus sessions in this period yet
             </p>
-            <p className="analytics-empty-hint">
+            <p className={styles.analyticsEmptyHint}>
               Finish a focus block from the Timer tab (use Skip to Break when you
               are done). Your charts and insights will show up here.
             </p>
           </div>
         ) : (
           <>
-            <div className="stats-grid">
-              <div className="stat-card">
-                <span className="stat-value">
+            <div className={styles.statsGrid}>
+              <div className={styles.statCard}>
+                <span className={styles.statValue}>
                   {formatTime(stats.totalFocusMinutes)}
                 </span>
-                <span className="stat-label">Total Focus</span>
+                <span className={styles.statLabel}>Total Focus</span>
               </div>
-              <div className="stat-card">
-                <span className="stat-value">{stats.avgSessionMinutes}m</span>
-                <span className="stat-label">Avg Session</span>
+              <div className={styles.statCard}>
+                <span className={styles.statValue}>{stats.avgSessionMinutes}m</span>
+                <span className={styles.statLabel}>Avg Session</span>
               </div>
-              <div className="stat-card">
-                <span className="stat-value">{stats.flowStatePercentage}%</span>
-                <span className="stat-label">Flow Time</span>
+              <div className={styles.statCard}>
+                <span className={styles.statValue}>{stats.flowStatePercentage}%</span>
+                <span className={styles.statLabel}>Flow Time</span>
               </div>
-              <div className="stat-card">
-                <span className="stat-value">{stats.completedSessions}</span>
-                <span className="stat-label">Sessions</span>
+              <div className={styles.statCard}>
+                <span className={styles.statValue}>{stats.completedSessions}</span>
+                <span className={styles.statLabel}>Sessions</span>
               </div>
             </div>
 
-            <div className="charts-row">
-              <div className="chart-card">
-                <h3 className="chart-title">Session Duration</h3>
+            <div className={styles.chartsRow}>
+              <div className={styles.chartCard}>
+                <h3 className={styles.chartTitle}>Session Duration</h3>
                 <SessionChart sessions={filtered} timeframe={timeframe} />
               </div>
-              <div className="chart-card">
-                <h3 className="chart-title">Focus vs Break</h3>
+              <div className={styles.chartCard}>
+                <h3 className={styles.chartTitle}>Focus vs Break</h3>
                 <FocusBreakChart stats={stats} />
               </div>
             </div>
 
             {insights && (
-              <div className="insights-card">
-                <h3 className="chart-title">Insights</h3>
-                <p className="insight-text">{insights}</p>
+              <div className={styles.insightsCard}>
+                <h3 className={styles.chartTitle}>Insights</h3>
+                <p className={styles.insightText}>{insights}</p>
               </div>
             )}
           </>
         )}
       </div>
 
-      <div className="analytics-actions">
-        <button className="btn btn--secondary" onClick={exportData}>
+      <div className={styles.analyticsActions}>
+        <button
+          type="button"
+          className={`${btnStyles.btn} ${btnStyles.btnSecondary}`}
+          onClick={exportData}
+        >
           Export Data
         </button>
       </div>

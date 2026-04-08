@@ -1,93 +1,58 @@
 import { useMemo } from 'react';
-import { useChartThemeColors } from '../../lib/chartTheme';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import type { TooltipItem } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { useCompactLayout } from '../../lib/useCompactLayout';
-import type { SessionStats } from '../../lib/types';
+import type { SessionStats } from '@/lib/types';
+import {
+  registerAnalyticsCharts,
+  useDoughnutChartOptions,
+  useChartDatasetFillColors,
+  useAnalyticsChartContext,
+} from '@/lib/chartConfig';
+import chartLayoutStyles from './Analytics.module.css';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+registerAnalyticsCharts();
 
 interface FocusBreakChartProps {
   stats: SessionStats;
 }
 
 export function FocusBreakChart({ stats }: FocusBreakChartProps) {
-  const compact = useCompactLayout();
-  const chartColors = useChartThemeColors();
+  const { compact, chartColors } = useAnalyticsChartContext();
+  const fills = useChartDatasetFillColors(0.8);
+  const chartOptions = useDoughnutChartOptions(chartColors, compact);
+
   const focusOnly = Math.max(
     0,
     stats.totalFocusMinutes - stats.totalFlowMinutes,
   );
   const hasData = stats.totalFocusMinutes > 0 || stats.totalBreakMinutes > 0;
 
-  const chartOptions = useMemo(
+  const data = useMemo(
     () => ({
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: {
-        legend: {
-          position: 'bottom' as const,
-          labels: {
-            color: chartColors.legend,
-            padding: compact ? 12 : 16,
-            font: {
-              family: chartColors.fontFamily,
-              size: compact ? 10 : 11,
-            },
-            boxWidth: compact ? 10 : 12,
-          },
+      labels: ['Focus', 'Flow', 'Break'],
+      datasets: [
+        {
+          data: [focusOnly, stats.totalFlowMinutes, stats.totalBreakMinutes],
+          backgroundColor: [fills.focus, fills.flow, fills.break],
+          borderWidth: 0,
         },
-        tooltip: {
-          callbacks: {
-            label: (ctx: TooltipItem<'doughnut'>) => {
-              const total = (ctx.dataset.data as number[]).reduce(
-                (a, b) => a + b,
-                0,
-              );
-              const raw = ctx.raw as number;
-              const pct = total > 0 ? Math.round((raw / total) * 100) : 0;
-              return `${ctx.label}: ${raw}m (${pct}%)`;
-            },
-          },
-        },
-      },
+      ],
     }),
-    [chartColors.fontFamily, chartColors.legend, compact],
+    [
+      focusOnly,
+      stats.totalFlowMinutes,
+      stats.totalBreakMinutes,
+      fills.focus,
+      fills.flow,
+      fills.break,
+    ],
   );
 
   return (
-    <div className="chart-card__canvas">
+    <div className={chartLayoutStyles.chartCardCanvas}>
       {!hasData ? (
-        <div className="chart-empty">No data yet</div>
+        <div className={chartLayoutStyles.chartEmpty}>No data yet</div>
       ) : (
-        <Doughnut
-          data={{
-            labels: ['Focus', 'Flow', 'Break'],
-            datasets: [
-              {
-                data: [
-                  focusOnly,
-                  stats.totalFlowMinutes,
-                  stats.totalBreakMinutes,
-                ],
-                backgroundColor: [
-                  'rgba(255, 140, 0, 0.8)',
-                  'rgba(255, 171, 0, 0.8)',
-                  'rgba(48, 209, 88, 0.8)',
-                ],
-                borderWidth: 0,
-              },
-            ],
-          }}
-          options={chartOptions}
-        />
+        <Doughnut data={data} options={chartOptions} />
       )}
     </div>
   );

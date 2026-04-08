@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTimerStore } from '../../stores/timerStore';
-import { useSettingsStore } from '../../stores/settingsStore';
+import { useTimerStore } from '@/stores/timerStore';
+import { useSettingsStore } from '@/stores/settingsStore';
 import { ProgressRing } from './ProgressRing';
 import { TimerDisplay } from './TimerDisplay';
 import { SessionTimeline } from './SessionTimeline';
 import { ControlButtons } from './ControlButtons';
 import { DebugPanel } from './DebugPanel';
-import { playSound, preloadSounds } from '../../lib/sounds';
-import type { TimerPhase, TimerStatus } from '../../lib/types';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import viewTitleStyles from '@/components/viewTitle.module.css';
+import styles from './Timer.module.css';
+import { playSound, preloadSounds } from '@/lib/sounds';
+import type { TimerPhase, TimerStatus } from '@/lib/types';
 
 export function TimerView() {
   const timer = useTimerStore((s) => s.timer);
@@ -125,11 +128,15 @@ export function TimerView() {
         : 0;
 
   return (
-    <div className="timer-view">
-      <h2 className="view-title">Focus</h2>
+    <div className={styles.timerView}>
+      <h2
+        className={`${viewTitleStyles.viewTitle} ${styles.viewTitleStretch}`}
+      >
+        Focus
+      </h2>
 
-      <div className="timer-view-body">
-        <div className="timer-ring-container">
+      <div className={styles.timerViewBody}>
+        <div className={styles.timerRingContainer}>
           <ProgressRing
             progress={progress}
             phase={timer.phase}
@@ -166,33 +173,14 @@ export function TimerView() {
       </div>
 
       {finishConfirmOpen && (
-        <div
-          className="modal-overlay"
-          onClick={() => setFinishConfirmOpen(false)}
-        >
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Finish session?</h3>
-            <p className="modal-body">
-              End this focus block and move on (same as Skip).
-            </p>
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn btn--secondary"
-                onClick={() => setFinishConfirmOpen(false)}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="btn btn--primary"
-                onClick={handleConfirmFinish}
-              >
-                Finish
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Finish session?"
+          body="End this focus block and move on (same as Skip)."
+          confirmLabel="Finish"
+          confirmVariant="primary"
+          onCancel={() => setFinishConfirmOpen(false)}
+          onConfirm={handleConfirmFinish}
+        />
       )}
 
       {debugOpen && (

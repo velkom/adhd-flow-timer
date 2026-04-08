@@ -19,8 +19,9 @@ A minimalist, distraction-free Pomodoro timer designed specifically for people w
 - **Vite** — Fast dev server and optimized builds
 - **Zustand** — Lightweight state management
 - **Chart.js** — Session analytics charts
-- **Vitest** + **Testing Library** — 59 tests covering domain logic and stores
-- **Lucide React** — Icon library
+- **Vitest** + **Testing Library** — tests for domain logic and stores
+- **ESLint** + **typescript-eslint** + **eslint-plugin-react-hooks** — `npm run lint`
+- **Iconify** (Ming Cute) — `@iconify/react` + `@iconify-icons/mingcute`
 
 ## Getting Started
 
@@ -28,6 +29,7 @@ A minimalist, distraction-free Pomodoro timer designed specifically for people w
 npm install
 npm run dev        # Start dev server at localhost:5173
 npm test           # Run test suite
+npm run lint       # ESLint on src/
 npm run build      # Production build to dist/
 ```
 
@@ -35,13 +37,14 @@ npm run build      # Production build to dist/
 
 ```
 src/
-├── lib/           # Pure domain logic (timer engine, calculations, formatters, storage)
-├── stores/        # Zustand state stores (timer, settings, sessions)
-├── components/    # React components
-│   ├── Timer/     # ProgressRing, TimerDisplay, DurationPresets, ControlButtons
+├── lib/           # Pure domain logic + chart helpers; optional barrel `lib/index.ts`
+├── stores/        # Zustand stores; optional barrel `stores/index.ts`
+├── hooks/         # Shared hooks (theme sync, compact layout); optional barrel `hooks/index.ts`
+├── components/    # React components + co-located `*.module.css`
+│   ├── Timer/     # TimerView, ring, display, controls, debug panel
 │   ├── Settings/  # Settings form
 │   └── Analytics/ # Charts, stats, insights
-├── styles/        # CSS design tokens, global styles, component styles
+├── styles/        # tokens.css, global.css only
 └── test/          # Test setup
 ```
 

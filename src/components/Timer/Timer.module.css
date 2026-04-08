@@ -1,0 +1,416 @@
+.timerView {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  padding-bottom: var(--space-6);
+}
+
+.viewTitleStretch {
+  align-self: stretch;
+}
+
+.timerViewBody {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-6);
+}
+
+.timerRingContainer {
+  container-type: inline-size;
+  container-name: timer-ring;
+  position: relative;
+  width: clamp(240px, 60vw, 300px);
+  height: clamp(240px, 60vw, 300px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progressRingWrapper {
+  position: absolute;
+  inset: 0;
+}
+
+.progressRingSvg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.progressRingTrack {
+  stroke: var(--color-bg-tertiary);
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.progressRingBar {
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 250ms var(--ease-out), stroke 400ms;
+  will-change: stroke-dashoffset;
+}
+
+.progressRingBarFlow {
+  animation: ringPulse 2s ease-in-out infinite;
+}
+
+@keyframes ringPulse {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.75;
+    filter: brightness(1.3);
+  }
+}
+
+.timerDisplay {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  text-align: center;
+}
+
+.timerDigits {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: clamp(var(--text-3xl), 15vw, var(--text-6xl));
+  font-weight: var(--weight-extralight);
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-primary);
+}
+
+@supports (font-size: 1cqi) {
+  .timerDigits {
+    font-size: clamp(var(--text-3xl), 36cqi, var(--text-6xl));
+  }
+}
+
+.timerPhaseLabel {
+  font-family: var(--font-body);
+  font-size: var(--text-fluid-phase);
+  font-weight: var(--weight-medium);
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+}
+
+.timerStatusLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.timerTotalLabel {
+  margin-top: var(--space-1);
+  max-width: 90%;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text-secondary);
+}
+
+.timerFlowBadge {
+  margin-top: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  background: var(--color-flow-subtle);
+  color: var(--color-flow);
+}
+
+.sessionTimeline {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.timelineDot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-tertiary);
+  transition: all var(--duration-normal) var(--ease-out);
+}
+
+.timelineDotCompleted {
+  background: var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent-glow);
+}
+
+.timelineDotCurrent {
+  background: var(--color-accent);
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes dotPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+.controlButtons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 360px;
+}
+
+.controlButtonsRow {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.controlButtonsRowSecondary {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.controlButtonsRowSecondary .controlBtn {
+  flex: 1;
+}
+
+.controlBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-fluid-control);
+  font-weight: var(--weight-medium);
+  padding-inline: var(--space-3);
+  text-align: center;
+  overflow-wrap: anywhere;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.controlBtnPrimary {
+  height: 80px;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+
+.controlBtnPrimary:hover {
+  background: var(--color-bg-tertiary);
+  transform: scale(1.02);
+}
+
+.controlBtnPrimary:active {
+  transform: scale(0.98);
+}
+
+.controlBtnPause {
+  background: var(--color-bg-secondary);
+}
+
+.controlBtnIconMorph {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.controlBtnIconLayer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+  pointer-events: none;
+}
+
+.controlBtnIconLayerVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.controlBtnSecondary {
+  height: 72px;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+.controlBtnSecondary:hover:not(:disabled) {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.controlBtnSecondary:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.controlBtnStop {
+  height: 52px;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  font-size: var(--text-fluid-control-sm);
+}
+
+.controlBtnStop:hover {
+  background: var(--color-error);
+  color: #fff;
+}
+
+.debugPanel {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-flow-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  animation: debugSlideIn var(--duration-normal) var(--ease-out);
+}
+
+@keyframes debugSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.debugPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.debugPanelTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-warning);
+}
+
+.debugCloseBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-tertiary);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.debugCloseBtn:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.debugSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.debugSectionLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-2xs);
+  font-family: var(--font-mono);
+  color: var(--color-text-tertiary);
+}
+
+.debugPills {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.debugPillsWrap {
+  flex-wrap: wrap;
+}
+
+.debugPill {
+  flex: 1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  transition: all var(--duration-fast) var(--ease-out);
+  text-align: center;
+}
+
+.debugPill:hover:not(:disabled) {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+}
+
+.debugPill:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.debugPillActive {
+  background: var(--color-warning);
+  color: #1a1a1a;
+}
+
+.debugPillActive:hover:not(:disabled) {
+  background: var(--color-warning);
+  color: #1a1a1a;
+  filter: brightness(1.1);
+}
+
+.debugPillAction:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.debugIndicator {
+  position: absolute;
+  top: -2px;
+  right: -18px;
+  color: var(--color-warning);
+  animation: debugBlink 2s ease-in-out infinite;
+}
+
+@keyframes debugBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

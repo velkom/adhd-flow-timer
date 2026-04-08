@@ -17,7 +17,7 @@ function getDataThemeAttr(): string {
 }
 
 /** Re-subscribe when resolved document theme changes (Chart.js reads concrete colors). */
-function useChartThemeKey(): string {
+export function useChartThemeKey(): string {
   return useSyncExternalStore(subscribeDataTheme, getDataThemeAttr, () => '');
 }
 

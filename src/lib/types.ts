@@ -44,6 +44,9 @@ export interface Session {
 
 export type Timeframe = 'day' | 'week' | 'month';
 
+/** Primary app tabs (no URL router). */
+export type View = 'timer' | 'settings' | 'analytics';
+
 export interface SessionStats {
   totalFocusMinutes: number;
   totalFlowMinutes: number;

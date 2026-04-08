@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { TimerSettings } from '../lib/types';
-import { DEFAULT_SETTINGS } from '../lib/types';
-import { loadSettings, saveSettings } from '../lib/storage';
+import type { TimerSettings } from '@/lib/types';
+import { DEFAULT_SETTINGS } from '@/lib/types';
+import { loadSettings, saveSettings } from '@/lib/storage';
 
 interface SettingsState {
   settings: TimerSettings;

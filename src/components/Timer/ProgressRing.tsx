@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
-import type { TimerPhase, TimerStatus } from '../../lib/types';
+import type { TimerPhase, TimerStatus } from '@/lib/types';
+import styles from './Timer.module.css';
 
 const RADIUS = 120;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
@@ -35,8 +36,8 @@ export function ProgressRing({ progress, phase, status }: ProgressRingProps) {
   const isFlow = status === 'flowState';
 
   return (
-    <div className="progress-ring-wrapper" aria-hidden="true">
-      <svg className="progress-ring-svg" viewBox="0 0 300 300">
+    <div className={styles.progressRingWrapper} aria-hidden="true">
+      <svg className={styles.progressRingSvg} viewBox="0 0 300 300">
         {/* Glow filter */}
         <defs>
           <filter id="ring-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -50,7 +51,7 @@ export function ProgressRing({ progress, phase, status }: ProgressRingProps) {
 
         {/* Background track */}
         <circle
-          className="progress-ring-track"
+          className={styles.progressRingTrack}
           cx="150"
           cy="150"
           r={RADIUS}
@@ -61,7 +62,7 @@ export function ProgressRing({ progress, phase, status }: ProgressRingProps) {
         {/* Progress arc */}
         <circle
           ref={circleRef}
-          className={`progress-ring-bar ${isFlow ? 'progress-ring-bar--flow' : ''}`}
+          className={`${styles.progressRingBar} ${isFlow ? styles.progressRingBarFlow : ''}`}
           cx="150"
           cy="150"
           r={RADIUS}

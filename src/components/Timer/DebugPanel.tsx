@@ -4,9 +4,10 @@ import flashLine from '@iconify-icons/mingcute/flash-line';
 import timeLine from '@iconify-icons/mingcute/time-line';
 import closeLine from '@iconify-icons/mingcute/close-line';
 import volumeLine from '@iconify-icons/mingcute/volume-line';
-import type { TimerStatus } from '../../lib/types';
-import { forcePlay, ALL_SOUND_EFFECTS, SOUND_LABELS } from '../../lib/sounds';
-import type { SoundEffect } from '../../lib/sounds';
+import type { TimerStatus } from '@/lib/types';
+import { forcePlay, ALL_SOUND_EFFECTS, SOUND_LABELS } from '@/lib/sounds';
+import type { SoundEffect } from '@/lib/sounds';
+import styles from './Timer.module.css';
 
 const SPEED_OPTIONS = [1, 4, 8, 16] as const;
 
@@ -38,14 +39,14 @@ export function DebugPanel({
   };
 
   return (
-    <div className="debug-panel">
-      <div className="debug-panel-header">
-        <div className="debug-panel-title">
+    <div className={styles.debugPanel}>
+      <div className={styles.debugPanelHeader}>
+        <div className={styles.debugPanelTitle}>
           <Icon icon={bugLine} width={14} />
           <span>Debug Controls</span>
         </div>
         <button
-          className="debug-close-btn"
+          className={styles.debugCloseBtn}
           onClick={onClose}
           aria-label="Close debug panel"
         >
@@ -53,16 +54,16 @@ export function DebugPanel({
         </button>
       </div>
 
-      <div className="debug-section">
-        <div className="debug-section-label">
+      <div className={styles.debugSection}>
+        <div className={styles.debugSectionLabel}>
           <Icon icon={flashLine} width={12} />
           <span>Speed</span>
         </div>
-        <div className="debug-pills">
+        <div className={styles.debugPills}>
           {SPEED_OPTIONS.map((speed) => (
             <button
               key={speed}
-              className={`debug-pill ${speedMultiplier === speed ? 'debug-pill--active' : ''}`}
+              className={`${styles.debugPill} ${speedMultiplier === speed ? styles.debugPillActive : ''}`}
               onClick={() => onSetSpeed(speed)}
             >
               x{speed}
@@ -71,16 +72,16 @@ export function DebugPanel({
         </div>
       </div>
 
-      <div className="debug-section">
-        <div className="debug-section-label">
+      <div className={styles.debugSection}>
+        <div className={styles.debugSectionLabel}>
           <Icon icon={timeLine} width={12} />
           <span>Skip Forward</span>
         </div>
-        <div className="debug-pills">
+        <div className={styles.debugPills}>
           {TIME_OPTIONS.map(({ label, seconds }) => (
             <button
               key={seconds}
-              className="debug-pill debug-pill--action"
+              className={`${styles.debugPill} ${styles.debugPillAction}`}
               onClick={() => onAddTime(seconds)}
               disabled={isIdle}
             >
@@ -90,16 +91,16 @@ export function DebugPanel({
         </div>
       </div>
 
-      <div className="debug-section">
-        <div className="debug-section-label">
+      <div className={styles.debugSection}>
+        <div className={styles.debugSectionLabel}>
           <Icon icon={volumeLine} width={12} />
           <span>Sound Preview</span>
         </div>
-        <div className="debug-pills debug-pills--wrap">
+        <div className={`${styles.debugPills} ${styles.debugPillsWrap}`}>
           {ALL_SOUND_EFFECTS.map((effect) => (
             <button
               key={effect}
-              className="debug-pill debug-pill--action"
+              className={`${styles.debugPill} ${styles.debugPillAction}`}
               onClick={() => handleSoundPreview(effect)}
             >
               {SOUND_LABELS[effect]}

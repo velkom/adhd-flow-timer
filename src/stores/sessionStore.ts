@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { Session, Timeframe } from '../lib/types';
-import { loadSessions, saveSessions } from '../lib/storage';
-import { filterSessionsByTimeframe, calculateStats } from '../lib/sessionCalculations';
+import type { Session, Timeframe } from '@/lib/types';
+import { loadSessions, saveSessions } from '@/lib/storage';
+import { filterSessionsByTimeframe, calculateStats } from '@/lib/sessionCalculations';
 
 interface SessionState {
   sessions: Session[];

@@ -6,8 +6,9 @@ import {
   formatOvertimePastDisplay,
   formatOvertimePastAriaLabel,
   formatTotalFocusLabel,
-} from '../../lib/formatters';
-import type { TimerPhase, TimerStatus } from '../../lib/types';
+} from '@/lib/formatters';
+import type { TimerPhase, TimerStatus } from '@/lib/types';
+import styles from './Timer.module.css';
 
 const TRIPLE_CLICK_WINDOW_MS = 500;
 
@@ -79,9 +80,9 @@ export function TimerDisplay({
   const pastSeconds = Math.floor(Math.abs(remainingSeconds));
 
   return (
-    <div className="timer-display" role="timer" aria-live="polite">
+    <div className={styles.timerDisplay} role="timer" aria-live="polite">
       <span
-        className="timer-digits"
+        className={styles.timerDigits}
         aria-label={
           isFocusOvertime
             ? formatOvertimePastAriaLabel(pastSeconds)
@@ -93,17 +94,17 @@ export function TimerDisplay({
           ? formatOvertimePastDisplay(pastSeconds)
           : formatTimerDisplay(remainingSeconds)}
         {debugActive && (
-          <span className="debug-indicator" aria-label="Debug mode active">
+          <span className={styles.debugIndicator} aria-label="Debug mode active">
             <Icon icon={bugLine} width={14} />
           </span>
         )}
       </span>
-      <span className="timer-phase-label">
+      <span className={styles.timerPhaseLabel}>
         {phaseLabel(phase, isFocusOvertime)}
       </span>
-      <span className="timer-status-label">{statusLabel(status)}</span>
+      <span className={styles.timerStatusLabel}>{statusLabel(status)}</span>
       {isFocusOvertime && (
-        <span className="timer-total-label">
+        <span className={styles.timerTotalLabel}>
           {formatTotalFocusLabel(elapsedSeconds)}
         </span>
       )}

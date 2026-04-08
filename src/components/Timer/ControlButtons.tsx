@@ -4,7 +4,8 @@ import pauseFill from '@iconify-icons/mingcute/pause-fill';
 import skipForwardFill from '@iconify-icons/mingcute/skip-forward-fill';
 import refreshAnticlockwise1Line from '@iconify-icons/mingcute/refresh-anticlockwise-1-line';
 import stopFill from '@iconify-icons/mingcute/stop-fill';
-import type { TimerStatus, TimerPhase } from '../../lib/types';
+import type { TimerStatus, TimerPhase } from '@/lib/types';
+import styles from './Timer.module.css';
 
 interface ControlButtonsProps {
   status: TimerStatus;
@@ -48,10 +49,12 @@ export function ControlButtons({
   const skipLabel = phase === 'focus' ? 'Skip to Break' : 'Skip to Focus';
 
   return (
-    <div className="control-buttons">
-      <div className="control-buttons-row control-buttons-row--secondary">
+    <div className={styles.controlButtons}>
+      <div
+        className={`${styles.controlButtonsRow} ${styles.controlButtonsRowSecondary}`}
+      >
         <button
-          className="control-btn control-btn--secondary"
+          className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
           onClick={onReset}
           disabled={isIdle}
           aria-label="Reset"
@@ -59,7 +62,7 @@ export function ControlButtons({
           <Icon icon={refreshAnticlockwise1Line} width={22} />
         </button>
         <button
-          className="control-btn control-btn--secondary"
+          className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
           onClick={onSkip}
           disabled={isIdle}
           aria-label={skipLabel}
@@ -70,18 +73,18 @@ export function ControlButtons({
 
       <button
         type="button"
-        className={`control-btn control-btn--primary ${showPauseIcon ? 'control-btn--pause' : ''}`}
+        className={`${styles.controlBtn} ${styles.controlBtnPrimary} ${showPauseIcon ? styles.controlBtnPause : ''}`}
         onClick={handlePrimaryClick}
         aria-label={primaryAriaLabel}
       >
-        <span className="control-btn__icon-morph" aria-hidden>
+        <span className={styles.controlBtnIconMorph} aria-hidden>
           <span
-            className={`control-btn__icon-layer ${showPauseIcon ? '' : 'control-btn__icon-layer--visible'}`}
+            className={`${styles.controlBtnIconLayer} ${showPauseIcon ? '' : styles.controlBtnIconLayerVisible}`}
           >
             <Icon icon={playFill} width={28} />
           </span>
           <span
-            className={`control-btn__icon-layer ${showPauseIcon ? 'control-btn__icon-layer--visible' : ''}`}
+            className={`${styles.controlBtnIconLayer} ${showPauseIcon ? styles.controlBtnIconLayerVisible : ''}`}
           >
             <Icon icon={pauseFill} width={28} />
           </span>
@@ -91,7 +94,7 @@ export function ControlButtons({
       {(isActive || isPaused) && (
         <button
           type="button"
-          className="control-btn control-btn--stop"
+          className={`${styles.controlBtn} ${styles.controlBtnStop}`}
           onClick={onFinishRequest}
           aria-label="Finish session"
         >

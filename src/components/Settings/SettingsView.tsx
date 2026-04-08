@@ -1,29 +1,37 @@
-import { useSettingsStore } from '../../stores/settingsStore';
-import { useSessionStore } from '../../stores/sessionStore';
+import { useSettingsStore } from '@/stores/settingsStore';
+import { useSessionStore } from '@/stores/sessionStore';
 import { useState } from 'react';
+import type { TimerSettings } from '@/lib/types';
+import { ConfirmModal } from '@/components/ConfirmModal';
+import viewTitleStyles from '@/components/viewTitle.module.css';
+import btnStyles from '@/components/buttons.module.css';
+import styles from './Settings.module.css';
 
 export function SettingsView() {
   const { settings, updateSettings, resetSettings } = useSettingsStore();
   const clearSessions = useSessionStore((s) => s.clearSessions);
   const [showResetModal, setShowResetModal] = useState(false);
 
-  const update = (key: string, value: unknown) => {
+  const updateSetting = <K extends keyof TimerSettings>(
+    key: K,
+    value: TimerSettings[K],
+  ) => {
     updateSettings({ [key]: value });
   };
 
   return (
-    <div className="settings-view">
-      <h2 className="view-title">Settings</h2>
+    <div className={styles.settingsView}>
+      <h2 className={viewTitleStyles.viewTitle}>Settings</h2>
 
-      <section className="settings-group">
-        <h3 className="settings-group-title">Timer</h3>
+      <section className={styles.settingsGroup}>
+        <h3 className={styles.settingsGroupTitle}>Timer</h3>
 
-        <label className="setting-field">
-          <span className="setting-label">Focus Duration</span>
+        <label className={styles.settingField}>
+          <span className={styles.settingLabel}>Focus Duration</span>
           <select
-            className="setting-input"
+            className={styles.settingInput}
             value={settings.focusDuration}
-            onChange={(e) => update('focusDuration', Number(e.target.value))}
+            onChange={(e) => updateSetting('focusDuration', Number(e.target.value))}
           >
             {[5, 10, 15, 20, 25, 30, 45, 60].map((m) => (
               <option key={m} value={m * 60}>
@@ -33,12 +41,12 @@ export function SettingsView() {
           </select>
         </label>
 
-        <label className="setting-field">
-          <span className="setting-label">Short Break</span>
+        <label className={styles.settingField}>
+          <span className={styles.settingLabel}>Short Break</span>
           <select
-            className="setting-input"
+            className={styles.settingInput}
             value={settings.shortBreakDuration}
-            onChange={(e) => update('shortBreakDuration', Number(e.target.value))}
+            onChange={(e) => updateSetting('shortBreakDuration', Number(e.target.value))}
           >
             {[3, 5, 10, 15].map((m) => (
               <option key={m} value={m * 60}>
@@ -48,12 +56,12 @@ export function SettingsView() {
           </select>
         </label>
 
-        <label className="setting-field">
-          <span className="setting-label">Long Break</span>
+        <label className={styles.settingField}>
+          <span className={styles.settingLabel}>Long Break</span>
           <select
-            className="setting-input"
+            className={styles.settingInput}
             value={settings.longBreakDuration}
-            onChange={(e) => update('longBreakDuration', Number(e.target.value))}
+            onChange={(e) => updateSetting('longBreakDuration', Number(e.target.value))}
           >
             {[10, 15, 20, 30].map((m) => (
               <option key={m} value={m * 60}>
@@ -63,13 +71,13 @@ export function SettingsView() {
           </select>
         </label>
 
-        <label className="setting-field">
-          <span className="setting-label">Sessions before Long Break</span>
+        <label className={styles.settingField}>
+          <span className={styles.settingLabel}>Sessions before Long Break</span>
           <select
-            className="setting-input"
+            className={styles.settingInput}
             value={settings.sessionsBeforeLongBreak}
             onChange={(e) =>
-              update('sessionsBeforeLongBreak', Number(e.target.value))
+              updateSetting('sessionsBeforeLongBreak', Number(e.target.value))
             }
           >
             {[2, 3, 4, 5, 6].map((n) => (
@@ -81,68 +89,72 @@ export function SettingsView() {
         </label>
       </section>
 
-      <section className="settings-group">
-        <h3 className="settings-group-title">Focus Aids</h3>
+      <section className={styles.settingsGroup}>
+        <h3 className={styles.settingsGroupTitle}>Focus Aids</h3>
 
-        <label className="setting-field setting-field--toggle">
-          <span className="setting-label">Visual Cues</span>
+        <label
+          className={`${styles.settingField} ${styles.settingFieldToggle}`}
+        >
+          <span className={styles.settingLabel}>Visual Cues</span>
           <input
             type="checkbox"
-            className="setting-toggle"
+            className={styles.settingToggle}
             checked={settings.enableVisualCues}
-            onChange={(e) => update('enableVisualCues', e.target.checked)}
+            onChange={(e) => updateSetting('enableVisualCues', e.target.checked)}
           />
         </label>
 
         {settings.enableVisualCues && (
-          <label className="setting-field">
-            <span className="setting-label">
+          <label className={styles.settingField}>
+            <span className={styles.settingLabel}>
               Cue Intensity ({settings.visualCueIntensity})
             </span>
             <input
               type="range"
-              className="setting-range"
+              className={styles.settingRange}
               min={1}
               max={10}
               value={settings.visualCueIntensity}
               onChange={(e) =>
-                update('visualCueIntensity', Number(e.target.value))
+                updateSetting('visualCueIntensity', Number(e.target.value))
               }
             />
           </label>
         )}
 
-        <label className="setting-field setting-field--toggle">
-          <span className="setting-label">Sound Notifications</span>
+        <label
+          className={`${styles.settingField} ${styles.settingFieldToggle}`}
+        >
+          <span className={styles.settingLabel}>Sound Notifications</span>
           <input
             type="checkbox"
-            className="setting-toggle"
+            className={styles.settingToggle}
             checked={settings.enableSoundNotifications}
             onChange={(e) =>
-              update('enableSoundNotifications', e.target.checked)
+              updateSetting('enableSoundNotifications', e.target.checked)
             }
           />
         </label>
 
         {settings.enableSoundNotifications && (
           <>
-            <label className="setting-field">
-              <span className="setting-label">
+            <label className={styles.settingField}>
+              <span className={styles.settingLabel}>
                 Sound volume ({Math.round(settings.soundVolume * 100)}%)
               </span>
               <input
                 type="range"
-                className="setting-range"
+                className={styles.settingRange}
                 min={0}
                 max={1}
                 step={0.05}
                 value={settings.soundVolume}
                 onChange={(e) =>
-                  update('soundVolume', Number(e.target.value))
+                  updateSetting('soundVolume', Number(e.target.value))
                 }
               />
             </label>
-            <p className="setting-hint">
+            <p className={styles.settingHint}>
               Browsers cannot read your device volume. If sounds feel loud,
               lower this slider or your system volume.
             </p>
@@ -150,20 +162,20 @@ export function SettingsView() {
         )}
       </section>
 
-      <section className="settings-group">
-        <h3 className="settings-group-title">Appearance</h3>
+      <section className={styles.settingsGroup}>
+        <h3 className={styles.settingsGroupTitle}>Appearance</h3>
 
-        <label className="setting-field">
-          <span className="setting-label">Theme</span>
-          <div className="setting-radio-group">
+        <label className={styles.settingField}>
+          <span className={styles.settingLabel}>Theme</span>
+          <div className={styles.settingRadioGroup}>
             {(['dark', 'light', 'system'] as const).map((t) => (
-              <label key={t} className="setting-radio">
+              <label key={t} className={styles.settingRadio}>
                 <input
                   type="radio"
                   name="theme"
                   value={t}
                   checked={settings.theme === t}
-                  onChange={() => update('theme', t)}
+                  onChange={() => updateSetting('theme', t)}
                 />
                 <span>{t.charAt(0).toUpperCase() + t.slice(1)}</span>
               </label>
@@ -172,12 +184,17 @@ export function SettingsView() {
         </label>
       </section>
 
-      <div className="settings-actions">
-        <button className="btn btn--secondary" onClick={resetSettings}>
+      <div className={styles.settingsActions}>
+        <button
+          type="button"
+          className={`${btnStyles.btn} ${btnStyles.btnSecondary}`}
+          onClick={resetSettings}
+        >
           Reset to Defaults
         </button>
         <button
-          className="btn btn--danger"
+          type="button"
+          className={`${btnStyles.btn} ${btnStyles.btnDanger}`}
           onClick={() => setShowResetModal(true)}
         >
           Clear All Data
@@ -185,33 +202,18 @@ export function SettingsView() {
       </div>
 
       {showResetModal && (
-        <div className="modal-overlay" onClick={() => setShowResetModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <h3 className="modal-title">Clear All Data?</h3>
-            <p className="modal-body">
-              This will permanently delete all your session history and progress.
-              This cannot be undone.
-            </p>
-            <div className="modal-actions">
-              <button
-                className="btn btn--secondary"
-                onClick={() => setShowResetModal(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="btn btn--danger"
-                onClick={() => {
-                  clearSessions();
-                  resetSettings();
-                  setShowResetModal(false);
-                }}
-              >
-                Delete Everything
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Clear All Data?"
+          body="This will permanently delete all your session history and progress. This cannot be undone."
+          confirmLabel="Delete Everything"
+          confirmVariant="danger"
+          onCancel={() => setShowResetModal(false)}
+          onConfirm={() => {
+            clearSessions();
+            resetSettings();
+            setShowResetModal(false);
+          }}
+        />
       )}
     </div>
   );

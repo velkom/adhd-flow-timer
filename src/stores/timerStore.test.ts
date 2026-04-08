@@ -2,8 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { useTimerStore } from './timerStore';
 import { useSettingsStore } from './settingsStore';
 import { useSessionStore } from './sessionStore';
-import { DEFAULT_SETTINGS } from '../lib/types';
-import { createInitialState } from '../lib/timerEngine';
+import { DEFAULT_SETTINGS } from '@/lib/types';
+import { createInitialState } from '@/lib/timerEngine';
 
 beforeEach(() => {
   localStorage.clear();

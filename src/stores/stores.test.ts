@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useSettingsStore } from './settingsStore';
 import { useSessionStore } from './sessionStore';
-import { DEFAULT_SETTINGS } from '../lib/types';
-import { STORAGE_KEYS } from '../lib/storage';
-import type { Session } from '../lib/types';
+import { DEFAULT_SETTINGS } from '@/lib/types';
+import { STORAGE_KEYS } from '@/lib/storage';
+import type { Session } from '@/lib/types';
 
 beforeEach(() => {
   localStorage.clear();

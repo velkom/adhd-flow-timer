@@ -1,3 +1,5 @@
+import styles from './Timer.module.css';
+
 interface SessionTimelineProps {
   totalSlots: number;
   completedSessions: number;
@@ -11,7 +13,7 @@ export function SessionTimeline({
 }: SessionTimelineProps) {
   return (
     <div
-      className="session-timeline"
+      className={styles.sessionTimeline}
       role="group"
       aria-label={`${completedSessions} of ${totalSlots} sessions completed`}
     >
@@ -21,7 +23,7 @@ export function SessionTimeline({
         return (
           <div
             key={i}
-            className={`timeline-dot ${isCompleted ? 'timeline-dot--completed' : ''} ${isCurrent ? 'timeline-dot--current' : ''}`}
+            className={`${styles.timelineDot} ${isCompleted ? styles.timelineDotCompleted : ''} ${isCurrent ? styles.timelineDotCurrent : ''}`}
             aria-label={
               isCompleted
                 ? `Session ${i + 1}: completed`

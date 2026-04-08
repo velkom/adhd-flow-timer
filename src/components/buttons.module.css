@@ -1,0 +1,37 @@
+.btn {
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  font-size: var(--text-fluid-btn);
+  font-weight: var(--weight-medium);
+  text-align: center;
+  overflow-wrap: anywhere;
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.btnSecondary {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.btnSecondary:hover {
+  background: var(--color-bg-elevated);
+}
+
+.btnPrimary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.08);
+}
+
+.btnDanger {
+  background: var(--color-bg-tertiary);
+  color: var(--color-error);
+}
+
+.btnDanger:hover {
+  background: var(--color-error);
+  color: #fff;
+}

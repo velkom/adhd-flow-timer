@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import type { View } from '../App';
+import type { View } from '@/lib/types';
+import styles from './Layout.module.css';
 
 interface LayoutProps {
   activeView: View;
@@ -9,17 +10,17 @@ interface LayoutProps {
 
 export function Layout({ activeView, onViewChange, children }: LayoutProps) {
   return (
-    <div className="app-layout">
-      <main className="app-main">
-        <div className="app-content">{children}</div>
+    <div className={styles.appLayout}>
+      <main className={styles.appMain}>
+        <div className={styles.appContent}>{children}</div>
       </main>
-      <nav className="app-nav" role="tablist" aria-label="Main navigation">
+      <nav className={styles.appNav} role="tablist" aria-label="Main navigation">
         {(['timer', 'settings', 'analytics'] as const).map((view) => (
           <button
             key={view}
             role="tab"
             aria-selected={activeView === view}
-            className={`nav-tab ${activeView === view ? 'nav-tab--active' : ''}`}
+            className={`${styles.navTab} ${activeView === view ? styles.navTabActive : ''}`}
             onClick={() => onViewChange(view)}
           >
             {view.charAt(0).toUpperCase() + view.slice(1)}

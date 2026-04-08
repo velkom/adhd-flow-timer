@@ -1,0 +1,24 @@
+# ADHD Flow Timer — agent context
+
+## Stack
+- React 19 + TypeScript (strict) + Vite 8
+- Zustand for global state (`src/stores/`)
+- Chart.js + react-chartjs-2 for analytics
+- CSS: design tokens in `src/styles/tokens.css`, resets/base in `global.css`. Feature UI uses **CSS Modules** next to components (e.g. `Timer.module.css`, `Layout.module.css`, `buttons.module.css`, `viewTitle.module.css`).
+- Icons: `@iconify/react` + `@iconify-icons/mingcute`
+- Tests: Vitest + Testing Library; `npm test`, `npm run typecheck`, `npm run lint`
+
+## Imports
+- Use path alias `@/` → `src/` (e.g. `@/lib/types`, `@/stores/timerStore`). Avoid deep `../../` chains.
+
+## Architecture
+- **Domain logic** lives in `src/lib/` (`timerEngine`, `storage`, `formatters`, `sessionCalculations`, `sounds`, `types`). Keep it pure where possible; side effects belong in stores or `main.tsx`.
+- **Stores**: `timerStore` orchestrates intervals, persistence, and `timerReducer`; `settingsStore` / `sessionStore` are smaller slices.
+- **Navigation**: view state in `App.tsx` (`timer` | `settings` | `analytics`); no react-router.
+- **Persistence**: `localStorage` via `src/lib/storage.ts`; `migrateLegacyData()` runs once at startup in `main.tsx`.
+- **Deploy**: GitHub Pages; `vite.config.ts` sets `base: '/adhd-flow-timer/'`.
+
+## Conventions
+- Prefer exhaustive handling for string unions (timer phase/status).
+- No `console.log` in production paths; run lint/typecheck before claiming done.
+- After structural changes, update tests in `*.test.ts` alongside `lib/` and `stores/`.
