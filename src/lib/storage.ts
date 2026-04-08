@@ -1,10 +1,19 @@
 import { DEFAULT_SETTINGS } from './types';
-import type { Session, TimerSettings } from './types';
+import type { Session, TimerSettings, TimerState } from './types';
 
 export const STORAGE_KEYS = {
   sessions: 'ft_sessions',
   settings: 'ft_settings',
+  timer: 'ft_timer',
 } as const;
+
+/** Snapshot of live timer for reload persistence (24h staleness enforced in timerStore). */
+export interface PersistedTimerState {
+  timer: TimerState;
+  startedAt: number | null;
+  pausedElapsed: number;
+  savedAt: number;
+}
 
 const LEGACY_KEYS = {
   flowTimerSessionData: 'flowTimerSessionData',
@@ -39,6 +48,34 @@ export function loadSettings(): TimerSettings {
 
 export function saveSettings(settings: TimerSettings): void {
   localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings));
+}
+
+export function saveTimerState(state: PersistedTimerState): void {
+  localStorage.setItem(STORAGE_KEYS.timer, JSON.stringify(state));
+}
+
+export function loadTimerState(): PersistedTimerState | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.timer);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedTimerState;
+    if (
+      !parsed ||
+      typeof parsed.savedAt !== 'number' ||
+      typeof parsed.pausedElapsed !== 'number' ||
+      parsed.timer == null ||
+      typeof parsed.timer !== 'object'
+    ) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function clearTimerState(): void {
+  localStorage.removeItem(STORAGE_KEYS.timer);
 }
 
 interface LegacySession {
