@@ -5,6 +5,7 @@ import {
   formatTimerDisplay,
   formatOvertimePastDisplay,
   formatOvertimePastAriaLabel,
+  formatTotalFocusLabel,
 } from '../../lib/formatters';
 import type { TimerPhase, TimerStatus } from '../../lib/types';
 
@@ -12,6 +13,7 @@ const TRIPLE_CLICK_WINDOW_MS = 500;
 
 interface TimerDisplayProps {
   remainingSeconds: number;
+  elapsedSeconds: number;
   phase: TimerPhase;
   status: TimerStatus;
   debugActive?: boolean;
@@ -44,6 +46,7 @@ function statusLabel(status: TimerStatus): string {
 
 export function TimerDisplay({
   remainingSeconds,
+  elapsedSeconds,
   phase,
   status,
   debugActive,
@@ -99,6 +102,11 @@ export function TimerDisplay({
         {phaseLabel(phase, isFocusOvertime)}
       </span>
       <span className="timer-status-label">{statusLabel(status)}</span>
+      {isFocusOvertime && (
+        <span className="timer-total-label">
+          {formatTotalFocusLabel(elapsedSeconds)}
+        </span>
+      )}
     </div>
   );
 }

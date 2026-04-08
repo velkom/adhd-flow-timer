@@ -137,6 +137,7 @@ export function TimerView() {
           />
           <TimerDisplay
             remainingSeconds={timer.remainingSeconds}
+            elapsedSeconds={timer.elapsedSeconds}
             phase={timer.phase}
             status={timer.status}
             debugActive={debugOpen}

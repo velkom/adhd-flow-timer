@@ -35,6 +35,23 @@ export function formatOvertimePastAriaLabel(pastSeconds: number): string {
   return `${parts.join(' and ')} past planned focus`;
 }
 
+/** Friendly total focus time label for flow-state subtitle (planned + overtime). */
+export function formatTotalFocusLabel(elapsedSeconds: number): string {
+  const totalMinutes = Math.max(0, Math.floor(elapsedSeconds / 60));
+  if (totalMinutes === 0) {
+    return 'Less than a minute in the zone';
+  }
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  if (hours === 0) {
+    return `${totalMinutes} min in the zone`;
+  }
+  if (mins === 0) {
+    return `${hours}h in the zone`;
+  }
+  return `${hours}h ${mins}m in the zone`;
+}
+
 export function formatDuration(totalSeconds: number): string {
   if (totalSeconds === 0) return '0s';
   const m = Math.floor(totalSeconds / 60);

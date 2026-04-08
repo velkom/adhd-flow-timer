@@ -198,6 +198,14 @@
   color: var(--color-text-tertiary);
 }
 
+.timer-total-label {
+  margin-top: var(--space-1);
+  max-width: 90%;
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--color-text-secondary);
+}
+
 .timer-flow-badge {
   margin-top: var(--space-1);
   padding: var(--space-1) var(--space-3);

@@ -4,6 +4,7 @@ import {
   formatTimerDisplay,
   formatOvertimePastDisplay,
   formatOvertimePastAriaLabel,
+  formatTotalFocusLabel,
   formatDuration,
   formatSessionLabel,
 } from './formatters';
@@ -67,6 +68,27 @@ describe('formatOvertimePastAriaLabel', () => {
     expect(formatOvertimePastAriaLabel(65)).toBe('1 minute and 5 seconds past planned focus');
     expect(formatOvertimePastAriaLabel(60)).toBe('1 minute past planned focus');
     expect(formatOvertimePastAriaLabel(1)).toBe('1 second past planned focus');
+  });
+});
+
+describe('formatTotalFocusLabel', () => {
+  it('handles sub-minute totals', () => {
+    expect(formatTotalFocusLabel(0)).toBe('Less than a minute in the zone');
+    expect(formatTotalFocusLabel(45)).toBe('Less than a minute in the zone');
+  });
+
+  it('formats minutes under one hour', () => {
+    expect(formatTotalFocusLabel(60)).toBe('1 min in the zone');
+    expect(formatTotalFocusLabel(28 * 60)).toBe('28 min in the zone');
+  });
+
+  it('formats hours and remainder', () => {
+    expect(formatTotalFocusLabel(60 * 60)).toBe('1h in the zone');
+    expect(formatTotalFocusLabel(60 * 60 + 12 * 60)).toBe('1h 12m in the zone');
+  });
+
+  it('clamps negative elapsed to zero minutes', () => {
+    expect(formatTotalFocusLabel(-10)).toBe('Less than a minute in the zone');
   });
 });
 
