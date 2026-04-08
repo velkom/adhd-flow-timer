@@ -3,11 +3,13 @@ import { TimerView } from '@/components/Timer/TimerView';
 import { SettingsView } from '@/components/Settings/SettingsView';
 import { AnalyticsView } from '@/components/Analytics/AnalyticsView';
 import { Layout } from '@/components/Layout';
+import { useDynamicFavicon } from '@/hooks/useDynamicFavicon';
 import { useThemeSync } from '@/hooks/useThemeSync';
 import type { View } from '@/lib/types';
 
 export function App() {
   useThemeSync();
+  useDynamicFavicon();
   const [view, setView] = useState<View>('timer');
 
   useEffect(() => {
