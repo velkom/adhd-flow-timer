@@ -82,3 +82,53 @@
 .navTabActive:hover {
   color: var(--color-on-accent);
 }
+
+/* ---------------------------------------------------------------------- */
+/* Short landscape — phones sideways: free vertical space, keep nav usable */
+/* ---------------------------------------------------------------------- */
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .appLayout {
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 100dvh;
+  }
+
+  .appMain {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .appContent {
+    padding-top: max(var(--space-2), env(safe-area-inset-top, 0px));
+    padding-bottom: max(var(--space-2), env(safe-area-inset-bottom, 0px));
+    padding-inline-start: max(
+      var(--layout-padding-x),
+      env(safe-area-inset-left, 0px)
+    );
+    padding-inline-end: var(--space-2);
+  }
+
+  .appNav {
+    flex-direction: column;
+    justify-content: center;
+    align-self: stretch;
+    width: max-content;
+    max-width: none;
+    margin-inline: 0;
+    margin-inline-end: max(var(--space-2), env(safe-area-inset-right, 0px));
+    margin-top: max(var(--space-2), env(safe-area-inset-top, 0px));
+    margin-bottom: max(var(--space-2), env(safe-area-inset-bottom, 0px));
+    position: static;
+    bottom: auto;
+    gap: var(--space-1);
+    padding: var(--space-2);
+  }
+
+  .navTab {
+    min-height: 36px;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-2xs);
+  }
+}

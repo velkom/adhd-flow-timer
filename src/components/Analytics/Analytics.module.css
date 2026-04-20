@@ -238,3 +238,35 @@
     flex: 1;
   }
 }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .analyticsView {
+    padding-bottom: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .statCard {
+    padding: var(--space-4);
+  }
+
+  .chartCard {
+    min-height: 200px;
+    padding: var(--space-4);
+  }
+
+  .chartCardCanvas {
+    min-height: 140px;
+  }
+
+  .insightsCard {
+    padding: var(--space-4);
+  }
+
+  .emptyState {
+    padding-block: var(--space-4);
+  }
+
+  .analyticsEmpty {
+    padding: var(--space-5) var(--space-4);
+  }
+}

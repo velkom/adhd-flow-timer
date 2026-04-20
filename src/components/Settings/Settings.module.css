@@ -210,3 +210,19 @@
     flex-direction: row;
   }
 }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .settingsView {
+    padding-bottom: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .settingsGroup {
+    padding: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .settingsActions {
+    padding-block: var(--space-2);
+  }
+}

@@ -62,6 +62,10 @@
    * ====================================================================== */
   --layout-content-max-width: 600px;
   --layout-padding-x: clamp(var(--space-3), 4vw, var(--space-6));
+  /*
+   * Short-landscape tuning (phones sideways): use max-height: 560px + orientation: landscape
+   * in component CSS — lightningcss cannot minify var() inside @media.
+   */
 
   /* ======================================================================
    * Radii — chunky rounded "watch face" cards

@@ -24,3 +24,9 @@
   background: var(--color-rail);
   align-self: center;
 }
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .viewTitle {
+    padding: var(--space-3) 0 var(--space-2);
+  }
+}
