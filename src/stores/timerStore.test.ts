@@ -4,6 +4,8 @@ import { useSettingsStore } from './settingsStore';
 import { useSessionStore } from './sessionStore';
 import { DEFAULT_SETTINGS } from '@/lib/types';
 import { createInitialState } from '@/lib/timerEngine';
+import { STORAGE_KEYS } from '@/lib/storage';
+import { persistTimerSlice } from './timerPersistence';
 
 beforeEach(() => {
   localStorage.clear();
@@ -94,5 +96,28 @@ describe('timerStore break recording', () => {
     const sessions = useSessionStore.getState().sessions;
     expect(sessions).toHaveLength(2);
     expect(sessions[1].type).toBe('break');
+  });
+});
+
+describe('resetStoredTimer', () => {
+  it('zeros cycle counters and overwrites persisted timer snapshot', () => {
+    const timer = {
+      ...createInitialState(DEFAULT_SETTINGS),
+      completedSessions: 3,
+      sessionIndex: 3,
+    };
+    useTimerStore.setState({ timer });
+    persistTimerSlice({ timer, startedAt: null, pausedElapsed: 0 });
+
+    const rawBefore = localStorage.getItem(STORAGE_KEYS.timer);
+    expect(rawBefore).toBeTruthy();
+    expect(JSON.parse(rawBefore!).timer.completedSessions).toBe(3);
+
+    useTimerStore.getState().resetStoredTimer();
+
+    expect(useTimerStore.getState().timer.completedSessions).toBe(0);
+    expect(useTimerStore.getState().timer.sessionIndex).toBe(0);
+    const rawAfter = localStorage.getItem(STORAGE_KEYS.timer);
+    expect(JSON.parse(rawAfter!).timer.completedSessions).toBe(0);
   });
 });

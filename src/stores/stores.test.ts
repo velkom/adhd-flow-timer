@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useSettingsStore } from './settingsStore';
 import { useSessionStore } from './sessionStore';
+import { useTimerStore } from './timerStore';
+import { clearAllUserData } from './clearAllUserData';
+import { createInitialState } from '@/lib/timerEngine';
 import { DEFAULT_SETTINGS } from '@/lib/types';
 import { STORAGE_KEYS } from '@/lib/storage';
 import type { Session } from '@/lib/types';
@@ -66,5 +69,48 @@ describe('sessionStore', () => {
     const stats = useSessionStore.getState().getStats('day');
     expect(stats.completedSessions).toBe(1);
     expect(stats.totalFocusMinutes).toBe(25);
+  });
+});
+
+describe('clearAllUserData', () => {
+  beforeEach(() => {
+    useTimerStore.setState({
+      timer: createInitialState(DEFAULT_SETTINGS),
+      startedAt: null,
+      pausedElapsed: 0,
+      intervalId: null,
+      debugSpeedMultiplier: 1,
+    });
+  });
+
+  it('clears sessions, restores default settings, and resets timer cycle', () => {
+    const session: Session = {
+      id: 'clear-test-1',
+      type: 'focus',
+      startedAt: new Date().toISOString(),
+      endedAt: new Date().toISOString(),
+      plannedDuration: 60,
+      actualDuration: 60,
+      flowStateDuration: 0,
+      completed: true,
+    };
+    useSessionStore.getState().addSession(session);
+    useSettingsStore.getState().updateSettings({ focusDuration: 5 * 60 });
+    useTimerStore.setState({
+      timer: {
+        ...createInitialState(
+          useSettingsStore.getState().settings,
+        ),
+        completedSessions: 2,
+        sessionIndex: 2,
+      },
+    });
+
+    clearAllUserData();
+
+    expect(useSessionStore.getState().sessions).toHaveLength(0);
+    expect(useSettingsStore.getState().settings.focusDuration).toBe(25 * 60);
+    expect(useTimerStore.getState().timer.completedSessions).toBe(0);
+    expect(localStorage.getItem(STORAGE_KEYS.sessions)).toBe('[]');
   });
 });

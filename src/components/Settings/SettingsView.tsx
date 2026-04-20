@@ -1,16 +1,11 @@
 import { useSettingsStore } from '@/stores/settingsStore';
-import { useSessionStore } from '@/stores/sessionStore';
-import { useState } from 'react';
 import type { TimerSettings } from '@/lib/types';
-import { ConfirmModal } from '@/components/ConfirmModal';
 import viewTitleStyles from '@/components/viewTitle.module.css';
-import btnStyles from '@/components/buttons.module.css';
 import styles from './Settings.module.css';
+import { SettingsDataActions } from './SettingsDataActions';
 
 export function SettingsView() {
-  const { settings, updateSettings, resetSettings } = useSettingsStore();
-  const clearSessions = useSessionStore((s) => s.clearSessions);
-  const [showResetModal, setShowResetModal] = useState(false);
+  const { settings, updateSettings } = useSettingsStore();
 
   const updateSetting = <K extends keyof TimerSettings>(
     key: K,
@@ -184,37 +179,7 @@ export function SettingsView() {
         </label>
       </section>
 
-      <div className={styles.settingsActions}>
-        <button
-          type="button"
-          className={`${btnStyles.btn} ${btnStyles.btnSecondary}`}
-          onClick={resetSettings}
-        >
-          Reset to Defaults
-        </button>
-        <button
-          type="button"
-          className={`${btnStyles.btn} ${btnStyles.btnDanger}`}
-          onClick={() => setShowResetModal(true)}
-        >
-          Clear All Data
-        </button>
-      </div>
-
-      {showResetModal && (
-        <ConfirmModal
-          title="Clear All Data?"
-          body="This will permanently delete all your session history and progress. This cannot be undone."
-          confirmLabel="Delete Everything"
-          confirmVariant="danger"
-          onCancel={() => setShowResetModal(false)}
-          onConfirm={() => {
-            clearSessions();
-            resetSettings();
-            setShowResetModal(false);
-          }}
-        />
-      )}
+      <SettingsDataActions />
     </div>
   );
 }

@@ -1,9 +1,10 @@
 import { create } from 'zustand';
-import { timerReducer } from '@/lib/timerEngine';
+import { createInitialState, timerReducer } from '@/lib/timerEngine';
 import { useSettingsStore } from './settingsStore';
 import {
   computeRestoredTimerState,
   persistTimerSnapshot,
+  persistTimerSlice,
 } from './timerPersistence';
 import { recordSession, recordBreakSessionIfEnded } from './sessionRecorder';
 import { startTickInterval } from './timerTick';
@@ -125,6 +126,21 @@ export const useTimerStore = create<TimerStoreState>((set, get) => {
         pausedElapsed: 0,
       });
       persistTimerSnapshot(get);
+    },
+
+    resetStoredTimer: () => {
+      const { intervalId } = get();
+      if (intervalId) clearInterval(intervalId);
+      const settings = getSettings();
+      const timer = createInitialState(settings);
+      set({
+        timer,
+        intervalId: null,
+        startedAt: null,
+        pausedElapsed: 0,
+        debugSpeedMultiplier: 1,
+      });
+      persistTimerSlice({ timer, startedAt: null, pausedElapsed: 0 });
     },
 
     setPreset: (seconds) => {

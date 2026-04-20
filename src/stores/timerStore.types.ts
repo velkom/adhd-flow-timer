@@ -18,6 +18,8 @@ export interface TimerStoreState {
   resume: () => void;
   skip: () => void;
   reset: () => void;
+  /** Full reset: idle focus, cycle counters zeroed, persisted timer snapshot updated. */
+  resetStoredTimer: () => void;
   setPreset: (seconds: number) => void;
   cleanup: () => void;
   setDebugSpeed: (multiplier: number) => void;
