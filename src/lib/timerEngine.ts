@@ -63,9 +63,7 @@ export function timerReducer(
     case 'RESUME': {
       if (state.status !== 'paused') return state;
       const nextStatus =
-        state.phase === 'focus' && state.remainingSeconds <= 0
-          ? 'flowState'
-          : 'running';
+        state.remainingSeconds <= 0 ? 'flowState' : 'running';
       return { ...state, status: nextStatus };
     }
 
@@ -74,37 +72,16 @@ export function timerReducer(
 
       const elapsed = action.elapsed;
       const phaseDuration = getPhaseDuration(state.phase, settings);
-
-      if (state.phase === 'focus') {
-        const remaining = phaseDuration - elapsed;
-        if (remaining <= 0) {
-          const flow = elapsed - phaseDuration;
-          return {
-            ...state,
-            status: 'flowState',
-            remainingSeconds: -flow,
-            elapsedSeconds: elapsed,
-            flowSeconds: flow,
-          };
-        }
-        return {
-          ...state,
-          remainingSeconds: remaining,
-          elapsedSeconds: elapsed,
-        };
-      }
-
-      // Break phases: auto-complete when time runs out
       const remaining = phaseDuration - elapsed;
+
       if (remaining <= 0) {
-        const nextPhase = 'focus';
+        const flow = elapsed - phaseDuration;
         return {
           ...state,
-          phase: nextPhase,
-          status: 'idle',
-          remainingSeconds: settings.focusDuration,
-          elapsedSeconds: 0,
-          flowSeconds: 0,
+          status: 'flowState',
+          remainingSeconds: -flow,
+          elapsedSeconds: elapsed,
+          flowSeconds: flow,
         };
       }
       return {

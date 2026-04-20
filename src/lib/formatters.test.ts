@@ -5,6 +5,7 @@ import {
   formatOvertimePastDisplay,
   formatOvertimePastAriaLabel,
   formatTotalFocusLabel,
+  formatTotalBreakLabel,
   formatDuration,
   formatSessionLabel,
 } from './formatters';
@@ -69,6 +70,11 @@ describe('formatOvertimePastAriaLabel', () => {
     expect(formatOvertimePastAriaLabel(60)).toBe('1 minute past planned focus');
     expect(formatOvertimePastAriaLabel(1)).toBe('1 second past planned focus');
   });
+
+  it('describes time past planned break', () => {
+    expect(formatOvertimePastAriaLabel(0, 'break')).toBe('0 seconds past planned break');
+    expect(formatOvertimePastAriaLabel(1, 'break')).toBe('1 second past planned break');
+  });
 });
 
 describe('formatTotalFocusLabel', () => {
@@ -89,6 +95,23 @@ describe('formatTotalFocusLabel', () => {
 
   it('clamps negative elapsed to zero minutes', () => {
     expect(formatTotalFocusLabel(-10)).toBe('Less than a minute in the zone');
+  });
+});
+
+describe('formatTotalBreakLabel', () => {
+  it('handles sub-minute totals', () => {
+    expect(formatTotalBreakLabel(0)).toBe('Less than a minute on your break');
+    expect(formatTotalBreakLabel(45)).toBe('Less than a minute on your break');
+  });
+
+  it('formats minutes under one hour', () => {
+    expect(formatTotalBreakLabel(60)).toBe('1 min on your break');
+    expect(formatTotalBreakLabel(5 * 60)).toBe('5 min on your break');
+  });
+
+  it('formats hours and remainder', () => {
+    expect(formatTotalBreakLabel(60 * 60)).toBe('1h on your break');
+    expect(formatTotalBreakLabel(60 * 60 + 12 * 60)).toBe('1h 12m on your break');
   });
 });
 

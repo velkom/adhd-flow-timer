@@ -60,7 +60,7 @@ export function recordBreakSessionIfEnded(
     endedAt: now.toISOString(),
     plannedDuration,
     actualDuration: elapsed,
-    flowStateDuration: 0,
+    flowStateDuration: prevTimer.flowSeconds,
     completed: true,
   };
 

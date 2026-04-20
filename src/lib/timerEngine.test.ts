@@ -83,6 +83,20 @@ describe('RESUME action', () => {
     expect(state.remainingSeconds).toBe(-251);
     expect(state.phase).toBe('focus');
   });
+
+  it('resumes to flowState when paused in break overtime', () => {
+    const state = stateAfter(
+      { type: 'START' },
+      { type: 'SKIP' },
+      { type: 'START' },
+      { type: 'TICK', elapsed: 5 * 60 + 120 },
+      { type: 'PAUSE' },
+      { type: 'RESUME' },
+    );
+    expect(state.status).toBe('flowState');
+    expect(state.remainingSeconds).toBe(-120);
+    expect(state.phase).toBe('shortBreak');
+  });
 });
 
 describe('TICK action', () => {
@@ -105,17 +119,17 @@ describe('TICK action', () => {
     expect(state.remainingSeconds).toBe(-5);
   });
 
-  it('does not enter flow state during break', () => {
+  it('enters flow state when break time runs out (same as focus)', () => {
     const s = settings;
     let state = createInitialState(s);
     state = timerReducer(state, { type: 'START' }, s);
     state = timerReducer(state, { type: 'SKIP' }, s);
-    // Now in break, start and tick past break
     state = timerReducer(state, { type: 'START' }, s);
     state = timerReducer(state, { type: 'TICK', elapsed: 5 * 60 + 1 }, s);
-    // Break should auto-complete, go to next focus
-    expect(state.phase).toBe('focus');
-    expect(state.status).toBe('idle');
+    expect(state.phase).toBe('shortBreak');
+    expect(state.status).toBe('flowState');
+    expect(state.flowSeconds).toBe(1);
+    expect(state.remainingSeconds).toBe(-1);
   });
 });
 

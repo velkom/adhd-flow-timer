@@ -29,7 +29,7 @@ afterEach(() => {
 });
 
 describe('timerStore break recording', () => {
-  it('records a break session when a running break auto-completes via TICK', () => {
+  it('does not record on TICK past planned break; skip records overtime like focus', () => {
     const shortSec = DEFAULT_SETTINGS.shortBreakDuration;
     useTimerStore.setState({
       timer: {
@@ -43,13 +43,22 @@ describe('timerStore break recording', () => {
       },
     });
 
-    useTimerStore.getState().dispatch({ type: 'TICK', elapsed: shortSec });
+    useTimerStore.getState().dispatch({ type: 'TICK', elapsed: shortSec + 45 });
+
+    expect(useSessionStore.getState().sessions).toHaveLength(0);
+    const mid = useTimerStore.getState().timer;
+    expect(mid.phase).toBe('shortBreak');
+    expect(mid.status).toBe('flowState');
+    expect(mid.flowSeconds).toBe(45);
+
+    useTimerStore.getState().skip();
 
     const sessions = useSessionStore.getState().sessions;
     expect(sessions).toHaveLength(1);
     expect(sessions[0].type).toBe('break');
-    expect(sessions[0].actualDuration).toBe(shortSec);
+    expect(sessions[0].actualDuration).toBe(shortSec + 45);
     expect(sessions[0].plannedDuration).toBe(shortSec);
+    expect(sessions[0].flowStateDuration).toBe(45);
   });
 
   it('records a break session when skipping an in-progress break', () => {

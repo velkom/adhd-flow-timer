@@ -13,7 +13,7 @@ export interface TimerState {
   sessionIndex: number;
   /** Total completed focus sessions */
   completedSessions: number;
-  /** Seconds spent in flow state for the current session */
+  /** Seconds past the planned block (focus or break) while in flow state */
   flowSeconds: number;
 }
 

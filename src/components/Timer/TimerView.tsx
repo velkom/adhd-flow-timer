@@ -49,11 +49,11 @@ export function TimerView() {
       return;
     }
 
-    // Break auto-completed → back to idle focus
-    const wasBreakRunning =
-      oldStatus === 'running' &&
+    // Break ended (skip / reset path) → back to idle focus
+    const wasBreakActive =
+      (oldStatus === 'running' || oldStatus === 'flowState') &&
       (oldPhase === 'shortBreak' || oldPhase === 'longBreak');
-    if (wasBreakRunning && timer.status === 'idle' && timer.phase === 'focus') {
+    if (wasBreakActive && timer.status === 'idle' && timer.phase === 'focus') {
       playSound('breakEnd');
       return;
     }

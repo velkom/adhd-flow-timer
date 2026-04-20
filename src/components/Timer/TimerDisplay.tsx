@@ -1,13 +1,15 @@
 import { useRef, useCallback } from 'react';
 import { Icon } from '@iconify/react';
 import bugLine from '@iconify-icons/mingcute/bug-line';
-import {
-  formatTimerDisplay,
-  formatOvertimePastDisplay,
-  formatOvertimePastAriaLabel,
-  formatTotalFocusLabel,
-} from '@/lib/formatters';
 import type { TimerPhase, TimerStatus } from '@/lib/types';
+import {
+  isOvertimeDisplay,
+  overtimeTotalSubtitle,
+  phaseLabel,
+  statusLabel,
+  timerDigitsAriaLabel,
+  timerDigitsText,
+} from './timerDisplayLabels';
 import styles from './Timer.module.css';
 
 const TRIPLE_CLICK_WINDOW_MS = 500;
@@ -19,30 +21,6 @@ interface TimerDisplayProps {
   status: TimerStatus;
   debugActive?: boolean;
   onDebugToggle?: () => void;
-}
-
-function phaseLabel(phase: TimerPhase, isFocusOvertime: boolean): string {
-  if (isFocusOvertime) return 'Past planned focus';
-  switch (phase) {
-    case 'focus':
-      return 'Focus';
-    case 'shortBreak':
-      return 'Short Break';
-    case 'longBreak':
-      return 'Long Break';
-  }
-}
-
-function statusLabel(status: TimerStatus): string {
-  switch (status) {
-    case 'idle':
-      return 'Ready';
-    case 'running':
-    case 'flowState':
-      return 'Focusing';
-    case 'paused':
-      return 'Paused';
-  }
 }
 
 export function TimerDisplay({
@@ -75,24 +53,24 @@ export function TimerDisplay({
     }, TRIPLE_CLICK_WINDOW_MS);
   }, [onDebugToggle]);
 
-  const isFocusOvertime =
-    phase === 'focus' && remainingSeconds <= 0 && status !== 'idle';
+  const isOvertime = isOvertimeDisplay(remainingSeconds, status);
   const pastSeconds = Math.floor(Math.abs(remainingSeconds));
+  const digitsText = timerDigitsText(isOvertime, pastSeconds, remainingSeconds);
+  const digitsAria = timerDigitsAriaLabel(
+    isOvertime,
+    pastSeconds,
+    phase,
+    remainingSeconds,
+  );
 
   return (
     <div className={styles.timerDisplay} role="timer" aria-live="polite">
       <span
         className={styles.timerDigits}
-        aria-label={
-          isFocusOvertime
-            ? formatOvertimePastAriaLabel(pastSeconds)
-            : `${Math.abs(remainingSeconds)} seconds remaining`
-        }
+        aria-label={digitsAria}
         onClick={handleDigitsClick}
       >
-        {isFocusOvertime
-          ? formatOvertimePastDisplay(pastSeconds)
-          : formatTimerDisplay(remainingSeconds)}
+        {digitsText}
         {debugActive && (
           <span className={styles.debugIndicator} aria-label="Debug mode active">
             <Icon icon={bugLine} width={14} />
@@ -100,12 +78,12 @@ export function TimerDisplay({
         )}
       </span>
       <span className={styles.timerPhaseLabel}>
-        {phaseLabel(phase, isFocusOvertime)}
+        {phaseLabel(phase, isOvertime)}
       </span>
-      <span className={styles.timerStatusLabel}>{statusLabel(status)}</span>
-      {isFocusOvertime && (
+      <span className={styles.timerStatusLabel}>{statusLabel(status, phase)}</span>
+      {isOvertime && (
         <span className={styles.timerTotalLabel}>
-          {formatTotalFocusLabel(elapsedSeconds)}
+          {overtimeTotalSubtitle(phase, elapsedSeconds)}
         </span>
       )}
     </div>

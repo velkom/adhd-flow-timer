@@ -24,15 +24,19 @@ export function formatOvertimePastDisplay(pastSeconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-export function formatOvertimePastAriaLabel(pastSeconds: number): string {
+export function formatOvertimePastAriaLabel(
+  pastSeconds: number,
+  variant: 'focus' | 'break' = 'focus',
+): string {
+  const planned = variant === 'focus' ? 'planned focus' : 'planned break';
   const sec = Math.floor(Math.abs(pastSeconds));
   const m = Math.floor(sec / 60);
   const s = sec % 60;
-  if (m === 0 && s === 0) return '0 seconds past planned focus';
+  if (m === 0 && s === 0) return `0 seconds past ${planned}`;
   const parts: string[] = [];
   if (m > 0) parts.push(`${m} minute${m === 1 ? '' : 's'}`);
   if (s > 0) parts.push(`${s} second${s === 1 ? '' : 's'}`);
-  return `${parts.join(' and ')} past planned focus`;
+  return `${parts.join(' and ')} past ${planned}`;
 }
 
 /** Friendly total focus time label for flow-state subtitle (planned + overtime). */
@@ -50,6 +54,23 @@ export function formatTotalFocusLabel(elapsedSeconds: number): string {
     return `${hours}h in the zone`;
   }
   return `${hours}h ${mins}m in the zone`;
+}
+
+/** Subtitle during break overtime (planned rest + extra). */
+export function formatTotalBreakLabel(elapsedSeconds: number): string {
+  const totalMinutes = Math.max(0, Math.floor(elapsedSeconds / 60));
+  if (totalMinutes === 0) {
+    return 'Less than a minute on your break';
+  }
+  const hours = Math.floor(totalMinutes / 60);
+  const mins = totalMinutes % 60;
+  if (hours === 0) {
+    return `${totalMinutes} min on your break`;
+  }
+  if (mins === 0) {
+    return `${hours}h on your break`;
+  }
+  return `${hours}h ${mins}m on your break`;
 }
 
 export function formatDuration(totalSeconds: number): string {
