@@ -48,28 +48,22 @@ export function ControlButtons({
 
   const skipLabel = phase === 'focus' ? 'Skip to Break' : 'Skip to Focus';
 
+  const primaryText = isIdle
+    ? 'Start'
+    : isActive
+      ? 'Pause'
+      : 'Resume';
+
   return (
     <div className={styles.controlButtons}>
-      <div
-        className={`${styles.controlButtonsRow} ${styles.controlButtonsRowSecondary}`}
+      <button
+        className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
+        onClick={onReset}
+        disabled={isIdle}
+        aria-label="Reset"
       >
-        <button
-          className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
-          onClick={onReset}
-          disabled={isIdle}
-          aria-label="Reset"
-        >
-          <Icon icon={refreshAnticlockwise1Line} width={22} />
-        </button>
-        <button
-          className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
-          onClick={onSkip}
-          disabled={isIdle}
-          aria-label={skipLabel}
-        >
-          <Icon icon={skipForwardFill} width={22} />
-        </button>
-      </div>
+        <Icon icon={refreshAnticlockwise1Line} width={20} />
+      </button>
 
       <button
         type="button"
@@ -81,14 +75,24 @@ export function ControlButtons({
           <span
             className={`${styles.controlBtnIconLayer} ${showPauseIcon ? '' : styles.controlBtnIconLayerVisible}`}
           >
-            <Icon icon={playFill} width={28} />
+            <Icon icon={playFill} width={22} />
           </span>
           <span
             className={`${styles.controlBtnIconLayer} ${showPauseIcon ? styles.controlBtnIconLayerVisible : ''}`}
           >
-            <Icon icon={pauseFill} width={28} />
+            <Icon icon={pauseFill} width={22} />
           </span>
         </span>
+        <span>{primaryText}</span>
+      </button>
+
+      <button
+        className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
+        onClick={onSkip}
+        disabled={isIdle}
+        aria-label={skipLabel}
+      >
+        <Icon icon={skipForwardFill} width={20} />
       </button>
 
       {(isActive || isPaused) && (
@@ -98,7 +102,7 @@ export function ControlButtons({
           onClick={onFinishRequest}
           aria-label="Finish session"
         >
-          <Icon icon={stopFill} width={20} />
+          <Icon icon={stopFill} width={16} />
           <span>Finish</span>
         </button>
       )}

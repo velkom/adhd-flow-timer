@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTimerStore } from '@/stores/timerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { ProgressRing } from './ProgressRing';
+import { ProgressBar } from './ProgressBar';
 import { TimerDisplay } from './TimerDisplay';
 import { SessionTimeline } from './SessionTimeline';
 import { ControlButtons } from './ControlButtons';
 import { DebugPanel } from './DebugPanel';
 import { ConfirmModal } from '@/components/ConfirmModal';
-import viewTitleStyles from '@/components/viewTitle.module.css';
 import styles from './Timer.module.css';
 import { playSound, preloadSounds } from '@/lib/sounds';
 import type { TimerPhase, TimerStatus } from '@/lib/types';
@@ -127,30 +126,41 @@ export function TimerView() {
         ? timer.elapsedSeconds / phaseDuration
         : 0;
 
+  const todayLabel = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    day: 'numeric',
+  });
+
+  const cycleIndex =
+    (timer.completedSessions % settings.sessionsBeforeLongBreak) + 1;
+
   return (
     <div className={styles.timerView}>
-      <h2
-        className={`${viewTitleStyles.viewTitle} ${styles.viewTitleStretch}`}
-      >
-        Focus
-      </h2>
+      <header className={styles.watchHeader}>
+        <span className={styles.watchDate}>{todayLabel}</span>
+        <span className={styles.watchMeta}>
+          <span className={styles.metaDot} aria-hidden="true" />
+          Session {cycleIndex}/{settings.sessionsBeforeLongBreak}
+        </span>
+      </header>
 
-      <div className={styles.timerViewBody}>
-        <div className={styles.timerRingContainer}>
-          <ProgressRing
-            progress={progress}
-            phase={timer.phase}
-            status={timer.status}
-          />
-          <TimerDisplay
-            remainingSeconds={timer.remainingSeconds}
-            elapsedSeconds={timer.elapsedSeconds}
-            phase={timer.phase}
-            status={timer.status}
-            debugActive={debugOpen}
-            onDebugToggle={toggleDebug}
-          />
-        </div>
+      <div className={styles.watchCard}>
+        <TimerDisplay
+          remainingSeconds={timer.remainingSeconds}
+          elapsedSeconds={timer.elapsedSeconds}
+          phase={timer.phase}
+          status={timer.status}
+          debugActive={debugOpen}
+          onDebugToggle={toggleDebug}
+        />
+
+        <ProgressBar
+          progress={progress}
+          phase={timer.phase}
+          status={timer.status}
+          remainingSeconds={timer.remainingSeconds}
+          phaseDuration={phaseDuration}
+        />
 
         <SessionTimeline
           totalSlots={settings.sessionsBeforeLongBreak}
@@ -160,17 +170,39 @@ export function TimerView() {
           currentActive={timer.status === 'running' || timer.status === 'flowState'}
         />
 
-        <ControlButtons
-          status={timer.status}
-          phase={timer.phase}
-          onStart={handleStart}
-          onPause={handlePause}
-          onResume={handleResume}
-          onSkip={handleSkip}
-          onFinishRequest={handleFinishRequest}
-          onReset={handleReset}
-        />
+        <footer className={styles.watchFooter}>
+          <span className={styles.watchFooterItem}>
+            <span className={styles.watchFooterLabel}>Mode</span>
+            <span className={styles.watchFooterValue}>
+              {timer.phase === 'focus' ? 'FOCUS' : 'BREAK'}
+            </span>
+          </span>
+          <span className={styles.watchFooterDivider} aria-hidden="true" />
+          <span className={styles.watchFooterItem}>
+            <span className={styles.watchFooterLabel}>State</span>
+            <span className={styles.watchFooterValue}>
+              {timer.status === 'flowState'
+                ? 'FLOW'
+                : timer.status === 'running'
+                  ? 'LIVE'
+                  : timer.status === 'paused'
+                    ? 'HOLD'
+                    : 'IDLE'}
+            </span>
+          </span>
+        </footer>
       </div>
+
+      <ControlButtons
+        status={timer.status}
+        phase={timer.phase}
+        onStart={handleStart}
+        onPause={handlePause}
+        onResume={handleResume}
+        onSkip={handleSkip}
+        onFinishRequest={handleFinishRequest}
+        onReset={handleReset}
+      />
 
       {finishConfirmOpen && (
         <ConfirmModal

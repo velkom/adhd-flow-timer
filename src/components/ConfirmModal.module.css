@@ -1,8 +1,8 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,31 +16,39 @@
 
 .modal {
   background: var(--color-bg-secondary);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-rail);
+  border-radius: var(--radius-2xl);
   padding: var(--space-6);
-  max-width: 400px;
+  max-width: 440px;
   width: 100%;
   animation: slideUp var(--duration-normal) var(--ease-out);
+  box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.7);
 }
 
 .modalTitle {
-  font-size: var(--text-fluid-modal-title);
+  font-family: var(--font-mono);
+  font-size: var(--text-md);
   font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-snug);
   margin-bottom: var(--space-3);
   text-wrap: balance;
+  color: var(--color-text-primary);
 }
 
 .modalBody {
-  font-size: var(--text-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--color-text-secondary);
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-5);
+  letter-spacing: var(--tracking-snug);
 }
 
 .modalActions {
   display: flex;
   gap: var(--space-3);
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 @keyframes fadeIn {

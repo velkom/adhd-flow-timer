@@ -17,9 +17,12 @@ html {
 
 body {
   font-family: var(--font-body);
+  font-weight: var(--weight-regular);
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   line-height: var(--leading-normal);
+  letter-spacing: var(--tracking-snug);
+  font-variant-ligatures: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
@@ -30,6 +33,13 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 50% -20%,
+      rgba(255, 90, 31, 0.05),
+      transparent 60%
+    ),
+    var(--color-bg-primary);
 }
 
 button {
@@ -42,6 +52,15 @@ button {
 
 input {
   font: inherit;
+}
+
+/* Tabular figures for all numeric UI */
+[class*='Digits'],
+[class*='Stat'],
+[class*='Value'],
+[class*='duration'],
+[class*='Pill'] {
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

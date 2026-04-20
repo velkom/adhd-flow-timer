@@ -6,7 +6,6 @@ import {
   isOvertimeDisplay,
   overtimeTotalSubtitle,
   phaseLabel,
-  statusLabel,
   timerDigitsAriaLabel,
   timerDigitsText,
 } from './timerDisplayLabels';
@@ -21,6 +20,16 @@ interface TimerDisplayProps {
   status: TimerStatus;
   debugActive?: boolean;
   onDebugToggle?: () => void;
+}
+
+/** Split "MM:SS" into big MM and smaller superscript-style SS (reference style). */
+function splitDigits(text: string): { head: string; tail: string | null } {
+  // text can be "MM:SS" or "-MM:SS"
+  const stripped = text.startsWith('-') ? text.slice(1) : text;
+  const sign = text.startsWith('-') ? '-' : '';
+  const [mm, ss] = stripped.split(':');
+  if (!ss) return { head: text, tail: null };
+  return { head: `${sign}${mm}`, tail: ss };
 }
 
 export function TimerDisplay({
@@ -63,24 +72,38 @@ export function TimerDisplay({
     remainingSeconds,
   );
 
+  const { head, tail } = splitDigits(digitsText);
+
   return (
     <div className={styles.timerDisplay} role="timer" aria-live="polite">
+      <span className={styles.timerTopline}>
+        <span className={styles.timerPhaseLabel}>
+          {phaseLabel(phase, isOvertime)}
+        </span>
+        {isOvertime && <span className={styles.timerFlowBadge}>Flow</span>}
+      </span>
+
       <span
         className={styles.timerDigits}
         aria-label={digitsAria}
         onClick={handleDigitsClick}
       >
-        {digitsText}
+        <span className={styles.timerDigitsHead}>{head}</span>
+        {tail && (
+          <>
+            <span className={styles.timerDigitsColon} aria-hidden="true">
+              :
+            </span>
+            <span className={styles.timerDigitsTail}>{tail}</span>
+          </>
+        )}
         {debugActive && (
           <span className={styles.debugIndicator} aria-label="Debug mode active">
             <Icon icon={bugLine} width={14} />
           </span>
         )}
       </span>
-      <span className={styles.timerPhaseLabel}>
-        {phaseLabel(phase, isOvertime)}
-      </span>
-      <span className={styles.timerStatusLabel}>{statusLabel(status, phase)}</span>
+
       {isOvertime && (
         <span className={styles.timerTotalLabel}>
           {overtimeTotalSubtitle(phase, elapsedSeconds)}
