@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useTimerStore } from '@/stores/timerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import type { OvertimeBlink } from './useOvertimeBlink';
 import type { TimerPhase, TimerStatus } from '@/lib/types';
 
 const VIEW_SIZE = 64;
@@ -15,6 +16,7 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 const COLOR_FOCUS = '#ff8c00';
 const COLOR_BREAK = '#30d158';
 const COLOR_FLOW = '#ffab00';
+const COLOR_ALERT = '#ff453a';
 const TRACK_STROKE = '#3d3d3d';
 
 function phaseDurationSeconds(
@@ -126,6 +128,13 @@ function centerMarkupFor(phase: TimerPhase, status: TimerStatus): string {
   return `<circle cx="${CX}" cy="${CY}" r="${INNER_DOT_RADIUS}" fill="${fill}" fill-opacity="${fillOpacity}"/>`;
 }
 
+/** Overtime frame: solid disc inside a full ring, so it reads as a bright dot at 16px. */
+function alertMarkup(): string {
+  const ring = `<circle cx="${CX}" cy="${CY}" r="${RADIUS}" fill="none" stroke="${COLOR_ALERT}" stroke-width="${STROKE_WIDTH}"/>`;
+  const disc = `<circle cx="${CX}" cy="${CY}" r="${RADIUS - STROKE_WIDTH}" fill="${COLOR_ALERT}"/>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_SIZE} ${VIEW_SIZE}">${ring}${disc}</svg>`;
+}
+
 function buildFaviconSvg(
   phase: TimerPhase,
   status: TimerStatus,
@@ -133,7 +142,10 @@ function buildFaviconSvg(
   focusDuration: number,
   shortBreakDuration: number,
   longBreakDuration: number,
+  alert: boolean,
 ): string {
+  if (alert) return alertMarkup();
+
   const color = arcColor(phase, status);
   const progress = progressForFavicon(
     phase,
@@ -158,14 +170,18 @@ function buildFaviconSvg(
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_SIZE} ${VIEW_SIZE}">${track}${arc}${centerMarkup}</svg>`;
 }
 
-/** Updates the document favicon to a progress ring reflecting timer phase, status, and elapsed time. */
-export function useDynamicFavicon(): void {
+/**
+ * Updates the document favicon to a progress ring reflecting timer phase, status, and
+ * elapsed time. In overtime the icon alternates with a red alert frame to draw attention.
+ */
+export function useDynamicFavicon(blink: OvertimeBlink): void {
   const phase = useTimerStore((s) => s.timer.phase);
   const status = useTimerStore((s) => s.timer.status);
   const elapsedSeconds = useTimerStore((s) => s.timer.elapsedSeconds);
   const focusDuration = useSettingsStore((s) => s.settings.focusDuration);
   const shortBreakDuration = useSettingsStore((s) => s.settings.shortBreakDuration);
   const longBreakDuration = useSettingsStore((s) => s.settings.longBreakDuration);
+  const alert = blink.active && blink.alertFrame;
 
   const originalHrefRef = useRef<string | null>(null);
 
@@ -192,6 +208,7 @@ export function useDynamicFavicon(): void {
       focusDuration,
       shortBreakDuration,
       longBreakDuration,
+      alert,
     );
     const href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
     link.setAttribute('href', href);
@@ -202,5 +219,6 @@ export function useDynamicFavicon(): void {
     focusDuration,
     shortBreakDuration,
     longBreakDuration,
+    alert,
   ]);
 }

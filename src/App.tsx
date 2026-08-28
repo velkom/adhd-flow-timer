@@ -4,12 +4,16 @@ import { SettingsView } from '@/components/Settings/SettingsView';
 import { AnalyticsView } from '@/components/Analytics/AnalyticsView';
 import { Layout } from '@/components/Layout';
 import { useDynamicFavicon } from '@/hooks/useDynamicFavicon';
+import { useOvertimeBlink } from '@/hooks/useOvertimeBlink';
+import { useOvertimeDocumentTitle } from '@/hooks/useOvertimeDocumentTitle';
 import { useThemeSync } from '@/hooks/useThemeSync';
 import type { View } from '@/lib/types';
 
 export function App() {
   useThemeSync();
-  useDynamicFavicon();
+  const overtimeBlink = useOvertimeBlink();
+  useDynamicFavicon(overtimeBlink);
+  useOvertimeDocumentTitle(overtimeBlink);
   const [view, setView] = useState<View>('timer');
 
   useEffect(() => {
