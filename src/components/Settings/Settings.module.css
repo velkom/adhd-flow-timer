@@ -8,7 +8,7 @@
 
 .settingsGroup {
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-rail);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-2xl);
   padding: var(--space-5);
   display: flex;
@@ -26,18 +26,29 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-2);
+  margin-bottom: 0;
 }
 
-.settingsGroupTitle::before {
-  content: '◆';
-  font-size: 0.7em;
+.groupDescription {
+  max-width: 62ch;
+  margin-top: calc(var(--space-2) * -1);
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
 }
 
 .settingField {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  min-width: 0;
+  border: 0;
 }
 
 .settingFieldToggle {
@@ -56,17 +67,15 @@
 
 .settingHint {
   margin-top: calc(var(--space-1) * -1);
-  font-family: var(--font-mono);
   font-size: 0.7rem;
   line-height: var(--leading-snug);
   color: var(--color-text-tertiary);
-  letter-spacing: var(--tracking-snug);
 }
 
 .settingInput {
   width: 100%;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-rail);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-bg-primary);
   color: var(--color-text-primary);
@@ -74,16 +83,9 @@
   font-size: var(--text-sm);
   font-weight: var(--weight-medium);
   letter-spacing: var(--tracking-snug);
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3e%3cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23ff5a1f' stroke-width='1.5' stroke-linecap='round'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right var(--space-4) center;
-  padding-right: var(--space-8);
 }
 
-.settingInput:focus {
-  outline: none;
+.settingInput:focus-visible {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px var(--color-accent-soft);
 }
@@ -94,11 +96,13 @@
   appearance: none;
   -webkit-appearance: none;
   background: var(--color-bg-tertiary);
-  border: 1px solid var(--color-rail);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   position: relative;
   cursor: pointer;
-  transition: all var(--duration-fast);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
   flex-shrink: 0;
 }
 
@@ -155,6 +159,13 @@
   box-shadow: 0 0 0 4px var(--color-accent-soft);
 }
 
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+}
+
 .settingRadioGroup {
   display: flex;
   gap: var(--space-2);
@@ -165,8 +176,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  min-height: 44px;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-rail);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   background: var(--color-bg-tertiary);
   font-family: var(--font-mono);
@@ -175,7 +187,10 @@
   text-transform: uppercase;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
 }
 
 .settingRadio:hover {
@@ -208,6 +223,12 @@
 @media (max-width: 480px) {
   .settingRadioGroup {
     flex-direction: row;
+  }
+}
+
+@media (min-width: 640px) {
+  .settingsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

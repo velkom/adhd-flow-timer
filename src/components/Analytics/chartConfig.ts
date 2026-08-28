@@ -1,21 +1,23 @@
 import { useMemo } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
   ArcElement,
-  Tooltip,
+  BarElement,
+  CategoryScale,
+  Chart as ChartJS,
   Legend,
+  LinearScale,
+  Tooltip,
+  type TooltipItem,
 } from 'chart.js';
-import type { TooltipItem } from 'chart.js';
-import { useChartThemeKey, useChartThemeColors } from '@/lib/chartTheme';
 import { useCompactLayout } from '@/hooks/useCompactLayout';
-import type { ChartThemeColors } from '@/lib/chartTheme';
+import {
+  useChartThemeColors,
+  useChartThemeKey,
+  type ChartThemeColors,
+} from '@/lib/chartTheme';
 
 let analyticsChartsRegistered = false;
 
-/** Register Chart.js scales/elements once for analytics screens. */
 export function registerAnalyticsCharts(): void {
   if (analyticsChartsRegistered) return;
   ChartJS.register(
@@ -29,9 +31,9 @@ export function registerAnalyticsCharts(): void {
   analyticsChartsRegistered = true;
 }
 
-const FALLBACK_FOCUS = '#ff8c00';
+const FALLBACK_FOCUS = '#ff5a1f';
 const FALLBACK_FLOW = '#ffab00';
-const FALLBACK_BREAK = '#30d158';
+const FALLBACK_BREAK = '#4ec9b0';
 
 function readCssVar(name: string, fallback: string): string {
   if (typeof document === 'undefined') return fallback;
@@ -41,7 +43,6 @@ function readCssVar(name: string, fallback: string): string {
   return raw || fallback;
 }
 
-/** Parse `#rgb` / `#rrggbb` to rgba(); falls back to original string if not hex. */
 function hexToRgba(hex: string, alpha: number): string {
   const h = hex.replace('#', '');
   if (h.length !== 3 && h.length !== 6) return hex;
@@ -49,23 +50,23 @@ function hexToRgba(hex: string, alpha: number): string {
     h.length === 3
       ? h
           .split('')
-          .map((c) => c + c)
+          .map((character) => character + character)
           .join('')
       : h;
-  const r = parseInt(full.slice(0, 2), 16);
-  const g = parseInt(full.slice(2, 4), 16);
-  const b = parseInt(full.slice(4, 6), 16);
-  if ([r, g, b].some((n) => Number.isNaN(n))) return hex;
-  return `rgba(${r},${g},${b},${alpha})`;
+  const red = parseInt(full.slice(0, 2), 16);
+  const green = parseInt(full.slice(2, 4), 16);
+  const blue = parseInt(full.slice(4, 6), 16);
+  if ([red, green, blue].some((channel) => Number.isNaN(channel))) return hex;
+  return `rgba(${red},${green},${blue},${alpha})`;
 }
 
-export interface ChartDatasetFillColors {
+interface ChartDatasetFillColors {
   focus: string;
   flow: string;
   break: string;
 }
 
-export function readChartDatasetFillColors(
+function readChartDatasetFillColors(
   alpha: number,
 ): ChartDatasetFillColors {
   const focus = readCssVar('--color-focus', FALLBACK_FOCUS);
@@ -80,10 +81,14 @@ export function readChartDatasetFillColors(
   };
 }
 
-/** Theme-aware dataset fills; updates when `data-theme` changes. */
-export function useChartDatasetFillColors(alpha: number): ChartDatasetFillColors {
-  const key = useChartThemeKey();
-  return useMemo(() => readChartDatasetFillColors(alpha), [key, alpha]);
+export function useChartDatasetFillColors(
+  alpha: number,
+): ChartDatasetFillColors {
+  const themeKey = useChartThemeKey();
+  return useMemo(
+    () => readChartDatasetFillColors(alpha),
+    [alpha, themeKey],
+  );
 }
 
 export function useBarStackedChartOptions(
@@ -108,8 +113,8 @@ export function useBarStackedChartOptions(
         },
         tooltip: {
           callbacks: {
-            label: (ctx: TooltipItem<'bar'>) =>
-              `${ctx.dataset.label ?? ''}: ${ctx.raw}m`,
+            label: (context: TooltipItem<'bar'>) =>
+              `${context.dataset.label ?? ''}: ${context.raw}m`,
           },
         },
       },
@@ -175,14 +180,15 @@ export function useDoughnutChartOptions(
         },
         tooltip: {
           callbacks: {
-            label: (ctx: TooltipItem<'doughnut'>) => {
-              const total = (ctx.dataset.data as number[]).reduce(
-                (a, b) => a + b,
+            label: (context: TooltipItem<'doughnut'>) => {
+              const total = (context.dataset.data as number[]).reduce(
+                (sum, value) => sum + value,
                 0,
               );
-              const raw = ctx.raw as number;
-              const pct = total > 0 ? Math.round((raw / total) * 100) : 0;
-              return `${ctx.label}: ${raw}m (${pct}%)`;
+              const raw = context.raw as number;
+              const percentage =
+                total > 0 ? Math.round((raw / total) * 100) : 0;
+              return `${context.label}: ${raw}m (${percentage}%)`;
             },
           },
         },
@@ -192,7 +198,6 @@ export function useDoughnutChartOptions(
   );
 }
 
-/** Convenience: compact layout + theme colors for charts. */
 export function useAnalyticsChartContext(): {
   compact: boolean;
   chartColors: ChartThemeColors;

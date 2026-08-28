@@ -7,7 +7,7 @@ import {
   useBarStackedChartOptions,
   useChartDatasetFillColors,
   useAnalyticsChartContext,
-} from '@/lib/chartConfig';
+} from './chartConfig';
 import chartLayoutStyles from './Analytics.module.css';
 
 registerAnalyticsCharts();
@@ -25,7 +25,10 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
   const data = useMemo(() => {
     const focus = sessions
       .filter((s) => s.type === 'focus')
-      .sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime())
+      .sort(
+        (a, b) =>
+          new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime(),
+      )
       .slice(-10);
 
     return {
@@ -52,7 +55,15 @@ export function SessionChart({ sessions, timeframe }: SessionChartProps) {
   }, [sessions, timeframe, fills.focus, fills.flow]);
 
   return (
-    <div className={chartLayoutStyles.chartCardCanvas}>
+    <div
+      className={chartLayoutStyles.chartCardCanvas}
+      role="img"
+      aria-label={
+        data.labels.length === 0
+          ? 'No focus blocks in this period'
+          : `Bar chart of ${data.labels.length} recent focus block durations`
+      }
+    >
       {data.labels.length === 0 ? (
         <div className={chartLayoutStyles.chartEmpty}>No sessions yet</div>
       ) : (

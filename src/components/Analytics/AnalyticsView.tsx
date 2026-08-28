@@ -28,7 +28,12 @@ export function AnalyticsView() {
   );
   const insights = useMemo(() => analyzeTimePatterns(filtered), [filtered]);
   const isEmpty = stats.completedSessions === 0;
-  const panelId = 'analytics-main-panel';
+  const statCards = [
+    { label: 'Total focus', value: formatTime(stats.totalFocusMinutes) },
+    { label: 'Average block', value: `${stats.avgSessionMinutes}m` },
+    { label: 'Flow time', value: `${stats.flowStatePercentage}%` },
+    { label: 'Focus blocks', value: `${stats.completedSessions}` },
+  ];
 
   const exportData = () => {
     const blob = new Blob([JSON.stringify(sessions, null, 2)], {
@@ -45,20 +50,20 @@ export function AnalyticsView() {
   return (
     <div className={styles.analyticsView}>
       <h2 className={viewTitleStyles.viewTitle}>Your Progress</h2>
+      <p className={styles.analyticsIntro}>
+        Look for patterns, not perfect streaks. Every completed focus block counts.
+      </p>
 
       <div
         className={styles.timeframeSelector}
-        role="tablist"
+        role="group"
         aria-label="Time period"
       >
         {TIMEFRAMES.map(({ label, value }) => (
           <button
             key={value}
-            id={`analytics-tab-${value}`}
             type="button"
-            role="tab"
-            aria-selected={timeframe === value}
-            aria-controls={panelId}
+            aria-pressed={timeframe === value}
             className={`${styles.timeframeBtn} ${timeframe === value ? styles.timeframeBtnActive : ''}`}
             onClick={() => setTimeframe(value)}
           >
@@ -67,60 +72,59 @@ export function AnalyticsView() {
         ))}
       </div>
 
-      <div
-        id={panelId}
-        role="tabpanel"
-        aria-labelledby={`analytics-tab-${timeframe}`}
-      >
+      <div>
         {isEmpty ? (
           <div className={styles.analyticsEmpty}>
             <p className={styles.analyticsEmptyTitle}>
               No focus sessions in this period yet
             </p>
             <p className={styles.analyticsEmptyHint}>
-              Finish a focus block from the Timer tab (use Skip to Break when you
-              are done). Your charts and insights will show up here.
+              Start on the Timer screen and choose Finish when your focus block is
+              done. Your patterns will appear here.
             </p>
           </div>
         ) : (
           <>
             <div className={styles.statsGrid}>
-              <div className={styles.statCard}>
-                <span className={styles.statValue}>
-                  {formatTime(stats.totalFocusMinutes)}
-                </span>
-                <span className={styles.statLabel}>Total Focus</span>
-              </div>
-              <div className={styles.statCard}>
-                <span className={styles.statValue}>{stats.avgSessionMinutes}m</span>
-                <span className={styles.statLabel}>Avg Session</span>
-              </div>
-              <div className={styles.statCard}>
-                <span className={styles.statValue}>{stats.flowStatePercentage}%</span>
-                <span className={styles.statLabel}>Flow Time</span>
-              </div>
-              <div className={styles.statCard}>
-                <span className={styles.statValue}>{stats.completedSessions}</span>
-                <span className={styles.statLabel}>Sessions</span>
-              </div>
+              {statCards.map((card) => (
+                <div key={card.label} className={styles.statCard}>
+                  <span className={styles.statValue}>{card.value}</span>
+                  <span className={styles.statLabel}>{card.label}</span>
+                </div>
+              ))}
             </div>
 
             <div className={styles.chartsRow}>
-              <div className={styles.chartCard}>
-                <h3 className={styles.chartTitle}>Session Duration</h3>
+              <section
+                className={styles.chartCard}
+                aria-labelledby="session-duration-title"
+              >
+                <h3 id="session-duration-title" className={styles.chartTitle}>
+                  Recent focus blocks
+                </h3>
                 <SessionChart sessions={filtered} timeframe={timeframe} />
-              </div>
-              <div className={styles.chartCard}>
-                <h3 className={styles.chartTitle}>Focus vs Break</h3>
+              </section>
+              <section
+                className={styles.chartCard}
+                aria-labelledby="focus-break-title"
+              >
+                <h3 id="focus-break-title" className={styles.chartTitle}>
+                  Focus and rest
+                </h3>
                 <FocusBreakChart stats={stats} />
-              </div>
+              </section>
             </div>
 
             {insights && (
-              <div className={styles.insightsCard}>
-                <h3 className={styles.chartTitle}>Insights</h3>
+              <section
+                className={styles.insightsCard}
+                aria-labelledby="insights-title"
+              >
+                <h3 id="insights-title" className={styles.chartTitle}>
+                  Pattern
+                </h3>
                 <p className={styles.insightText}>{insights}</p>
-              </div>
+              </section>
             )}
           </>
         )}
@@ -131,6 +135,7 @@ export function AnalyticsView() {
           type="button"
           className={`${btnStyles.btn} ${btnStyles.btnSecondary}`}
           onClick={exportData}
+          disabled={sessions.length === 0}
         >
           Export Data
         </button>

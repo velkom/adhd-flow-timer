@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTimerStore } from '@/stores/timerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
+import { useTimerSoundEffects } from '@/hooks/useTimerSoundEffects';
+import { playSound } from '@/lib/sounds';
 import { ProgressBar } from './ProgressBar';
 import { TimerDisplay } from './TimerDisplay';
 import { SessionTimeline } from './SessionTimeline';
 import { ControlButtons } from './ControlButtons';
 import { DebugPanel } from './DebugPanel';
+import { statusLabel } from './timerDisplayLabels';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import styles from './Timer.module.css';
-import { playSound, preloadSounds } from '@/lib/sounds';
-import type { TimerPhase, TimerStatus } from '@/lib/types';
 
 export function TimerView() {
   const timer = useTimerStore((s) => s.timer);
@@ -21,52 +22,13 @@ export function TimerView() {
   const [debugOpen, setDebugOpen] = useState(false);
   const [finishConfirmOpen, setFinishConfirmOpen] = useState(false);
 
-  const prevPhase = useRef<TimerPhase>(timer.phase);
-  const prevStatus = useRef<TimerStatus>(timer.status);
-
-  useEffect(() => {
-    preloadSounds();
-  }, []);
+  useTimerSoundEffects(timer.phase, timer.status);
 
   useEffect(() => {
     if (timer.status === 'idle' && timer.phase === 'focus') {
       setPreset(settings.focusDuration);
     }
   }, [settings.focusDuration, timer.status, timer.phase, setPreset]);
-
-  useEffect(() => {
-    const oldPhase = prevPhase.current;
-    const oldStatus = prevStatus.current;
-    prevPhase.current = timer.phase;
-    prevStatus.current = timer.status;
-
-    if (oldPhase === timer.phase && oldStatus === timer.status) return;
-
-    // Focus timer expired → entered flow state
-    if (oldStatus === 'running' && timer.status === 'flowState') {
-      playSound('complete');
-      return;
-    }
-
-    // Break ended (skip / reset path) → back to idle focus
-    const wasBreakActive =
-      (oldStatus === 'running' || oldStatus === 'flowState') &&
-      (oldPhase === 'shortBreak' || oldPhase === 'longBreak');
-    if (wasBreakActive && timer.status === 'idle' && timer.phase === 'focus') {
-      playSound('breakEnd');
-      return;
-    }
-
-    // Skipped from focus → now idle on a break phase
-    if (
-      oldPhase === 'focus' &&
-      timer.status === 'idle' &&
-      (timer.phase === 'shortBreak' || timer.phase === 'longBreak')
-    ) {
-      playSound('breakStart');
-      return;
-    }
-  }, [timer.phase, timer.status]);
 
   const toggleDebug = useCallback(() => {
     setDebugOpen((prev) => {
@@ -133,13 +95,15 @@ export function TimerView() {
 
   const cycleIndex =
     (timer.completedSessions % settings.sessionsBeforeLongBreak) + 1;
+  const isTimerActive =
+    timer.status === 'running' || timer.status === 'flowState';
 
   return (
     <div className={styles.timerView}>
       <header className={styles.watchHeader}>
         <span className={styles.watchDate}>{todayLabel}</span>
         <span className={styles.watchMeta}>
-          <span className={styles.metaDot} aria-hidden="true" />
+          {isTimerActive && <span className={styles.metaDot} aria-hidden="true" />}
           Session {cycleIndex}/{settings.sessionsBeforeLongBreak}
         </span>
       </header>
@@ -167,27 +131,14 @@ export function TimerView() {
           completedSessions={
             timer.completedSessions % settings.sessionsBeforeLongBreak
           }
-          currentActive={timer.status === 'running' || timer.status === 'flowState'}
+          currentActive={isTimerActive}
         />
 
         <footer className={styles.watchFooter}>
           <span className={styles.watchFooterItem}>
-            <span className={styles.watchFooterLabel}>Mode</span>
+            <span className={styles.watchFooterLabel}>Status</span>
             <span className={styles.watchFooterValue}>
-              {timer.phase === 'focus' ? 'FOCUS' : 'BREAK'}
-            </span>
-          </span>
-          <span className={styles.watchFooterDivider} aria-hidden="true" />
-          <span className={styles.watchFooterItem}>
-            <span className={styles.watchFooterLabel}>State</span>
-            <span className={styles.watchFooterValue}>
-              {timer.status === 'flowState'
-                ? 'FLOW'
-                : timer.status === 'running'
-                  ? 'LIVE'
-                  : timer.status === 'paused'
-                    ? 'HOLD'
-                    : 'IDLE'}
+              {statusLabel(timer.status, timer.phase)}
             </span>
           </span>
         </footer>
@@ -207,8 +158,8 @@ export function TimerView() {
       {finishConfirmOpen && (
         <ConfirmModal
           title="Finish session?"
-          body="End this focus block and move on (same as Skip)."
-          confirmLabel="Finish"
+          body="Save this focus block and start your break."
+          confirmLabel="Finish focus"
           confirmVariant="primary"
           onCancel={() => setFinishConfirmOpen(false)}
           onConfirm={handleConfirmFinish}

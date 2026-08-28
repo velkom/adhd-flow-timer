@@ -6,7 +6,7 @@ import {
   useDoughnutChartOptions,
   useChartDatasetFillColors,
   useAnalyticsChartContext,
-} from '@/lib/chartConfig';
+} from './chartConfig';
 import chartLayoutStyles from './Analytics.module.css';
 
 registerAnalyticsCharts();
@@ -48,7 +48,15 @@ export function FocusBreakChart({ stats }: FocusBreakChartProps) {
   );
 
   return (
-    <div className={chartLayoutStyles.chartCardCanvas}>
+    <div
+      className={chartLayoutStyles.chartCardCanvas}
+      role="img"
+      aria-label={
+        hasData
+          ? `Doughnut chart: ${focusOnly} focus minutes, ${stats.totalFlowMinutes} flow minutes, and ${stats.totalBreakMinutes} break minutes`
+          : 'No focus or break data in this period'
+      }
+    >
       {!hasData ? (
         <div className={chartLayoutStyles.chartEmpty}>No data yet</div>
       ) : (

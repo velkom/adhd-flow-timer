@@ -7,7 +7,7 @@ import volumeLine from '@iconify-icons/mingcute/volume-line';
 import type { TimerStatus } from '@/lib/types';
 import { forcePlay, ALL_SOUND_EFFECTS, SOUND_LABELS } from '@/lib/sounds';
 import type { SoundEffect } from '@/lib/sounds';
-import styles from './Timer.module.css';
+import styles from './DebugPanel.module.css';
 
 const SPEED_OPTIONS = [1, 4, 8, 16] as const;
 
@@ -46,6 +46,7 @@ export function DebugPanel({
           <span>Debug Controls</span>
         </div>
         <button
+          type="button"
           className={styles.debugCloseBtn}
           onClick={onClose}
           aria-label="Close debug panel"
@@ -62,9 +63,11 @@ export function DebugPanel({
         <div className={styles.debugPills}>
           {SPEED_OPTIONS.map((speed) => (
             <button
+              type="button"
               key={speed}
               className={`${styles.debugPill} ${speedMultiplier === speed ? styles.debugPillActive : ''}`}
               onClick={() => onSetSpeed(speed)}
+              aria-pressed={speedMultiplier === speed}
             >
               x{speed}
             </button>
@@ -80,6 +83,7 @@ export function DebugPanel({
         <div className={styles.debugPills}>
           {TIME_OPTIONS.map(({ label, seconds }) => (
             <button
+              type="button"
               key={seconds}
               className={`${styles.debugPill} ${styles.debugPillAction}`}
               onClick={() => onAddTime(seconds)}
@@ -99,6 +103,7 @@ export function DebugPanel({
         <div className={`${styles.debugPills} ${styles.debugPillsWrap}`}>
           {ALL_SOUND_EFFECTS.map((effect) => (
             <button
+              type="button"
               key={effect}
               className={`${styles.debugPill} ${styles.debugPillAction}`}
               onClick={() => handleSoundPreview(effect)}

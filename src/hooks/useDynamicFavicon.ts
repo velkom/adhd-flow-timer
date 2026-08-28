@@ -13,11 +13,11 @@ const INNER_DOT_RADIUS = 11;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 /** Matches dark theme tokens in `tokens.css` (data URLs cannot use CSS variables). */
-const COLOR_FOCUS = '#ff8c00';
-const COLOR_BREAK = '#30d158';
+const COLOR_FOCUS = '#ff5a1f';
+const COLOR_BREAK = '#4ec9b0';
 const COLOR_FLOW = '#ffab00';
 const COLOR_ALERT = '#ff453a';
-const TRACK_STROKE = '#3d3d3d';
+const TRACK_STROKE = '#141414';
 
 function phaseDurationSeconds(
   phase: TimerPhase,

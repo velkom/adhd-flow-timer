@@ -1,5 +1,5 @@
 import type { TimerPhase, TimerStatus } from '@/lib/types';
-import styles from './Timer.module.css';
+import styles from './ProgressBar.module.css';
 
 interface ProgressBarProps {
   /** 0..1 representing how far through the current phase we are */
@@ -77,7 +77,9 @@ export function ProgressBar({
       aria-valuenow={Math.round(clamped * 100)}
     >
       <div className={styles.progressBarHeader}>
-        <span className={styles.progressBarLabel}>{phaseLabel}</span>
+        <span className={styles.progressBarLabel}>
+          {isFlow ? 'Overtime' : 'Remaining'}
+        </span>
         <span className={styles.progressBarPill}>{pillText}</span>
       </div>
 

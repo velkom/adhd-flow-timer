@@ -5,6 +5,13 @@
   "start_url": "/adhd-flow-timer/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#000000",
-  "icons": []
+  "theme_color": "#ff5a1f",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

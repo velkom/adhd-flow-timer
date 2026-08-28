@@ -16,8 +16,8 @@
 
 .modal {
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-rail);
-  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: var(--space-6);
   max-width: 440px;
   width: 100%;
@@ -26,7 +26,6 @@
 }
 
 .modalTitle {
-  font-family: var(--font-mono);
   font-size: var(--text-md);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-snug);
@@ -36,12 +35,10 @@
 }
 
 .modalBody {
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-5);
-  letter-spacing: var(--tracking-snug);
 }
 
 .modalActions {

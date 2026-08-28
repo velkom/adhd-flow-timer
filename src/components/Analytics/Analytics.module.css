@@ -6,6 +6,15 @@
   gap: var(--space-3);
 }
 
+.analyticsIntro {
+  max-width: 60ch;
+  margin-inline: auto;
+  text-align: center;
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
 .timeframeSelector {
   display: flex;
   flex-wrap: wrap;
@@ -13,7 +22,7 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-2);
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-rail);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   width: max-content;
   max-width: 100%;
@@ -21,6 +30,7 @@
 }
 
 .timeframeBtn {
+  min-height: 44px;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
   font-family: var(--font-mono);
@@ -30,11 +40,14 @@
   text-transform: uppercase;
   color: var(--color-text-secondary);
   background: transparent;
-  transition: all var(--duration-fast) var(--ease-out);
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
 }
 
 .timeframeBtn:hover {
   color: var(--color-text-primary);
+  background: var(--color-bg-elevated);
 }
 
 .timeframeBtnActive {
@@ -46,6 +59,7 @@
 
 .timeframeBtnActive:hover {
   color: var(--color-on-accent);
+  background: var(--color-accent-strong);
 }
 
 .statsGrid {
@@ -57,26 +71,13 @@
 .statCard {
   min-width: 0;
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-rail);
-  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  position: relative;
   overflow: hidden;
-}
-
-.statCard::before {
-  content: '';
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow: 0 0 12px var(--color-accent-glow);
 }
 
 .statValue {
@@ -97,7 +98,7 @@
   font-weight: var(--weight-medium);
   color: var(--color-text-tertiary);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-widest);
+  letter-spacing: var(--tracking-wider);
 }
 
 .chartsRow {
@@ -110,8 +111,8 @@
   display: flex;
   flex-direction: column;
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-rail);
-  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: var(--space-5);
   min-height: 280px;
   position: relative;
@@ -129,11 +130,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-}
-
-.chartTitle::before {
-  content: '◆';
-  font-size: 0.7em;
 }
 
 .chartCardCanvas {
@@ -158,8 +154,8 @@
 
 .insightsCard {
   background: var(--color-bg-secondary);
-  border: 1px solid var(--color-rail);
-  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
@@ -168,11 +164,9 @@
 }
 
 .insightText {
-  font-family: var(--font-mono);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   line-height: var(--leading-relaxed);
-  letter-spacing: var(--tracking-snug);
 }
 
 .emptyState {
@@ -189,8 +183,8 @@
   text-align: center;
   padding: var(--space-8) var(--space-5);
   background: var(--color-bg-secondary);
-  border: 1px dashed var(--color-rail);
-  border-radius: var(--radius-2xl);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -199,23 +193,18 @@
 
 .analyticsEmptyTitle {
   margin: 0;
-  font-family: var(--font-display);
   font-size: var(--text-md);
-  font-weight: var(--weight-regular);
-  letter-spacing: var(--tracking-snug);
+  font-weight: var(--weight-semibold);
   color: var(--color-text-primary);
   line-height: var(--leading-tight);
-  text-transform: uppercase;
 }
 
 .analyticsEmptyHint {
   margin: 0;
-  font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
   line-height: var(--leading-relaxed);
-  letter-spacing: var(--tracking-snug);
-  max-width: 40ch;
+  max-width: 48ch;
   margin-inline: auto;
 }
 

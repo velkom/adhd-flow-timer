@@ -75,5 +75,5 @@ export const DEFAULT_SETTINGS: TimerSettings = {
   soundVolume: 0.45,
   visualCueIntensity: 5,
   theme: 'dark',
-  accentColor: '#ff8c00',
+  accentColor: '#ff5a1f',
 };

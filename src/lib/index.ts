@@ -6,4 +6,3 @@ export * from './sessionCalculations';
 export * from './overtimeAlert';
 export * from './sounds';
 export * from './chartTheme';
-export * from './chartConfig';

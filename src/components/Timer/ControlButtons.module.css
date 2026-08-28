@@ -1,0 +1,111 @@
+.controlButtons {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(112px, 1.7fr) minmax(0, 1fr);
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+}
+
+.controlBtn {
+  min-width: 0;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-xl);
+  font-family: var(--font-mono);
+  font-size: var(--text-fluid-control);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  text-align: center;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.controlBtnPrimary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  box-shadow: 0 8px 24px -12px var(--color-accent-glow);
+}
+
+.controlBtnPrimary:hover {
+  background: var(--color-accent-strong);
+  transform: translateY(-1px);
+}
+
+.controlBtnPrimary:active {
+  transform: scale(0.98);
+}
+
+.controlBtnPause {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  box-shadow: none;
+}
+
+.controlBtnPause:hover {
+  background: var(--color-bg-elevated);
+}
+
+.controlBtnIconMorph {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.controlBtnIconLayer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.88);
+  transition:
+    opacity var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+  pointer-events: none;
+}
+
+.controlBtnIconLayerVisible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.controlBtnSecondary {
+  flex-direction: column;
+  gap: 2px;
+  padding-inline: var(--space-2);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-2xs);
+}
+
+.controlBtnSecondary:hover:not(:disabled) {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border-color: var(--color-text-tertiary);
+}
+
+.controlBtnSecondary:disabled {
+  opacity: 0.38;
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .controlButtons {
+    max-width: none;
+  }
+
+  .controlBtn {
+    height: 52px;
+  }
+}

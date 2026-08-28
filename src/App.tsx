@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { TimerView } from '@/components/Timer/TimerView';
 import { SettingsView } from '@/components/Settings/SettingsView';
 import { AnalyticsView } from '@/components/Analytics/AnalyticsView';
@@ -15,10 +15,6 @@ export function App() {
   useDynamicFavicon(overtimeBlink);
   useOvertimeDocumentTitle(overtimeBlink);
   const [view, setView] = useState<View>('timer');
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [view]);
 
   return (
     <Layout activeView={view} onViewChange={setView}>

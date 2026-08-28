@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useOvertimeBlink } from './useOvertimeBlink';
+import { useOvertimeBlink, visualCuePeriodMs } from './useOvertimeBlink';
 import { useTimerStore } from '@/stores/timerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { createInitialState } from '@/lib/timerEngine';
@@ -44,6 +44,13 @@ afterEach(() => {
 });
 
 describe('useOvertimeBlink', () => {
+  it('maps stronger cue intensity to a faster cadence', () => {
+    expect(visualCuePeriodMs(DEFAULT_SETTINGS.visualCueIntensity)).toBe(
+      OVERTIME_BLINK_PERIOD_MS,
+    );
+    expect(visualCuePeriodMs(10)).toBeLessThan(visualCuePeriodMs(1));
+  });
+
   it('is inactive outside overtime and schedules no interval', () => {
     const { result } = renderHook(() => useOvertimeBlink());
     expect(result.current.active).toBe(false);
@@ -94,6 +101,7 @@ describe('useOvertimeBlink', () => {
 
     expect(result.current.active).toBe(true);
     expect(result.current.alertFrame).toBe(true);
+    expect(document.documentElement.dataset.visualCues).toBe('false');
 
     act(() => {
       vi.advanceTimersByTime(4 * OVERTIME_BLINK_PERIOD_MS);
@@ -107,6 +115,7 @@ describe('useOvertimeBlink', () => {
     const { result } = renderHook(() => useOvertimeBlink());
 
     expect(result.current.alertFrame).toBe(true);
+    expect(document.documentElement.dataset.visualCues).toBe('false');
     act(() => {
       vi.advanceTimersByTime(4 * OVERTIME_BLINK_PERIOD_MS);
     });

@@ -9,7 +9,7 @@ import {
   timerDigitsAriaLabel,
   timerDigitsText,
 } from './timerDisplayLabels';
-import styles from './Timer.module.css';
+import styles from './TimerDisplay.module.css';
 
 const TRIPLE_CLICK_WINDOW_MS = 500;
 
@@ -63,6 +63,7 @@ export function TimerDisplay({
   }, [onDebugToggle]);
 
   const isOvertime = isOvertimeDisplay(remainingSeconds, status);
+  const isTicking = status === 'running' || status === 'flowState';
   const pastSeconds = Math.floor(Math.abs(remainingSeconds));
   const digitsText = timerDigitsText(isOvertime, pastSeconds, remainingSeconds);
   const digitsAria = timerDigitsAriaLabel(
@@ -75,7 +76,7 @@ export function TimerDisplay({
   const { head, tail } = splitDigits(digitsText);
 
   return (
-    <div className={styles.timerDisplay} role="timer" aria-live="polite">
+    <div className={styles.timerDisplay}>
       <span className={styles.timerTopline}>
         <span className={styles.timerPhaseLabel}>
           {phaseLabel(phase, isOvertime)}
@@ -88,10 +89,15 @@ export function TimerDisplay({
         aria-label={digitsAria}
         onClick={handleDigitsClick}
       >
-        <span className={styles.timerDigitsHead}>{head}</span>
+        <span>{head}</span>
         {tail && (
           <>
-            <span className={styles.timerDigitsColon} aria-hidden="true">
+            <span
+              className={`${styles.timerDigitsColon} ${
+                isTicking ? styles.timerDigitsColonActive : ''
+              }`}
+              aria-hidden="true"
+            >
               :
             </span>
             <span className={styles.timerDigitsTail}>{tail}</span>
