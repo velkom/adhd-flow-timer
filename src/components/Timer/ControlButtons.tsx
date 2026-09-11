@@ -117,7 +117,7 @@ export function ControlButtons({
         type="button"
         className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
         onClick={isFocus ? onFinishRequest : onSkip}
-        disabled={isIdle}
+        disabled={isIdle && isFocus}
         aria-label={transitionAriaLabel}
       >
         <Icon

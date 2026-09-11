@@ -84,6 +84,17 @@ describe('timerStore break recording', () => {
     expect(sessions[0].actualDuration).toBe(100);
   });
 
+  it('does not record a break that was left before it started', () => {
+    useTimerStore.getState().start();
+    useTimerStore.getState().skip();
+    expect(useSessionStore.getState().sessions).toHaveLength(1);
+
+    useTimerStore.getState().skip();
+
+    expect(useTimerStore.getState().timer.phase).toBe('focus');
+    expect(useSessionStore.getState().sessions).toHaveLength(1);
+  });
+
   it('records focus then break when skipping focus then skipping break', () => {
     useTimerStore.getState().start();
     useTimerStore.getState().skip();

@@ -95,7 +95,7 @@ export const useTimerStore = create<TimerStoreState>((set, get) => {
 
     skip: () => {
       const { timer, intervalId } = get();
-      if (timer.status === 'idle') return;
+      if (timer.status === 'idle' && timer.phase === 'focus') return;
 
       if (intervalId) clearInterval(intervalId);
       const settings = getSettings();

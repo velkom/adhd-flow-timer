@@ -42,6 +42,9 @@ export function recordBreakSessionIfEnded(
     return;
   }
 
+  // A break left before it was ever started is not a break that happened.
+  if (prevTimer.status === 'idle') return;
+
   const settings = getSettings();
   const plannedDuration =
     prevTimer.phase === 'shortBreak'

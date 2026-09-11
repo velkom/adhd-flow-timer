@@ -152,6 +152,23 @@ describe('SKIP action', () => {
     expect(state.status).toBe('idle');
   });
 
+  it('leaves an unstarted break for the next focus block', () => {
+    const state = stateAfter(
+      { type: 'START' },
+      { type: 'SKIP' },
+      { type: 'SKIP' },
+    );
+    expect(state.phase).toBe('focus');
+    expect(state.status).toBe('idle');
+    expect(state.remainingSeconds).toBe(25 * 60);
+  });
+
+  it('is a no-op on a focus block that never started', () => {
+    const state = stateAfter({ type: 'SKIP' });
+    expect(state.phase).toBe('focus');
+    expect(state.completedSessions).toBe(0);
+  });
+
   it('triggers long break after N sessions', () => {
     let state = createInitialState(settings);
     for (let i = 0; i < settings.sessionsBeforeLongBreak; i++) {

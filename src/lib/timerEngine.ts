@@ -92,7 +92,9 @@ export function timerReducer(
     }
 
     case 'SKIP': {
-      if (state.status === 'idle') return state;
+      // A focus block that never started has nothing to finish; a break can be
+      // left at any time, including before it is started.
+      if (state.status === 'idle' && state.phase === 'focus') return state;
 
       if (state.phase === 'focus') {
         const newCompleted = state.completedSessions + 1;
