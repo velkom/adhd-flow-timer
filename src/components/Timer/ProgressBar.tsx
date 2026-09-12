@@ -1,3 +1,4 @@
+import { AnimatedText } from '@/components/AnimatedText';
 import type { TimerPhase, TimerStatus } from '@/lib/types';
 import styles from './ProgressBar.module.css';
 
@@ -77,9 +78,10 @@ export function ProgressBar({
       aria-valuenow={Math.round(clamped * 100)}
     >
       <div className={styles.progressBarHeader}>
-        <span className={styles.progressBarLabel}>
-          {isFlow ? 'Overtime' : 'Remaining'}
-        </span>
+        <AnimatedText
+          value={isFlow ? 'Overtime' : 'Remaining'}
+          className={styles.progressBarLabel}
+        />
         <span className={styles.progressBarPill}>{pillText}</span>
       </div>
 

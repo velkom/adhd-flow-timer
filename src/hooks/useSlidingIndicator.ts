@@ -4,12 +4,13 @@ interface UseSlidingIndicatorOptions {
   activeIndex: number;
 }
 
-export function useSlidingIndicator<TContainer extends HTMLElement = HTMLElement>({
-  activeIndex,
-}: UseSlidingIndicatorOptions) {
+export function useSlidingIndicator<
+  TContainer extends HTMLElement = HTMLElement,
+  TItem extends HTMLElement = HTMLButtonElement,
+>({ activeIndex }: UseSlidingIndicatorOptions) {
   const containerRef = useRef<TContainer>(null);
   const indicatorRef = useRef<HTMLSpanElement>(null);
-  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const itemRefs = useRef<Array<TItem | null>>([]);
   const hasPositioned = useRef(false);
 
   const positionIndicator = useCallback(
@@ -64,7 +65,7 @@ export function useSlidingIndicator<TContainer extends HTMLElement = HTMLElement
   }, [positionIndicator]);
 
   const setItemRef = useCallback(
-    (index: number) => (element: HTMLButtonElement | null) => {
+    (index: number) => (element: TItem | null) => {
       itemRefs.current[index] = element;
     },
     [],

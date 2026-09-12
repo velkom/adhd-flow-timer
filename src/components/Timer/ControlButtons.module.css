@@ -80,6 +80,14 @@
   transform: scale(1);
 }
 
+.primaryLabel {
+  min-width: 6ch;
+}
+
+.transitionLabel {
+  min-width: 5ch;
+}
+
 .controlBtnSecondary {
   flex-direction: column;
   gap: 2px;

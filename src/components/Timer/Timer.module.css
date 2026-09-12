@@ -42,9 +42,49 @@
 .metaDot {
   width: 6px;
   height: 6px;
+  flex-shrink: 0;
   border-radius: 50%;
   background: var(--color-accent);
   box-shadow: 0 0 8px var(--color-accent-glow);
+  opacity: 0;
+  filter: blur(2px);
+  transform: translate(-4px, 4px) scale(0);
+  transition:
+    opacity var(--duration-exit) var(--ease-snap),
+    filter var(--duration-exit) var(--ease-snap),
+    transform var(--duration-exit) var(--ease-snap);
+}
+
+.metaDot[data-open='true'] {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate(0, 0) scale(1);
+  animation: metaDotIn var(--duration-view) var(--ease-motion) both;
+}
+
+.watchMetaText {
+  min-width: 12ch;
+}
+
+@keyframes metaDotIn {
+  0% {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translate(-4px, 4px) scale(0);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(0, 0) scale(1.2);
+  }
+  82% {
+    transform: translate(0, 0) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(0, 0) scale(1);
+  }
 }
 
 /* ------------------------------ Watch card ----------------------------- */
@@ -81,21 +121,32 @@
 }
 
 .timelineDot {
+  position: relative;
   flex: 1;
   height: 4px;
   border-radius: var(--radius-full);
   background: var(--color-bg-tertiary);
-  transition:
-    background-color var(--duration-normal) var(--ease-out),
-    box-shadow var(--duration-normal) var(--ease-out);
+  overflow: hidden;
+  transition: box-shadow var(--duration-normal) var(--ease-motion);
 }
 
-.timelineDotCompleted {
+.timelineDot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: var(--color-accent);
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--duration-normal) var(--ease-motion);
+}
+
+.timelineDotCompleted::after,
+.timelineDotCurrent::after {
+  transform: scaleX(1);
 }
 
 .timelineDotCurrent {
-  background: var(--color-accent);
   box-shadow: 0 0 12px var(--color-accent-glow);
 }
 
@@ -125,6 +176,7 @@
 }
 
 .watchFooterValue {
+  min-width: 8ch;
   color: var(--color-text-primary);
   font-weight: var(--weight-semibold);
 }

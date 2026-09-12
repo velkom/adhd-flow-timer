@@ -1,5 +1,6 @@
 import { useId, useState, type ReactNode } from 'react';
 import { isScreenWakeLockSupported } from '@/hooks/useScreenWakeLock';
+import { useSlidingIndicator } from '@/hooks/useSlidingIndicator';
 import { useSettingsStore } from '@/stores/settingsStore';
 import type { TimerSettings } from '@/lib/types';
 import styles from './Settings.module.css';
@@ -43,6 +44,8 @@ const SESSION_OPTIONS = [2, 3, 4, 5, 6].map((sessions) => ({
   label: `${sessions}`,
   value: sessions,
 }));
+
+const THEMES = ['dark', 'light', 'system'] as const;
 
 function SettingSelect({
   label,
@@ -119,6 +122,14 @@ function ToggleSetting({
 
 export function SettingsView() {
   const { settings, updateSettings } = useSettingsStore();
+  const activeThemeIndex = THEMES.indexOf(settings.theme);
+  const {
+    containerRef: themeGroupRef,
+    indicatorRef: themeIndicatorRef,
+    setItemRef: setThemeRef,
+  } = useSlidingIndicator<HTMLDivElement, HTMLLabelElement>({
+    activeIndex: activeThemeIndex,
+  });
 
   const updateSetting = <K extends keyof TimerSettings>(
     key: K,
@@ -243,9 +254,18 @@ export function SettingsView() {
         <h3 className={styles.settingsGroupTitle}>Appearance</h3>
         <fieldset className={styles.settingField}>
           <legend className={styles.settingLabel}>Theme</legend>
-          <div className={styles.settingRadioGroup}>
-            {(['dark', 'light', 'system'] as const).map((t) => (
-              <label key={t} className={styles.settingRadio}>
+          <div ref={themeGroupRef} className={styles.settingRadioGroup}>
+            <span
+              ref={themeIndicatorRef}
+              className={styles.settingRadioIndicator}
+              aria-hidden="true"
+            />
+            {THEMES.map((t, index) => (
+              <label
+                key={t}
+                ref={setThemeRef(index)}
+                className={styles.settingRadio}
+              >
                 <input
                   type="radio"
                   name="theme"

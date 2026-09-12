@@ -65,6 +65,7 @@
 /* ---------------------------------------------------------------------- */
 
 .appNav {
+  isolation: isolate;
   display: flex;
   justify-content: center;
   gap: var(--space-1);
@@ -92,7 +93,7 @@
   background: var(--color-accent);
   box-shadow: 0 8px 24px -12px var(--color-accent-glow);
   pointer-events: none;
-  view-transition-name: nav-indicator;
+  z-index: 0;
   transform: translate(
     var(--indicator-x, 0),
     var(--indicator-y, 0)
@@ -133,6 +134,7 @@
 .navTabActive {
   color: var(--color-on-accent);
   font-weight: var(--weight-semibold);
+  transition-delay: var(--duration-normal);
 }
 
 .navTabActive:hover {
@@ -169,11 +171,6 @@
 
 :global(::view-transition-new(page-title)) {
   animation: viewTitleIn var(--duration-normal) var(--ease-motion) both;
-}
-
-:global(::view-transition-group(nav-indicator)) {
-  animation-duration: var(--duration-normal);
-  animation-timing-function: var(--ease-motion);
 }
 
 @keyframes viewContentOut {
@@ -258,5 +255,9 @@
 @media (prefers-reduced-motion: reduce) {
   .appMain {
     scroll-behavior: auto;
+  }
+
+  .navTabActive {
+    transition-delay: 0ms;
   }
 }

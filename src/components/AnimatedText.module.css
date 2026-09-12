@@ -1,0 +1,52 @@
+.animatedText {
+  display: inline-grid;
+  align-items: center;
+}
+
+.layer,
+.incoming,
+.outgoing {
+  grid-area: 1 / 1;
+}
+
+.incoming {
+  animation: animatedTextIn var(--duration-normal) var(--ease-motion) both;
+}
+
+.outgoing {
+  pointer-events: none;
+  animation: animatedTextOut var(--duration-exit) var(--ease-snap) both;
+}
+
+@keyframes animatedTextIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes animatedTextOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
+    filter: blur(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incoming,
+  .outgoing {
+    animation: none;
+  }
+}

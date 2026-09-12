@@ -16,6 +16,7 @@
 }
 
 .timeframeSelector {
+  isolation: isolate;
   position: relative;
   display: flex;
   flex-wrap: wrap;
@@ -40,6 +41,7 @@
   background: var(--color-accent);
   box-shadow: 0 8px 24px -12px var(--color-accent-glow);
   pointer-events: none;
+  z-index: 0;
   transform: translate(
     var(--indicator-x, 0),
     var(--indicator-y, 0)
@@ -78,6 +80,13 @@
 .timeframeBtnActive {
   color: var(--color-on-accent);
   font-weight: var(--weight-semibold);
+  transition-delay: var(--duration-normal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timeframeBtnActive {
+    transition-delay: 0ms;
+  }
 }
 
 .timeframeBtnActive:hover {

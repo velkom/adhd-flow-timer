@@ -246,20 +246,56 @@
 }
 
 .settingRadioGroup {
+  isolation: isolate;
+  position: relative;
   display: flex;
-  gap: var(--space-2);
+  align-items: center;
+  gap: var(--space-1);
   flex-wrap: wrap;
+  width: max-content;
+  max-width: 100%;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-tertiary);
+}
+
+.settingRadioIndicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--indicator-width, 0);
+  height: var(--indicator-height, 0);
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  box-shadow: 0 8px 24px -12px var(--color-accent-glow);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(
+    var(--indicator-x, 0),
+    var(--indicator-y, 0)
+  );
+  transition:
+    transform var(--duration-normal) var(--ease-motion),
+    width var(--duration-normal) var(--ease-motion),
+    height var(--duration-normal) var(--ease-motion);
+}
+
+.settingRadioIndicator[data-animate='false'] {
+  transition: none;
 }
 
 .settingRadio {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--space-2);
   min-height: 44px;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
+  border: 1px solid transparent;
   border-radius: var(--radius-full);
-  background: var(--color-bg-tertiary);
+  background: transparent;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: var(--tracking-wider);
@@ -267,21 +303,20 @@
   color: var(--color-text-secondary);
   cursor: pointer;
   transition:
-    color var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    color var(--duration-normal) var(--ease-motion),
+    background-color var(--duration-fast) var(--ease-out);
 }
 
 .settingRadio:hover {
-  border-color: var(--color-text-tertiary);
+  background: var(--color-bg-elevated);
   color: var(--color-text-primary);
 }
 
 .settingRadio:has(input:checked) {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
   color: var(--color-on-accent);
   font-weight: var(--weight-semibold);
+  background: transparent;
+  transition-delay: var(--duration-normal), 0ms;
 }
 
 .settingRadio input {
@@ -289,6 +324,12 @@
   position: absolute;
   opacity: 0;
   pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .settingRadio:has(input:checked) {
+    transition-delay: 0ms;
+  }
 }
 
 .settingsActions {

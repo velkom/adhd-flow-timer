@@ -31,6 +31,7 @@
   font-size: 0.68rem;
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-wider);
+  animation: flowBadgeIn var(--duration-view) var(--ease-motion) both;
 }
 
 .timerDigits {
@@ -78,6 +79,7 @@
   font-size: var(--text-xs);
   line-height: var(--leading-snug);
   color: var(--color-text-secondary);
+  animation: timerSubtitleIn var(--duration-normal) var(--ease-motion) both;
 }
 
 .debugIndicator {
@@ -95,6 +97,37 @@
 
   55% {
     opacity: var(--visual-cue-strength, 0.45);
+  }
+}
+
+@keyframes flowBadgeIn {
+  0% {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translate(-6px, 4px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(0, 0) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes timerSubtitleIn {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
   }
 }
 

@@ -3,6 +3,7 @@ import playFill from '@iconify-icons/mingcute/play-fill';
 import pauseFill from '@iconify-icons/mingcute/pause-fill';
 import skipForwardFill from '@iconify-icons/mingcute/skip-forward-fill';
 import refreshAnticlockwise1Line from '@iconify-icons/mingcute/refresh-anticlockwise-1-line';
+import { AnimatedText } from '@/components/AnimatedText';
 import type { TimerStatus, TimerPhase } from '@/lib/types';
 import styles from './ControlButtons.module.css';
 
@@ -107,7 +108,10 @@ export function ControlButtons({
             <Icon icon={pauseFill} width={22} />
           </span>
         </span>
-        <span>{primaryControl.label}</span>
+        <AnimatedText
+          value={primaryControl.label}
+          className={styles.primaryLabel}
+        />
       </button>
 
       <button
@@ -118,7 +122,10 @@ export function ControlButtons({
         aria-label={transitionAriaLabel}
       >
         <Icon icon={skipForwardFill} width={20} aria-hidden="true" />
-        <span>{transitionLabel}</span>
+        <AnimatedText
+          value={transitionLabel}
+          className={styles.transitionLabel}
+        />
       </button>
     </div>
   );

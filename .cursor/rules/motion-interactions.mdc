@@ -1,0 +1,17 @@
+---
+description: Keep interactions alive, natural, and consistent with the motion system
+alwaysApply: true
+---
+
+# Motion and interactions
+
+- Treat motion as part of every UI change, not as optional polish. Use it to explain continuity, state changes, hierarchy, and feedback.
+- Reuse the duration and easing tokens in `src/styles/tokens.css`. Add a token before introducing a repeated new timing.
+- Prefer transform and opacity; use small blur, clipping, or shadow changes only when they clarify the interaction.
+- Animate low-frequency semantic changes such as labels, tabs, toggles, progress state, disclosure, and modal lifecycle.
+- Do not animate initial page load, countdown digits on every tick, or other high-frequency updates.
+- Keep layout stable: reserve contextual text width, keep indicators behind labels, and avoid font or geometry changes that make controls jump.
+- Motion must be interruptible. Rapid input should replace stale outgoing states and settle on the latest state.
+- Preserve native control semantics, keyboard behavior, focus visibility, pointer targets, and accessible names.
+- Respect `prefers-reduced-motion` with an immediate, fully functional state change and no delayed color or visibility changes.
+- Verify desktop, mobile, short landscape, keyboard use, rapid switching, and reduced motion before shipping.

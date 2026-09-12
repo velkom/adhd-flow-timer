@@ -1,6 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { Icon } from '@iconify/react';
 import bugLine from '@iconify-icons/mingcute/bug-line';
+import { AnimatedText } from '@/components/AnimatedText';
 import type { TimerPhase, TimerStatus } from '@/lib/types';
 import {
   isOvertimeDisplay,
@@ -78,9 +79,10 @@ export function TimerDisplay({
   return (
     <div className={styles.timerDisplay}>
       <span className={styles.timerTopline}>
-        <span className={styles.timerPhaseLabel}>
-          {phaseLabel(phase, isOvertime)}
-        </span>
+        <AnimatedText
+          value={phaseLabel(phase, isOvertime)}
+          className={styles.timerPhaseLabel}
+        />
         {isOvertime && <span className={styles.timerFlowBadge}>Flow</span>}
       </span>
 

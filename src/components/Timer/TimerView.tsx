@@ -3,6 +3,7 @@ import { useTimerStore } from '@/stores/timerStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useTimerSoundEffects } from '@/hooks/useTimerSoundEffects';
 import { playSound } from '@/lib/sounds';
+import { AnimatedText } from '@/components/AnimatedText';
 import { ProgressBar } from './ProgressBar';
 import { TimerDisplay } from './TimerDisplay';
 import { SessionTimeline } from './SessionTimeline';
@@ -98,8 +99,15 @@ export function TimerView() {
       <header className={styles.watchHeader}>
         <span className={styles.watchDate}>{todayLabel}</span>
         <span className={styles.watchMeta}>
-          {isTimerActive && <span className={styles.metaDot} aria-hidden="true" />}
-          Session {cycleIndex}/{settings.sessionsBeforeLongBreak}
+          <span
+            className={styles.metaDot}
+            data-open={isTimerActive}
+            aria-hidden="true"
+          />
+          <AnimatedText
+            value={`Session ${cycleIndex}/${settings.sessionsBeforeLongBreak}`}
+            className={styles.watchMetaText}
+          />
         </span>
       </header>
 
@@ -132,9 +140,10 @@ export function TimerView() {
         <footer className={styles.watchFooter}>
           <span className={styles.watchFooterItem}>
             <span className={styles.watchFooterLabel}>Status</span>
-            <span className={styles.watchFooterValue}>
-              {statusLabel(timer.status, timer.phase)}
-            </span>
+            <AnimatedText
+              value={statusLabel(timer.status, timer.phase)}
+              className={styles.watchFooterValue}
+            />
           </span>
         </footer>
       </div>
