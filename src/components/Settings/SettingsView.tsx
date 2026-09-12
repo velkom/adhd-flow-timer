@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { isScreenWakeLockSupported } from '@/hooks/useScreenWakeLock';
 import { useSettingsStore } from '@/stores/settingsStore';
 import type { TimerSettings } from '@/lib/types';
 import viewTitleStyles from '@/components/viewTitle.module.css';
@@ -209,6 +210,18 @@ export function SettingsView() {
             </p>
           </>
         )}
+
+        <ToggleSetting
+          label="Keep screen awake"
+          checked={settings.keepScreenAwake}
+          onChange={(checked) => updateSetting('keepScreenAwake', checked)}
+        />
+
+        <p className={styles.settingHint}>
+          {isScreenWakeLockSupported()
+            ? 'Stops your phone from dimming or locking while this page is open. Switching tabs or apps ends it until you come back.'
+            : 'This browser cannot keep the screen awake. Chrome or Edge on Android, and Safari on iOS 16.4 or later, support it.'}
+        </p>
       </section>
 
       <section className={styles.settingsGroup}>

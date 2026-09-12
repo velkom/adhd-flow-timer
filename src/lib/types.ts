@@ -27,6 +27,8 @@ export interface TimerSettings {
   /** App-relative master gain for UI sounds (0–1); does not read OS volume. */
   soundVolume: number;
   visualCueIntensity: number;
+  /** Holds a screen wake lock while the app is visible (HTTPS + supported browser only). */
+  keepScreenAwake: boolean;
   theme: 'dark' | 'light' | 'system';
   accentColor: string;
 }
@@ -74,6 +76,7 @@ export const DEFAULT_SETTINGS: TimerSettings = {
   enableSoundNotifications: false,
   soundVolume: 0.45,
   visualCueIntensity: 5,
+  keepScreenAwake: true,
   theme: 'dark',
   accentColor: '#ff5a1f',
 };
