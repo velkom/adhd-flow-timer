@@ -1,5 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { useSlidingIndicator } from '@/hooks/useSlidingIndicator';
 import type { View } from '@/lib/types';
+import viewTitleStyles from './viewTitle.module.css';
 import styles from './Layout.module.css';
 
 const NAV_ITEMS: ReadonlyArray<{ view: View; label: string }> = [
@@ -7,6 +9,12 @@ const NAV_ITEMS: ReadonlyArray<{ view: View; label: string }> = [
   { view: 'settings', label: 'Settings' },
   { view: 'analytics', label: 'Progress' },
 ];
+
+const VIEW_TITLES = {
+  timer: 'Timer',
+  settings: 'Settings',
+  analytics: 'Your Progress',
+} satisfies Record<View, string>;
 
 interface LayoutProps {
   activeView: View;
@@ -17,6 +25,10 @@ interface LayoutProps {
 export function Layout({ activeView, onViewChange, children }: LayoutProps) {
   const mainRef = useRef<HTMLElement>(null);
   const isInitialView = useRef(true);
+  const activeIndex = NAV_ITEMS.findIndex((item) => item.view === activeView);
+  const { containerRef, indicatorRef, setItemRef } = useSlidingIndicator({
+    activeIndex,
+  });
 
   useEffect(() => {
     if (isInitialView.current) {
@@ -39,12 +51,27 @@ export function Layout({ activeView, onViewChange, children }: LayoutProps) {
         <h1 id="app-title" className={styles.visuallyHidden}>
           ADHD Flow Timer
         </h1>
-        <div className={styles.appContent}>{children}</div>
+        <div className={styles.appContent}>
+          <h2 className={`${viewTitleStyles.viewTitle} ${styles.pageTitle}`}>
+            {VIEW_TITLES[activeView]}
+          </h2>
+          <div className={styles.viewBody}>{children}</div>
+        </div>
       </main>
-      <nav className={styles.appNav} aria-label="Main navigation">
-        {NAV_ITEMS.map(({ view, label }) => (
+      <nav
+        ref={containerRef}
+        className={styles.appNav}
+        aria-label="Main navigation"
+      >
+        <span
+          ref={indicatorRef}
+          className={styles.navIndicator}
+          aria-hidden="true"
+        />
+        {NAV_ITEMS.map(({ view, label }, index) => (
           <button
             key={view}
+            ref={setItemRef(index)}
             type="button"
             aria-current={activeView === view ? 'page' : undefined}
             className={`${styles.navTab} ${activeView === view ? styles.navTabActive : ''}`}

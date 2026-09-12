@@ -16,6 +16,7 @@
 }
 
 .timeframeSelector {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -29,7 +30,33 @@
   margin-inline: auto;
 }
 
+.timeframeIndicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--indicator-width, 0);
+  height: var(--indicator-height, 0);
+  border-radius: var(--radius-full);
+  background: var(--color-accent);
+  box-shadow: 0 8px 24px -12px var(--color-accent-glow);
+  pointer-events: none;
+  transform: translate(
+    var(--indicator-x, 0),
+    var(--indicator-y, 0)
+  );
+  transition:
+    transform var(--duration-normal) var(--ease-motion),
+    width var(--duration-normal) var(--ease-motion),
+    height var(--duration-normal) var(--ease-motion);
+}
+
+.timeframeIndicator[data-animate='false'] {
+  transition: none;
+}
+
 .timeframeBtn {
+  position: relative;
+  z-index: 1;
   min-height: 44px;
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-full);
@@ -40,9 +67,7 @@
   text-transform: uppercase;
   color: var(--color-text-secondary);
   background: transparent;
-  transition:
-    color var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-normal) var(--ease-motion);
 }
 
 .timeframeBtn:hover {
@@ -51,15 +76,13 @@
 }
 
 .timeframeBtnActive {
-  background: var(--color-accent);
   color: var(--color-on-accent);
   font-weight: var(--weight-semibold);
-  box-shadow: 0 8px 24px -12px var(--color-accent-glow);
 }
 
 .timeframeBtnActive:hover {
   color: var(--color-on-accent);
-  background: var(--color-accent-strong);
+  background: transparent;
 }
 
 .statsGrid {

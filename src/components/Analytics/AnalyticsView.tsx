@@ -1,11 +1,11 @@
 import { useState, useMemo } from 'react';
+import { useSlidingIndicator } from '@/hooks/useSlidingIndicator';
 import { useSessionStore } from '@/stores/sessionStore';
 import { analyzeTimePatterns } from '@/lib/sessionCalculations';
 import { formatTime } from '@/lib/formatters';
 import type { Timeframe } from '@/lib/types';
 import { SessionChart } from './SessionChart';
 import { FocusBreakChart } from './FocusBreakChart';
-import viewTitleStyles from '@/components/viewTitle.module.css';
 import btnStyles from '@/components/buttons.module.css';
 import styles from './Analytics.module.css';
 
@@ -17,6 +17,13 @@ const TIMEFRAMES: { label: string; value: Timeframe }[] = [
 
 export function AnalyticsView() {
   const [timeframe, setTimeframe] = useState<Timeframe>('day');
+  const activeTimeframeIndex = TIMEFRAMES.findIndex(
+    (item) => item.value === timeframe,
+  );
+  const { containerRef, indicatorRef, setItemRef } =
+    useSlidingIndicator<HTMLDivElement>({
+      activeIndex: activeTimeframeIndex,
+    });
   const getStats = useSessionStore((s) => s.getStats);
   const getFilteredSessions = useSessionStore((s) => s.getFilteredSessions);
   const sessions = useSessionStore((s) => s.sessions);
@@ -49,19 +56,25 @@ export function AnalyticsView() {
 
   return (
     <div className={styles.analyticsView}>
-      <h2 className={viewTitleStyles.viewTitle}>Your Progress</h2>
       <p className={styles.analyticsIntro}>
         Look for patterns, not perfect streaks. Every completed focus block counts.
       </p>
 
       <div
+        ref={containerRef}
         className={styles.timeframeSelector}
         role="group"
         aria-label="Time period"
       >
-        {TIMEFRAMES.map(({ label, value }) => (
+        <span
+          ref={indicatorRef}
+          className={styles.timeframeIndicator}
+          aria-hidden="true"
+        />
+        {TIMEFRAMES.map(({ label, value }, index) => (
           <button
             key={value}
+            ref={setItemRef(index)}
             type="button"
             aria-pressed={timeframe === value}
             className={`${styles.timeframeBtn} ${timeframe === value ? styles.timeframeBtnActive : ''}`}

@@ -1,7 +1,10 @@
 import {
+  useCallback,
   useEffect,
   useId,
   useRef,
+  useState,
+  type AnimationEvent,
   type KeyboardEvent,
   type MouseEvent,
   type ReactNode,
@@ -9,6 +12,8 @@ import {
 import { createPortal } from 'react-dom';
 import modalStyles from './ConfirmModal.module.css';
 import btnStyles from './buttons.module.css';
+
+const CLOSE_FALLBACK_MS = 200;
 
 export type ConfirmModalConfirmVariant = 'primary' | 'danger';
 
@@ -35,6 +40,42 @@ export function ConfirmModal({
   const bodyId = useId();
   const cancelRef = useRef<HTMLButtonElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
+  const pendingClose = useRef<(() => void) | null>(null);
+  const closeTimer = useRef<number | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const completeClose = useCallback(() => {
+    const action = pendingClose.current;
+    if (!action) return;
+
+    pendingClose.current = null;
+    if (closeTimer.current !== null) {
+      window.clearTimeout(closeTimer.current);
+      closeTimer.current = null;
+    }
+    action();
+  }, []);
+
+  const requestClose = useCallback(
+    (action: () => void) => {
+      if (pendingClose.current) return;
+
+      const reduceMotion =
+        window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+      if (reduceMotion) {
+        action();
+        return;
+      }
+
+      pendingClose.current = action;
+      setIsClosing(true);
+      closeTimer.current = window.setTimeout(
+        completeClose,
+        CLOSE_FALLBACK_MS,
+      );
+    },
+    [completeClose],
+  );
 
   useEffect(() => {
     const previouslyFocused =
@@ -47,6 +88,9 @@ export function ConfirmModal({
     cancelRef.current?.focus();
 
     return () => {
+      if (closeTimer.current !== null) {
+        window.clearTimeout(closeTimer.current);
+      }
       if (appRoot) appRoot.inert = wasInert;
       previouslyFocused?.focus();
     };
@@ -55,7 +99,7 @@ export function ConfirmModal({
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === 'Escape') {
       event.preventDefault();
-      onCancel();
+      requestClose(onCancel);
       return;
     }
 
@@ -72,7 +116,13 @@ export function ConfirmModal({
 
   const handleOverlayClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
-      onCancel();
+      requestClose(onCancel);
+    }
+  };
+
+  const handleOverlayAnimationEnd = (event: AnimationEvent<HTMLDivElement>) => {
+    if (isClosing && event.target === event.currentTarget) {
+      completeClose();
     }
   };
 
@@ -82,7 +132,12 @@ export function ConfirmModal({
       : `${btnStyles.btn} ${btnStyles.btnPrimary}`;
 
   return createPortal(
-    <div className={modalStyles.modalOverlay} onClick={handleOverlayClick}>
+    <div
+      className={modalStyles.modalOverlay}
+      data-state={isClosing ? 'closing' : 'open'}
+      onClick={handleOverlayClick}
+      onAnimationEnd={handleOverlayAnimationEnd}
+    >
       <div
         className={modalStyles.modal}
         role="dialog"
@@ -102,7 +157,8 @@ export function ConfirmModal({
             ref={cancelRef}
             type="button"
             className={`${btnStyles.btn} ${btnStyles.btnSecondary}`}
-            onClick={onCancel}
+            disabled={isClosing}
+            onClick={() => requestClose(onCancel)}
           >
             {cancelLabel}
           </button>
@@ -110,7 +166,8 @@ export function ConfirmModal({
             ref={confirmRef}
             type="button"
             className={confirmClass}
-            onClick={onConfirm}
+            disabled={isClosing}
+            onClick={() => requestClose(onConfirm)}
           >
             {confirmLabel}
           </button>

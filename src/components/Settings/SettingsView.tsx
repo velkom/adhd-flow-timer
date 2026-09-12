@@ -1,8 +1,7 @@
-import { useId } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { isScreenWakeLockSupported } from '@/hooks/useScreenWakeLock';
 import { useSettingsStore } from '@/stores/settingsStore';
 import type { TimerSettings } from '@/lib/types';
-import viewTitleStyles from '@/components/viewTitle.module.css';
 import styles from './Settings.module.css';
 import { SettingsDataActions } from './SettingsDataActions';
 
@@ -22,6 +21,7 @@ interface ToggleSettingProps {
   label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
+  children?: ReactNode;
 }
 
 const FOCUS_OPTIONS = [5, 10, 15, 20, 25, 30, 45, 60].map((minutes) => ({
@@ -77,21 +77,42 @@ function ToggleSetting({
   label,
   checked,
   onChange,
+  children,
 }: ToggleSettingProps) {
   const inputId = useId();
+  const panelId = useId();
+  const [isInitialized, setIsInitialized] = useState(false);
 
   return (
-    <div className={`${styles.settingField} ${styles.settingFieldToggle}`}>
-      <label className={styles.settingLabel} htmlFor={inputId}>
-        {label}
-      </label>
-      <input
-        id={inputId}
-        type="checkbox"
-        className={styles.settingToggle}
-        checked={checked}
-        onChange={(event) => onChange(event.target.checked)}
-      />
+    <div className={styles.settingToggleBlock}>
+      <div className={`${styles.settingField} ${styles.settingFieldToggle}`}>
+        <label className={styles.settingLabel} htmlFor={inputId}>
+          {label}
+        </label>
+        <input
+          id={inputId}
+          type="checkbox"
+          className={`${styles.settingToggle} ${isInitialized ? styles.settingToggleInitialized : ''}`}
+          checked={checked}
+          aria-controls={children ? panelId : undefined}
+          aria-expanded={children ? checked : undefined}
+          onChange={(event) => {
+            setIsInitialized(true);
+            onChange(event.target.checked);
+          }}
+        />
+      </div>
+      {children && (
+        <div
+          id={panelId}
+          className={styles.settingReveal}
+          data-open={checked}
+          aria-hidden={!checked}
+          inert={checked ? undefined : true}
+        >
+          <div className={styles.settingRevealInner}>{children}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -108,8 +129,6 @@ export function SettingsView() {
 
   return (
     <div className={styles.settingsView}>
-      <h2 className={viewTitleStyles.viewTitle}>Settings</h2>
-
       <section className={styles.settingsGroup}>
         <h3 className={styles.settingsGroupTitle}>Timer</h3>
         <p className={styles.groupDescription}>
@@ -152,9 +171,7 @@ export function SettingsView() {
           label="Visual cues"
           checked={settings.enableVisualCues}
           onChange={(checked) => updateSetting('enableVisualCues', checked)}
-        />
-
-        {settings.enableVisualCues && (
+        >
           <label className={styles.settingField}>
             <span className={styles.settingLabel}>
               Cue intensity: {settings.visualCueIntensity} of 10
@@ -175,7 +192,7 @@ export function SettingsView() {
               <span>Strong</span>
             </span>
           </label>
-        )}
+        </ToggleSetting>
 
         <ToggleSetting
           label="Sound notifications"
@@ -183,9 +200,7 @@ export function SettingsView() {
           onChange={(checked) =>
             updateSetting('enableSoundNotifications', checked)
           }
-        />
-
-        {settings.enableSoundNotifications && (
+        >
           <>
             <label className={styles.settingField}>
               <span className={styles.settingLabel}>
@@ -209,7 +224,7 @@ export function SettingsView() {
               lower this slider or your system volume.
             </p>
           </>
-        )}
+        </ToggleSetting>
 
         <ToggleSetting
           label="Keep screen awake"

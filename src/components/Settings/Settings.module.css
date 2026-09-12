@@ -57,6 +57,47 @@
   justify-content: space-between;
 }
 
+.settingToggleBlock {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.settingReveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-normal) var(--ease-motion);
+}
+
+.settingReveal[data-open='true'] {
+  grid-template-rows: 1fr;
+}
+
+.settingRevealInner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: 0;
+  transition:
+    opacity var(--duration-exit) var(--ease-snap),
+    filter var(--duration-exit) var(--ease-snap),
+    padding-top var(--duration-normal) var(--ease-motion);
+}
+
+.settingReveal[data-open='true'] .settingRevealInner {
+  opacity: 1;
+  filter: blur(0);
+  padding-top: var(--space-4);
+  transition:
+    opacity var(--duration-normal) var(--ease-motion),
+    filter var(--duration-normal) var(--ease-motion),
+    padding-top var(--duration-normal) var(--ease-motion);
+}
+
 .settingLabel {
   font-family: var(--font-mono);
   font-size: var(--text-xs);
@@ -101,8 +142,8 @@
   position: relative;
   cursor: pointer;
   transition:
-    background-color var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    background-color 180ms var(--ease-motion),
+    border-color 180ms var(--ease-motion);
   flex-shrink: 0;
 }
 
@@ -115,8 +156,8 @@
   height: 20px;
   border-radius: 50%;
   background: var(--color-text-secondary);
-  transition: transform var(--duration-fast) var(--ease-out),
-    background var(--duration-fast);
+  transform: translateX(0);
+  transition: background-color 180ms var(--ease-motion);
 }
 
 .settingToggle:checked {
@@ -127,6 +168,44 @@
 .settingToggle:checked::after {
   transform: translateX(22px);
   background: var(--color-on-accent);
+}
+
+.settingToggleInitialized:checked::after {
+  animation: toggleOn 350ms cubic-bezier(0.34, 1.35, 0.64, 1) both;
+}
+
+.settingToggleInitialized:not(:checked)::after {
+  animation: toggleOff 350ms cubic-bezier(0.34, 1.35, 0.64, 1) both;
+}
+
+@keyframes toggleOn {
+  0% {
+    transform: translateX(0);
+  }
+  55% {
+    transform: translateX(23.5px);
+  }
+  80% {
+    transform: translateX(21.5px);
+  }
+  100% {
+    transform: translateX(22px);
+  }
+}
+
+@keyframes toggleOff {
+  0% {
+    transform: translateX(22px);
+  }
+  55% {
+    transform: translateX(-1.5px);
+  }
+  80% {
+    transform: translateX(0.5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .settingRange {
