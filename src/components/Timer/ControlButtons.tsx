@@ -3,7 +3,6 @@ import playFill from '@iconify-icons/mingcute/play-fill';
 import pauseFill from '@iconify-icons/mingcute/pause-fill';
 import skipForwardFill from '@iconify-icons/mingcute/skip-forward-fill';
 import refreshAnticlockwise1Line from '@iconify-icons/mingcute/refresh-anticlockwise-1-line';
-import stopFill from '@iconify-icons/mingcute/stop-fill';
 import type { TimerStatus, TimerPhase } from '@/lib/types';
 import styles from './ControlButtons.module.css';
 
@@ -14,8 +13,7 @@ interface ControlButtonsProps {
   onPause: () => void;
   onResume: () => void;
   onSkip: () => void;
-  onFinishRequest: () => void;
-  onReset: () => void;
+  onResetRequest: () => void;
 }
 
 type PrimaryAction = 'start' | 'pause' | 'resume';
@@ -49,8 +47,7 @@ export function ControlButtons({
   onPause,
   onResume,
   onSkip,
-  onFinishRequest,
-  onReset,
+  onResetRequest,
 }: ControlButtonsProps) {
   const isIdle = status === 'idle';
   const primaryControl = primaryControlForStatus(status);
@@ -75,17 +72,17 @@ export function ControlButtons({
   };
 
   const isFocus = phase === 'focus';
-  const transitionLabel = isFocus ? 'Finish' : 'Focus';
+  const transitionLabel = isFocus ? 'Next' : 'Focus';
   const transitionAriaLabel = isFocus
-    ? 'Finish focus session and start break'
-    : 'Finish break and return to focus';
+    ? 'End focus session and start break'
+    : 'End break and return to focus';
 
   return (
     <div className={styles.controlButtons}>
       <button
         type="button"
         className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
-        onClick={onReset}
+        onClick={onResetRequest}
         disabled={isIdle}
       >
         <Icon icon={refreshAnticlockwise1Line} width={20} aria-hidden="true" />
@@ -116,15 +113,11 @@ export function ControlButtons({
       <button
         type="button"
         className={`${styles.controlBtn} ${styles.controlBtnSecondary}`}
-        onClick={isFocus ? onFinishRequest : onSkip}
+        onClick={onSkip}
         disabled={isIdle && isFocus}
         aria-label={transitionAriaLabel}
       >
-        <Icon
-          icon={isFocus ? stopFill : skipForwardFill}
-          width={20}
-          aria-hidden="true"
-        />
+        <Icon icon={skipForwardFill} width={20} aria-hidden="true" />
         <span>{transitionLabel}</span>
       </button>
     </div>

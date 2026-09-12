@@ -79,7 +79,7 @@ export function AnalyticsView() {
               No focus sessions in this period yet
             </p>
             <p className={styles.analyticsEmptyHint}>
-              Start on the Timer screen and choose Finish when your focus block is
+              Start on the Timer screen and choose Next when your focus block is
               done. Your patterns will appear here.
             </p>
           </div>

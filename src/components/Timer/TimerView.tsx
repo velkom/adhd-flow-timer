@@ -20,7 +20,7 @@ export function TimerView() {
   const settings = useSettingsStore((s) => s.settings);
 
   const [debugOpen, setDebugOpen] = useState(false);
-  const [finishConfirmOpen, setFinishConfirmOpen] = useState(false);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   useTimerSoundEffects(timer.phase, timer.status);
 
@@ -59,17 +59,12 @@ export function TimerView() {
     skip();
   }, [skip]);
 
-  const handleFinishRequest = useCallback(() => {
-    setFinishConfirmOpen(true);
+  const handleResetRequest = useCallback(() => {
+    setResetConfirmOpen(true);
   }, []);
 
-  const handleConfirmFinish = useCallback(() => {
-    setFinishConfirmOpen(false);
-    playSound('click');
-    skip();
-  }, [skip]);
-
-  const handleReset = useCallback(() => {
+  const handleConfirmReset = useCallback(() => {
+    setResetConfirmOpen(false);
     playSound('click');
     reset();
   }, [reset]);
@@ -151,18 +146,17 @@ export function TimerView() {
         onPause={handlePause}
         onResume={handleResume}
         onSkip={handleSkip}
-        onFinishRequest={handleFinishRequest}
-        onReset={handleReset}
+        onResetRequest={handleResetRequest}
       />
 
-      {finishConfirmOpen && (
+      {resetConfirmOpen && (
         <ConfirmModal
-          title="Finish session?"
-          body="Save this focus block and start your break."
-          confirmLabel="Finish focus"
-          confirmVariant="primary"
-          onCancel={() => setFinishConfirmOpen(false)}
-          onConfirm={handleConfirmFinish}
+          title="Reset timer?"
+          body="The current phase restarts from the beginning. Elapsed time will not be saved."
+          confirmLabel="Reset"
+          confirmVariant="danger"
+          onCancel={() => setResetConfirmOpen(false)}
+          onConfirm={handleConfirmReset}
         />
       )}
 
